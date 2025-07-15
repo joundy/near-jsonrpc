@@ -1,0 +1,19 @@
+{
+  "name": "@near-js/jsonrpc-generator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "generate": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "openapi-typescript": "^7.8.0",
+    "ts-morph": "^26.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.14",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}

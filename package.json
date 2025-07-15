@@ -1,0 +1,10 @@
+{
+  "name": "near-jsonrpc",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Hafiz Joundy Syafie <hafizjoundys@gmail.com>",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ]
+}
