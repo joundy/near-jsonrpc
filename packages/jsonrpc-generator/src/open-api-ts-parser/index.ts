@@ -17,7 +17,11 @@ export function parseOpenapiTS(openapiTS: string) {
   // const schemaTypes = parseSchemaTypes(source);
   const methods = parseMethodTypes(source);
 
+  // TODO: need to add more work for this
+  const schemas = parseSchemaTypes(source);
+
   return {
     methods,
+    schemas,
   };
 }

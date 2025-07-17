@@ -18,12 +18,7 @@ export function parseSchemaTypes(source: SourceFile) {
 
   const properties = schemaLiteral.getProperties();
 
-  let outputContent = `/**
-   * This file was auto-generated from @near-js/jsonrpc-generator.
-   * It contains all the extracted types from openapi spec.
-   */
-  
-  `;
+  let outputSchemas = ``;
 
   for (const property of properties) {
     const typeName = property.getName();
@@ -60,12 +55,8 @@ export function parseSchemaTypes(source: SourceFile) {
     const regex = /components\["schemas"\]\["([^"]+)"\]/g;
     typeDefinition = typeDefinition.replace(regex, "$1");
 
-    outputContent += `export type ${typeName} = ${typeDefinition};\n`;
-
-    // if (typeName === "AccessKey") {
-    //   break;
-    // }
+    outputSchemas += `export type ${typeName} = ${typeDefinition};\n`;
   }
 
-  return outputContent;
+  return outputSchemas;
 }
