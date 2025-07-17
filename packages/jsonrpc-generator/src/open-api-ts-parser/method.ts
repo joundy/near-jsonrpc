@@ -17,6 +17,12 @@ import {
   OPENAPI_TS_SCHEMAS,
 } from "../utils/openapi-ts";
 import { JsonRPCBodyType, JsonRpcResponseType } from "../utils";
+import type {
+  ErrorType,
+  MethodType,
+  RequestType,
+  ResponseType,
+} from "../types";
 
 // TODO: validate is it valid json rpc request or not
 // TODO: validate the schema for request and response should be has a standard json rpc schema
@@ -67,6 +73,73 @@ function getRequestType(schemaType: string, source: SourceFile) {
   };
 }
 
+// TODO: handle more possible cases for the result type
+function resultToResponseType(result: PropertySignature) {
+  const resultChild = result.getChildAtIndex(2);
+
+  switch (resultChild.getKind()) {
+    case SyntaxKind.ArrayType:
+      const arrayType = resultChild.asKindOrThrow(SyntaxKind.ArrayType);
+
+      const arrayindexed = arrayType.getChildAtIndexIfKindOrThrow(
+        0,
+        SyntaxKind.IndexedAccessType
+      );
+
+      return {
+        schema: removeQuotes(arrayindexed.getIndexTypeNode().getText()),
+        isArray: true,
+        isNullable: false,
+      };
+
+    case SyntaxKind.UnionType:
+      const unionType = resultChild.asKindOrThrow(SyntaxKind.UnionType);
+      const type = unionType.getTypeNodes();
+
+      if (type.length !== 2) {
+        throw new Error("Unsupported union result type");
+      }
+
+      // this should be indexed access type
+      const unionIndexed = type[0]!.asKindOrThrow(SyntaxKind.IndexedAccessType);
+
+      // this should be nulled type
+      type[1]!
+        .asKindOrThrow(SyntaxKind.LiteralType)
+        .getFirstDescendantByKindOrThrow(SyntaxKind.NullKeyword);
+
+      return {
+        schema: removeQuotes(unionIndexed.getIndexTypeNode().getText()),
+        isArray: false,
+        isNullable: true,
+      };
+
+    case SyntaxKind.IndexedAccessType:
+      const directIndexed = resultChild.asKindOrThrow(
+        SyntaxKind.IndexedAccessType
+      );
+
+      return {
+        schema: removeQuotes(directIndexed.getIndexTypeNode().getText()),
+        isArray: false,
+        isNullable: false,
+      };
+
+    default:
+      throw new Error("Unsupported result type");
+  }
+}
+
+function errorToErrorType(error: PropertySignature): ErrorType {
+  const indexed = error.getFirstDescendantByKindOrThrow(
+    SyntaxKind.IndexedAccessType
+  );
+
+  return {
+    schema: removeQuotes(indexed.getIndexTypeNode().getText()),
+  };
+}
+
 // TODO: validate valid json rpc response schema
 function getResponseType(schemaType: string, source: SourceFile) {
   const schema = getSchemaProperty(
@@ -87,8 +160,8 @@ function getResponseType(schemaType: string, source: SourceFile) {
     .getFirstDescendantByKindOrThrow(SyntaxKind.ParenthesizedType)
     .getFirstDescendantByKindOrThrow(SyntaxKind.UnionType);
 
-  let errorProperty: PropertySignature | undefined;
-  let resultProperty: PropertySignature | undefined;
+  let errorType: ErrorType | undefined;
+  let responseType: ResponseType | undefined;
 
   const unionDescendants = union.getDescendants();
   for (const descendant of unionDescendants) {
@@ -99,18 +172,22 @@ function getResponseType(schemaType: string, source: SourceFile) {
       const error = literal.getProperty(JsonRpcResponseType.error);
 
       if (result) {
-        resultProperty = result;
+        responseType = resultToResponseType(result);
       }
       if (error) {
-        errorProperty = error;
+        errorType = errorToErrorType(error);
       }
     }
   }
 
-  console.log(resultProperty?.getText());
-  console.log(errorProperty?.getText());
+  if (!errorType || !responseType) {
+    throw new Error("Invalid response type");
+  }
 
-  //   console.log(parenthized.getFullText());
+  return {
+    errorType,
+    responseType,
+  };
 }
 
 function getSchemaTypeFromContent(property: PropertySignature) {
@@ -150,13 +227,6 @@ function parseResponse(property: PropertySignature, source: SourceFile) {
   return getResponseType(schemaType, source);
 }
 
-type MethodType = {
-  method: string;
-  requestType: string;
-  responseType: string;
-  errorType: string;
-};
-
 export function parseMethodTypes(source: SourceFile) {
   const operation = source.getInterfaceOrThrow(OPENAPI_TS_OPERATIONS);
   const operationProperties = operation.getProperties();
@@ -170,27 +240,33 @@ export function parseMethodTypes(source: SourceFile) {
       .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
       .getProperties();
 
-    let method: string;
-    let requestType: string;
-    let responseType: string;
-    let errorType: string;
+    let requestType: RequestType | undefined;
+    let responseType: ResponseType | undefined;
+    let errorType: ErrorType | undefined;
 
     for (const methodProperty of methodProperties) {
-      //   if (methodProperty.getName() === OPENAPI_TS_OPERATION_REQUEST_BODY) {
-      //     const requestBody = parseRequestBody(methodProperty, source);
-      //     method = requestBody.method;
-      //     requestType = requestBody.requestType;
-      //   }
+      if (methodProperty.getName() === OPENAPI_TS_OPERATION_REQUEST_BODY) {
+        const requestBody = parseRequestBody(methodProperty, source);
+        requestType = {
+          method: requestBody.method,
+          schema: requestBody.requestType,
+        };
+      }
       if (methodProperty.getName() === OPENAPI_TS_OPERATION_RESPONSES) {
-        parseResponse(methodProperty, source);
+        const response = parseResponse(methodProperty, source);
+        responseType = response.responseType;
+        errorType = response.errorType;
       }
     }
 
+    if (!requestType || !responseType || !errorType) {
+      throw new Error("Invalid method type");
+    }
+
     results.push({
-      method: method!,
-      requestType: requestType!,
-      responseType: "",
-      errorType: "",
+      request: requestType,
+      response: responseType,
+      error: errorType,
     });
 
     // TODO: remove this when its ready
@@ -199,5 +275,5 @@ export function parseMethodTypes(source: SourceFile) {
     // }
   }
 
-  //   console.log(results);
+  console.log(results);
 }
