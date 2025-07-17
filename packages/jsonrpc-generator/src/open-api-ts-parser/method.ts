@@ -1,11 +1,4 @@
-import {
-  IndexedAccessTypeNode,
-  PropertySignature,
-  SyntaxKind,
-  TypeChecker,
-  TypeLiteralNode,
-  type SourceFile,
-} from "ts-morph";
+import { PropertySignature, SyntaxKind, type SourceFile } from "ts-morph";
 import {
   OPENAPI_TS_COMPONENTS,
   OPENAPI_TS_OPERATION_CONTENT_TYPE,
@@ -100,10 +93,10 @@ function resultToResponseType(result: PropertySignature) {
         throw new Error("Unsupported union result type");
       }
 
-      // this should be indexed access type
+      // this should be expected as a indexed access type
       const unionIndexed = type[0]!.asKindOrThrow(SyntaxKind.IndexedAccessType);
 
-      // this should be nulled type
+      // this should be expected as a nulled type
       type[1]!
         .asKindOrThrow(SyntaxKind.LiteralType)
         .getFirstDescendantByKindOrThrow(SyntaxKind.NullKeyword);
@@ -233,9 +226,6 @@ export function parseMethodTypes(source: SourceFile) {
 
   const results: MethodType[] = [];
   for (const operation of operationProperties) {
-    // TODO: remove this when its ready
-    const name = operation.getName();
-
     const methodProperties = operation
       .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
       .getProperties();
@@ -268,12 +258,7 @@ export function parseMethodTypes(source: SourceFile) {
       response: responseType,
       error: errorType,
     });
-
-    // TODO: remove this when its ready
-    // if (name === "block") {
-    //   break;
-    // }
   }
 
-  console.log(results);
+  return results;
 }

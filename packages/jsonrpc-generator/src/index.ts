@@ -1,16 +1,15 @@
-import { getOpenApiSpec, getOpenApiSpecLocal } from "./utils";
+import { getOpenApiSpecLocal } from "./utils";
 import { generateOpenapiTS } from "./utils/openapi-ts";
-import { parse } from "./open-api-ts-parser";
-import { writeFileSync } from "fs";
+import { parseOpenapiTS } from "./open-api-ts-parser";
+import { exporter } from "./exporter";
 
 async function main() {
   const spec = getOpenApiSpecLocal();
-  // const spec = await getOpenApiSpec();
+
   const openapiTS = await generateOpenapiTS(spec);
+  const parsed = parseOpenapiTS(openapiTS);
 
-  parse(openapiTS);
-
-  // writeFileSync("openapi.ts", openapiTS);
+  exporter(parsed.methods);
 }
 
 main();
