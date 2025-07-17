@@ -2,5 +2,12 @@
   "name": "@near-js/jsonrpc-client",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "devDependencies": {
+    "@near-js/jsonrpc-types": "*",
+    "tsx": "^4.20.3"
+  }
 }

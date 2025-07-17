@@ -1,6 +1,27 @@
 {
   "name": "@near-js/jsonrpc-types",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "exports": {
+    "./methods": {
+      "require": "./lib/methods.js",
+      "import": "./lib/methods.js",
+      "types": "./lib/methods.d.ts"
+    },
+    "./schemas": {
+      "require": "./lib/schemas.js",
+      "import": "./lib/schemas.js",
+      "types": "./lib/schemas.d.ts"
+    },
+    "./types": {
+      "require": "./lib/types.js",
+      "import": "./lib/types.js",
+      "types": "./lib/types.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "files": ["lib"]
 }
