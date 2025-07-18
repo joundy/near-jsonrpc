@@ -1,4 +1,4 @@
-import { Project, VariableDeclarationKind } from "ts-morph";
+import { Project } from "ts-morph";
 import { GENERATED_COMMENT } from "../utils";
 
 export function exportTypes() {

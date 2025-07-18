@@ -3,14 +3,7 @@ import type { MethodType } from "../types";
 import { snakeToCamel } from "../utils/formarter";
 import { GENERATED_COMMENT } from "../utils";
 
-export function exportMethods(methods: MethodType[]) {
-  const uniqueNeededSchemas = new Set<string>();
-  for (const method of methods) {
-    uniqueNeededSchemas.add(method.request.schema);
-    uniqueNeededSchemas.add(method.response.schema);
-    uniqueNeededSchemas.add(method.error.schema);
-  }
-
+export function exportMethods(methods: MethodType[], neededSchemas: string[]) {
   const project = new Project();
 
   // create a virtual file to export the methods
@@ -24,26 +17,37 @@ export function exportMethods(methods: MethodType[]) {
 
   source.addImportDeclaration({
     moduleSpecifier: "./schemas",
-    namedImports: uniqueNeededSchemas.values().toArray(),
+    namedImports: neededSchemas,
     isTypeOnly: true,
   });
 
-  for (const method of methods) {
-    source
-      .addVariableStatement({
+  source.addVariableStatements(
+    methods.map((method) => {
+      let response = method.response.schema;
+      if (method.response.isArray) {
+        response = `${method.response.schema}[]`;
+      }
+      if (method.response.isNullable) {
+        response = `${method.response.schema} | null`;
+      }
+
+      return {
         declarationKind: VariableDeclarationKind.Const,
         isExported: true,
         declarations: [
           {
             name: snakeToCamel(method.request.method),
-            initializer: `defineMethod<${method.request.schema}, ${method.response.schema}, RpcError>("${method.request.method}")`,
+            initializer: `defineMethod<${method.request.schema}, ${response}, RpcError>("${method.request.method}")`,
           },
         ],
-      })
-      .addJsDoc({
-        description: `Method definition for ${method.request.method} RPC call`,
-      });
-  }
+        docs: [
+          {
+            description: `Method definition for ${method.request.method} RPC call`,
+          },
+        ],
+      };
+    })
+  );
 
   source.formatText();
 
