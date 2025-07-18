@@ -19,6 +19,8 @@ import type {
 
 // TODO: validate is it valid json rpc request or not
 // TODO: validate the schema for request and response should be has a standard json rpc schema
+// TODO: rather than manually traverse the indexedAccess type, using regex is more efficient for getting the schema type
+// and also its' more usefull for getting the request type context: eg Schema[] or Schema | null, etc
 
 function getSchemaProperty(source: SourceFile, schemaType: string) {
   const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);

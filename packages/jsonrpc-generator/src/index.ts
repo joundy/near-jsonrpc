@@ -14,7 +14,7 @@ async function main() {
   const parsed = parseOpenapiTS(openapiTS);
 
   console.info("# Exporting");
-  exporter(parsed.methods, parsed.schemas);
+  exporter(parsed.methods, parsed.schemas.schemaTypes);
 }
 
 main();
