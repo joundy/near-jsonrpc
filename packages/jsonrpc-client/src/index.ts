@@ -65,26 +65,3 @@ export function createRpcClient(
     return acc;
   }, {} as any);
 }
-
-// TODO: remove this, just for testing
-async function main() {
-  const transporter = createJsonRpcTransporter("https://rpc.testnet.near.org");
-  const client = createRpcClient(transporter);
-
-  const { result } = await client.status({});
-  console.log(result.genesis_hash);
-
-  //   const { result, error } = await client.block({
-  //     block_id: "ADbRTY7bbGpS8UeJK6vNT4D8biEzzvL8AkD4pjQ38jA8",
-  //   });
-  //   if (error) {
-  //     console.log("error");
-  //     return
-  //   }
-
-  //   // THIS IS A TYPE SAFE EXAMPLE
-  //   console.log(result.header.signature);
-  //   console.log(result.header.approvals);
-}
-
-main();

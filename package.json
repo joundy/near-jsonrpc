@@ -5,6 +5,7 @@
   "author": "Hafiz Joundy Syafie <hafizjoundys@gmail.com>",
   "license": "MIT",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples"
   ]
 }

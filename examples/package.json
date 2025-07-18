@@ -1,13 +1,14 @@
 {
-  "name": "@near-js/jsonrpc-client",
+  "name": "examples",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "tsx src/index.ts"
+    "access-keys": "tsx access-keys.ts"
   },
   "devDependencies": {
+    "@near-js/jsonrpc-client": "*",
     "@near-js/jsonrpc-types": "*",
     "tsx": "^4.20.3"
   }
-}
+} 
