@@ -32,3 +32,7 @@ export const GENERATED_COMMENT = `/**
  * 
  * @generated
  */`;
+
+export function removeQuotes(text: string) {
+  return text.replace(/['"]/g, "");
+}

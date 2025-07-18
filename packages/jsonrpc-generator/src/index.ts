@@ -9,7 +9,7 @@ async function main() {
   const openapiTS = await generateOpenapiTS(spec);
   const parsed = parseOpenapiTS(openapiTS);
 
-  exporter(parsed.methods, parsed.schemas);
+  // exporter(parsed.methods, parsed.schemas);
 }
 
 main();
