@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "tsx src/index.ts"
+    "example": "tsx src/example.ts"
   },
   "devDependencies": {
     "@near-js/jsonrpc-types": "*",

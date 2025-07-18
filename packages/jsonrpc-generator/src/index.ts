@@ -14,7 +14,11 @@ async function main() {
   const parsed = parseOpenapiTS(openapiTS);
 
   console.info("# Exporting");
-  exporter(parsed.methods, parsed.schemas.schemaTypes);
+  exporter(
+    parsed.methods,
+    parsed.schemas.schemaTypes,
+    parsed.schemas.mappedSnakeCamelProperty
+  );
 }
 
 main();

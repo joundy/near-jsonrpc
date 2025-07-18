@@ -17,6 +17,11 @@
       "require": "./lib/types.js",
       "import": "./lib/types.js",
       "types": "./lib/types.d.ts"
+    },
+    "./mapped-properties": {
+      "require": "./lib/mapped-properties.js",
+      "import": "./lib/mapped-properties.js",
+      "types": "./lib/mapped-properties.d.ts"
     }
   },
   "scripts": {

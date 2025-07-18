@@ -24,7 +24,7 @@ export declare const EXPERIMENTALLightClientBlockProof: import("./types").Method
 /** Method definition for EXPERIMENTAL_light_client_proof RPC call */
 export declare const EXPERIMENTALLightClientProof: import("./types").Method<RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcError>;
 /** Method definition for EXPERIMENTAL_maintenance_windows RPC call */
-export declare const EXPERIMENTALMaintenanceWindows: import("./types").Method<RpcMaintenanceWindowsRequest, Range_of_uint64, RpcError>;
+export declare const EXPERIMENTALMaintenanceWindows: import("./types").Method<RpcMaintenanceWindowsRequest, Range_of_uint64[], RpcError>;
 /** Method definition for EXPERIMENTAL_protocol_config RPC call */
 export declare const EXPERIMENTALProtocolConfig: import("./types").Method<RpcProtocolConfigRequest, RpcProtocolConfigResponse, RpcError>;
 /** Method definition for EXPERIMENTAL_receipt RPC call */
@@ -34,11 +34,11 @@ export declare const EXPERIMENTALSplitStorageInfo: import("./types").Method<RpcS
 /** Method definition for EXPERIMENTAL_tx_status RPC call */
 export declare const EXPERIMENTALTxStatus: import("./types").Method<RpcTransactionStatusRequest, RpcTransactionResponse, RpcError>;
 /** Method definition for EXPERIMENTAL_validators_ordered RPC call */
-export declare const EXPERIMENTALValidatorsOrdered: import("./types").Method<RpcValidatorsOrderedRequest, ValidatorStakeView, RpcError>;
+export declare const EXPERIMENTALValidatorsOrdered: import("./types").Method<RpcValidatorsOrderedRequest, ValidatorStakeView[], RpcError>;
 /** Method definition for gas_price RPC call */
 export declare const gasPrice: import("./types").Method<RpcGasPriceRequest, RpcGasPriceResponse, RpcError>;
 /** Method definition for health RPC call */
-export declare const health: import("./types").Method<RpcHealthRequest, RpcHealthResponse, RpcError>;
+export declare const health: import("./types").Method<RpcHealthRequest, RpcHealthResponse | null, RpcError>;
 /** Method definition for light_client_proof RPC call */
 export declare const lightClientProof: import("./types").Method<RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcError>;
 /** Method definition for network_info RPC call */

@@ -7,6 +7,15 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["src", "index.ts", "methods.ts", "schemas.ts", "types.ts"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "include": [
+    "src",
+    "methods.ts",
+    "schemas.ts",
+    "types.ts",
+    "mapped-properties.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*"
+  ]
 }
