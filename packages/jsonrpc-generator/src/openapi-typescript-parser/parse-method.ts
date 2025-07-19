@@ -9,7 +9,7 @@ import {
   OPENAPI_TS_OPERATIONS,
   OPENAPI_TS_SCHEMAS,
 } from "../utils/openapi-ts";
-import { JsonRPCBodyType, JsonRpcResponseType } from "../utils";
+import { JsonRPCBodyType, JsonRpcResponseType, removeQuotes } from "../utils";
 import type {
   ErrorType,
   MethodType,
@@ -19,10 +19,8 @@ import type {
 
 // TODO: validate is it valid json rpc request or not
 // TODO: validate the schema for request and response should be has a standard json rpc schema
-
-function removeQuotes(text: string) {
-  return text.replace(/['"]/g, "");
-}
+// TODO: rather than manually traverse the indexedAccess type, using regex is more efficient for getting the schema type
+// and also its' more usefull for getting the request type context: eg Schema[] or Schema | null, etc
 
 function getSchemaProperty(source: SourceFile, schemaType: string) {
   const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);

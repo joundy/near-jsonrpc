@@ -8,11 +8,19 @@ import type {
 
 export type RpcClient = {
   [K in keyof typeof methods]: (typeof methods)[K] extends Method<any, any, any>
-    ? (
-        request: RequestType<(typeof methods)[K]>
-      ) => Promise<{
-        result: ResponseType<(typeof methods)[K]>;
-        error: ErrorType<(typeof methods)[K]>;
-      }>
+    ? (request: RequestType<(typeof methods)[K]>) => Promise<
+        {
+          result?: ResponseType<(typeof methods)[K]>;
+          error?: ErrorType<(typeof methods)[K]>;
+        } & (
+          | { error: ErrorType<(typeof methods)[K]>; result?: never }
+          | { result: ResponseType<(typeof methods)[K]>; error?: never }
+        )
+      >
     : never;
 };
+
+export type Transporter = (
+  methodName: string,
+  request: any
+) => Promise<{ result: any; error: any }>;

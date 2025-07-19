@@ -1,3 +1,5 @@
-export function snakeToCamel(str: string): string {
-  return str.replace(/([-_][a-z])/g, (group) => group.charAt(1).toUpperCase());
+export function snakeToCamel(str: string) {
+  return str.replace(/[_.-](\w|$)/g, function (_, x) {
+      return x.toUpperCase();
+  });
 }

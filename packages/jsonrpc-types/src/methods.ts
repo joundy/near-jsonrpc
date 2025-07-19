@@ -32,7 +32,7 @@ export const EXPERIMENTALLightClientBlockProof = defineMethod<RpcLightClientBloc
 /** Method definition for EXPERIMENTAL_light_client_proof RPC call */
 export const EXPERIMENTALLightClientProof = defineMethod<RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcError>("EXPERIMENTAL_light_client_proof");
 /** Method definition for EXPERIMENTAL_maintenance_windows RPC call */
-export const EXPERIMENTALMaintenanceWindows = defineMethod<RpcMaintenanceWindowsRequest, Range_of_uint64, RpcError>("EXPERIMENTAL_maintenance_windows");
+export const EXPERIMENTALMaintenanceWindows = defineMethod<RpcMaintenanceWindowsRequest, Range_of_uint64[], RpcError>("EXPERIMENTAL_maintenance_windows");
 /** Method definition for EXPERIMENTAL_protocol_config RPC call */
 export const EXPERIMENTALProtocolConfig = defineMethod<RpcProtocolConfigRequest, RpcProtocolConfigResponse, RpcError>("EXPERIMENTAL_protocol_config");
 /** Method definition for EXPERIMENTAL_receipt RPC call */
@@ -42,11 +42,11 @@ export const EXPERIMENTALSplitStorageInfo = defineMethod<RpcSplitStorageInfoRequ
 /** Method definition for EXPERIMENTAL_tx_status RPC call */
 export const EXPERIMENTALTxStatus = defineMethod<RpcTransactionStatusRequest, RpcTransactionResponse, RpcError>("EXPERIMENTAL_tx_status");
 /** Method definition for EXPERIMENTAL_validators_ordered RPC call */
-export const EXPERIMENTALValidatorsOrdered = defineMethod<RpcValidatorsOrderedRequest, ValidatorStakeView, RpcError>("EXPERIMENTAL_validators_ordered");
+export const EXPERIMENTALValidatorsOrdered = defineMethod<RpcValidatorsOrderedRequest, ValidatorStakeView[], RpcError>("EXPERIMENTAL_validators_ordered");
 /** Method definition for gas_price RPC call */
 export const gasPrice = defineMethod<RpcGasPriceRequest, RpcGasPriceResponse, RpcError>("gas_price");
 /** Method definition for health RPC call */
-export const health = defineMethod<RpcHealthRequest, RpcHealthResponse, RpcError>("health");
+export const health = defineMethod<RpcHealthRequest, RpcHealthResponse | null, RpcError>("health");
 /** Method definition for light_client_proof RPC call */
 export const lightClientProof = defineMethod<RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcError>("light_client_proof");
 /** Method definition for network_info RPC call */

@@ -18,3 +18,8 @@ export type MethodType = {
   response: ResponseType;
   error: ErrorType;
 };
+
+export type SchemaType = {
+  schema: string;
+  type: string
+}
