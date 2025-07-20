@@ -515,5 +515,4 @@ exports.mappedSnakeCamelProperty = new Map([["full_access_cost", "fullAccessCost
     ["vm_kind", "vmKind"],
     ["combined_transactions_size_limit", "combinedTransactionsSizeLimit"],
     ["main_storage_proof_size_soft_limit", "mainStorageProofSizeSoftLimit"],
-    ["new_transactions_validation_state_size_soft_limit", "newTransactionsValidationStateSizeSoftLimit"],
-]);
+    ["new_transactions_validation_state_size_soft_limit", "newTransactionsValidationStateSizeSoftLimit"]]);

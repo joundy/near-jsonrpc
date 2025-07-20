@@ -8,11 +8,12 @@
     "generate": "tsx src/index.ts"
   },
   "dependencies": {
-    "openapi-typescript": "^7.8.0",
+    "openapi-typescript": "7.8.0",
     "ts-morph": "^26.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.14",
+    "patch-package": "^8.0.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }

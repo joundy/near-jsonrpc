@@ -1,0 +1,30 @@
+diff --git a/node_modules/openapi-typescript/dist/transform/schema-object.mjs b/node_modules/openapi-typescript/dist/transform/schema-object.mjs
+index bfcae19..bafbae9 100644
+--- a/node_modules/openapi-typescript/dist/transform/schema-object.mjs
++++ b/node_modules/openapi-typescript/dist/transform/schema-object.mjs
+@@ -125,10 +125,23 @@ function transformSchemaObjectWithComposition(schemaObject, options) {
+     const allOf = allOfType.length ? tsIntersection(allOfType) : void 0;
+     finalType = tsIntersection([...coreObjectType ? [coreObjectType] : [], ...allOf ? [allOf] : []]);
+   }
+-  const anyOfType = collectUnionCompositions(schemaObject.anyOf ?? []);
++
++  // PATCH: Treat the anyOf like oneOf
++  // const anyOfType = collectUnionCompositions(schemaObject.anyOf ?? []);
++  // if (anyOfType.length) {
++  //   finalType = tsUnion([...finalType ? [finalType] : [], ...anyOfType]);
++  // }
++  const anyOfType = collectUnionCompositions(
++    schemaObject.anyOf || "type" in schemaObject && schemaObject.type === "object" && schemaObject.enum || []
++  );
+   if (anyOfType.length) {
+-    finalType = tsUnion([...finalType ? [finalType] : [], ...anyOfType]);
++    if (anyOfType.every(tsIsPrimitive)) {
++      finalType = tsUnion([...finalType ? [finalType] : [], ...anyOfType]);
++    } else {
++      finalType = tsIntersection([...finalType ? [finalType] : [], tsUnion(anyOfType)]);
++    }
+   }
++
+   const oneOfType = collectUnionCompositions(
+     schemaObject.oneOf || "type" in schemaObject && schemaObject.type === "object" && schemaObject.enum || []
+   );
