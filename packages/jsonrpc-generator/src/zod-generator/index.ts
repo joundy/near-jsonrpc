@@ -7,7 +7,7 @@ import {
 import { createGeneratorContext, generateSchemas } from "./generator";
 
 // generate zod schemas from the cooked schemas
-export function generateZodSchemas(schemasTs: string) {
+export function generateZodSchemas(schemasTs: string, suffix: string) {
   const project = new Project();
   const source = project.createSourceFile("__temp__zod_schemas.ts", schemasTs);
 
@@ -17,7 +17,7 @@ export function generateZodSchemas(schemasTs: string) {
   const circularDependencies = detectCircularDependencies(dependencyMap);
   const cyclicTypeNames = findMostCommonStringInCircles(circularDependencies);
   const cyclicTypes = new Set(cyclicTypeNames);
-  const context = createGeneratorContext(schemas, cyclicTypes);
+  const context = createGeneratorContext(schemas, cyclicTypes, suffix);
 
   const result = generateSchemas(schemas, context);
 
@@ -25,6 +25,6 @@ export function generateZodSchemas(schemasTs: string) {
 
   return {
     zodSchemas: result,
-    dependencies: cyclicTypes,
+    dependencies: Array.from(cyclicTypes),
   };
 }

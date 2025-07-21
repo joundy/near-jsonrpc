@@ -27,5 +27,5 @@ export type SchemaType = {
 export type ZodSchemaType = {
   schema: string;
   type: string;
-  requiredZodType: boolean;
+  zodType?: string;
 };

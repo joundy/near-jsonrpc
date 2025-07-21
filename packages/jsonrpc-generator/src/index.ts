@@ -3,10 +3,14 @@ import { generateOpenapiTS } from "./utils/openapi-ts";
 import { parseOpenapiTS } from "./openapi-typescript-parser";
 import { buildTypes } from "./builder/build-types";
 import { buildMethods } from "./builder/build-methods";
-import { buildSchemas } from "./builder/build-schema";
+import { buildSchemas } from "./builder/build-schemas";
 import { buildMappedProperties } from "./builder/build-mapped-properties";
 import { writeFileSync } from "fs";
 import { generateZodSchemas } from "./zod-generator";
+import { buildZodSchemas } from "./builder/built-zod-schema";
+
+const SCHEMA_SUFFIX = "Type";
+const ZOD_SCHEMA_SUFFIX = "Schema";
 
 async function main() {
   console.info("📄 Getting OpenAPI spec...");
@@ -39,7 +43,12 @@ async function main() {
   );
 
   console.info("✨ Generating Zod from schemas...");
-  const zodSchemas = generateZodSchemas(builtSchemas);
+  const zodSchemas = generateZodSchemas(builtSchemas, ZOD_SCHEMA_SUFFIX);
+
+  const builtZodSchemas = buildZodSchemas(zodSchemas.zodSchemas, {
+    schemasLocation: "./schemas",
+    schemaDependencies: zodSchemas.dependencies,
+  });
 
   // console.log(zodSchemas);
 
@@ -47,6 +56,7 @@ async function main() {
   writeFileSync("../../packages/jsonrpc-types/src/types.ts", builtTypes);
   writeFileSync("../../packages/jsonrpc-types/src/methods.ts", builtMethods);
   writeFileSync("../../packages/jsonrpc-types/src/schemas.ts", builtSchemas);
+  writeFileSync("../../packages/jsonrpc-types/src/zod-schemas.ts", builtZodSchemas);
   writeFileSync(
     "../../packages/jsonrpc-types/src/mapped-properties.ts",
     builtMappedProperties

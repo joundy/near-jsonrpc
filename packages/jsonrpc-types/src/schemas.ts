@@ -3002,7 +3002,7 @@ export type RpcQueryResponse = {
     block_hash: CryptoHash;
     /** Format: uint64 */
     block_height: number;
-} & (AccountView | ContractCodeView | ViewStateResult | CallResult | AccessKeyView | AccessKeyList);
+} | AccountView | ContractCodeView | ViewStateResult | CallResult | AccessKeyView | AccessKeyList;
 export type RpcReceiptRequest = {
     receipt_id: CryptoHash;
 };
@@ -3139,16 +3139,16 @@ export type RpcStatusResponse = {
 };
 export type RpcTransactionResponse = {
     final_execution_status: TxExecutionStatus;
-} & (FinalExecutionOutcomeWithReceiptView | FinalExecutionOutcomeView);
+} | FinalExecutionOutcomeWithReceiptView | FinalExecutionOutcomeView;
 export type RpcTransactionStatusRequest = {
     /** @default EXECUTED_OPTIMISTIC */
     wait_until: TxExecutionStatus;
-} & ({
+} | {
     signed_tx_base64: SignedTransaction;
 } | {
     sender_account_id: AccountId;
     tx_hash: CryptoHash;
-});
+};
 export type RpcValidatorRequest = "latest" | {
     epoch_id: EpochId;
 } | {

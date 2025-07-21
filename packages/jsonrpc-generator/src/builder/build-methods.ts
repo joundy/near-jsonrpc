@@ -15,7 +15,7 @@ export function buildMethods(
   const project = new Project();
 
   // create a virtual file to export the methods
-  const source = project.createSourceFile("__temp__exporter_methods.ts", "");
+  const source = project.createSourceFile("__temp__builder_methods.ts", "");
   source.insertStatements(0, GENERATED_COMMENT);
 
   source.addImportDeclaration({

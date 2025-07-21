@@ -16,32 +16,29 @@ export function generateSchemas(
 
   // Generate schemas
   for (const schema of schemas) {
-    const schemaName = schema.getName();
+    const schemaName = schema.getName() + context.suffix;
     const typeNode = schema.getTypeNode();
     const zodSchema = convertTypeNodeToZod(
       typeNode,
-      context.schemaSet,
-      cyclicTypes
+      context
     );
 
     // Generate schema export
-    if (cyclicTypes.has(schemaName)) {
+    if (cyclicTypes.has(schema.getName())) {
       results.push({
         schema: schemaName,
         type: zodSchema,
-        requiredZodType: true,
+        zodType: schema.getName(),
       });
     } else {
       results.push({
         schema: schemaName,
         type: zodSchema,
-        requiredZodType: false,
       });
     }
 
     context.dependencies.add(schemaName);
   }
-
   return results;
 }
 
@@ -50,18 +47,20 @@ export function generateSchemas(
  */
 export function createGeneratorContext(
   schemas: TypeAliasDeclaration[],
-  cyclicTypes: Set<string>
+  cyclicTypes: Set<string>,
+  suffix: string
 ): GeneratorContext {
   const schemaSet = new Set<string>();
   const dependencies = new Set<string>();
 
   for (const schema of schemas) {
-    schemaSet.add(schema.getName());
+    schemaSet.add(schema.getName() + suffix);
   }
 
   return {
     schemaSet,
     dependencies,
     cyclicTypes,
+    suffix,
   };
 }

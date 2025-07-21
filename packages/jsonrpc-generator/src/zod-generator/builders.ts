@@ -92,8 +92,11 @@ export function createZodStringLiteral(value: string): string {
 /**
  * Creates a Zod type reference schema
  */
-export function createZodTypeReference(name: string): string {
-  return `z.lazy(() => ${name}Schema)`;
+export function createZodTypeReference(name: string, useLazy: boolean): string {
+  if (!useLazy) {
+    return name;
+  }
+  return `z.lazy(() => ${name})`;
 }
 
 /**

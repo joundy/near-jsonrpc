@@ -5,7 +5,7 @@ export function buildTypes() {
   const project = new Project();
 
   // create a virtual file to export the methods
-  const source = project.createSourceFile("__temp__exporter_types.ts", "");
+  const source = project.createSourceFile("__temp__builder_types.ts", "");
   source.insertStatements(0, GENERATED_COMMENT);
 
   source

@@ -60,12 +60,12 @@ export function handleTypeReference(
   }
 
   if (identifier === IdentifierType.Record) {
-    return handleRecordType(typeNode);
+    return handleRecordType(typeNode, context);
   }
 
   // Handle custom schema references
-  if (context.schemaSet.has(identifier)) {
-    return createZodTypeReference(identifier);
+  if (context.schemaSet.has(identifier + context.suffix)) {
+    return createZodTypeReference(identifier + context.suffix, !context.dependencies.has(identifier + context.suffix));
   }
 
   return createZodPrimitive(PrimitiveType.Any);
@@ -74,7 +74,7 @@ export function handleTypeReference(
 /**
  * Handles Record<K, V> type references
  */
-function handleRecordType(typeNode: TypeNode): string {
+function handleRecordType(typeNode: TypeNode, context: GeneratorContext): string {
   if (!typeNode.isKind(SyntaxKind.TypeReference)) {
     throw new Error("Expected TypeReference for Record type");
   }
@@ -84,11 +84,9 @@ function handleRecordType(typeNode: TypeNode): string {
     throw new Error("Record type must have exactly 2 type arguments");
   }
 
-  const keyType = convertTypeNodeToZod(typeArguments[0]!, new Set(), new Set());
+  const keyType = convertTypeNodeToZod(typeArguments[0]!, context);
   const valueType = convertTypeNodeToZod(
-    typeArguments[1]!,
-    new Set(),
-    new Set()
+    typeArguments[1]!, context,
   );
 
   return createZodRecord(keyType, valueType);
@@ -115,13 +113,11 @@ export function handleTypeLiteral(
     if (indexSignature) {
       const keyType = convertTypeNodeToZod(
         indexSignature.getKeyTypeNode(),
-        context.schemaSet,
-        context.cyclicTypes
+        context
       );
       const valueType = convertTypeNodeToZod(
         indexSignature.getReturnTypeNode(),
-        context.schemaSet,
-        context.cyclicTypes
+        context
       );
       return createZodRecord(keyType, valueType);
     }
@@ -133,8 +129,7 @@ export function handleTypeLiteral(
     name: property.getName(),
     zodType: convertTypeNodeToZod(
       property.getTypeNode(),
-      context.schemaSet,
-      context.cyclicTypes
+      context
     ),
     isOptional: property.hasQuestionToken(),
   }));
@@ -155,8 +150,7 @@ export function handleArrayType(
 
   const elementType = convertTypeNodeToZod(
     typeNode.getElementTypeNode(),
-    context.schemaSet,
-    context.cyclicTypes
+    context
   );
   return createZodArray(elementType);
 }
@@ -174,7 +168,7 @@ export function handleTupleType(
 
   const elements = typeNode.getElements();
   const zodTypes = elements.map((element) =>
-    convertTypeNodeToZod(element, context.schemaSet, context.cyclicTypes)
+    convertTypeNodeToZod(element, context)
   );
 
   return createZodTuple(zodTypes);
@@ -193,7 +187,7 @@ export function handleUnionType(
 
   const nodes = typeNode.getTypeNodes();
   const zodTypes = nodes.map((node) =>
-    convertTypeNodeToZod(node, context.schemaSet, context.cyclicTypes)
+    convertTypeNodeToZod(node, context)
   );
 
   return createZodUnion(zodTypes);
@@ -212,7 +206,7 @@ export function handleIntersectionType(
 
   const nodes = typeNode.getTypeNodes();
   const zodTypes = nodes.map((node) =>
-    convertTypeNodeToZod(node, context.schemaSet, context.cyclicTypes)
+    convertTypeNodeToZod(node, context)
   );
 
   return createZodIntersection(zodTypes);
@@ -231,8 +225,7 @@ export function handleParenthesizedType(
 
   return convertTypeNodeToZod(
     typeNode.getTypeNode(),
-    context.schemaSet,
-    context.cyclicTypes
+    context
   );
 }
 
@@ -262,18 +255,11 @@ export function handleLiteralType(typeNode: TypeNode): string | null {
  */
 export function convertTypeNodeToZod(
   typeNode: TypeNode | undefined,
-  schemaSet: Set<string>,
-  cyclicTypes: Set<string>
+  context: GeneratorContext
 ): string {
   if (!typeNode) {
     return createZodPrimitive(PrimitiveType.Unknown);
   }
-
-  const context: GeneratorContext = {
-    schemaSet,
-    dependencies: new Set(),
-    cyclicTypes,
-  };
 
   // Try each handler in order
   const handlers = [
