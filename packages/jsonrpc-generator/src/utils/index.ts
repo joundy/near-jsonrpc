@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+import { MethodType } from "../types";
 
 export enum JsonRPCBodyType {
   id = "id",
@@ -42,4 +43,20 @@ export const GENERATED_COMMENT_WITH_CREDITS = `/**
 
 export function removeQuotes(text: string) {
   return text.replace(/['"]/g, "");
+}
+
+export function getUniqueSchemas(methods: MethodType[]) {
+  const uniqueNeededSchemasSet = new Set<string>();
+  for (const methodType of methods) {
+    uniqueNeededSchemasSet.add(methodType.request.schema);
+    uniqueNeededSchemasSet.add(methodType.response.schema);
+    uniqueNeededSchemasSet.add(methodType.error.schema);
+  }
+  return Array.from(uniqueNeededSchemasSet);
+}
+
+export function snakeToCamel(str: string) {
+  return str.replace(/[_.-](\w|$)/g, function (_, x) {
+    return x.toUpperCase();
+  });
 }

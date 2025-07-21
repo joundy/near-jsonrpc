@@ -1,14 +1,14 @@
 import { Project, VariableDeclarationKind } from "ts-morph";
 import { GENERATED_COMMENT } from "../utils";
 
-export function exportMappedProperties(
+export function buildMappedProperties(
   mappedSnakeCamelProperty: Map<string, string>
 ) {
   const project = new Project();
 
   // create a virtual file to export the methods
   const source = project.createSourceFile(
-    "__temp__exporter_mapped_properties.ts",
+    "__temp__builder_mapped_properties.ts",
     ""
   );
   source.insertStatements(0, GENERATED_COMMENT);
@@ -30,5 +30,8 @@ export function exportMappedProperties(
 
   source.formatText();
 
-  return source.getFullText();
+  const text = source.getFullText();
+  project.removeSourceFile(source);
+
+  return text;
 }

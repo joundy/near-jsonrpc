@@ -2,11 +2,11 @@ import { Project } from "ts-morph";
 import { GENERATED_COMMENT_WITH_CREDITS } from "../utils";
 import type { SchemaType } from "../types";
 
-export function exportSchemas(schemaTypes: SchemaType[]) {
+export function buildSchemas(schemaTypes: SchemaType[]) {
   const project = new Project();
 
   // create a virtual file to export the methods
-  const source = project.createSourceFile("__temp__exporter_schemas.ts", "");
+  const source = project.createSourceFile("__temp__builder_schemas.ts", "");
   source.insertStatements(0, GENERATED_COMMENT_WITH_CREDITS);
 
   source.addTypeAliases(
@@ -19,5 +19,8 @@ export function exportSchemas(schemaTypes: SchemaType[]) {
 
   source.formatText();
 
-  return source.getFullText();
+  const text = source.getFullText();
+  project.removeSourceFile(source)
+
+  return text
 }

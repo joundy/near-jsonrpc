@@ -21,5 +21,11 @@ export type MethodType = {
 
 export type SchemaType = {
   schema: string;
-  type: string
-}
+  type: string;
+};
+
+export type ZodSchemaType = {
+  schema: string;
+  type: string;
+  zodType?: string;
+};

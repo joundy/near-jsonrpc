@@ -1,7 +1,7 @@
 import { SourceFile, SyntaxKind } from "ts-morph";
 import { OPENAPI_TS_COMPONENTS, OPENAPI_TS_SCHEMAS } from "../utils/openapi-ts";
 import type { SchemaType } from "../types";
-import { snakeToCamel } from "../utils/formarter";
+import { snakeToCamel } from "../utils";
 
 // TODO: change property from snake_case to camelCase
 // This basically grabbing the schema types from the openapi.ts file and exporting them by its name
@@ -64,6 +64,6 @@ export function parseSchemaTypes(source: SourceFile) {
 
   return {
     schemaTypes,
-    mappedSnakeCamelProperty
+    mappedSnakeCamelProperty,
   };
 }

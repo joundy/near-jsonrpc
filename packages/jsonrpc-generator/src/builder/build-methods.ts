@@ -1,22 +1,30 @@
 import { Project, VariableDeclarationKind } from "ts-morph";
 import type { MethodType } from "../types";
-import { snakeToCamel } from "../utils/formarter";
-import { GENERATED_COMMENT } from "../utils";
+import { GENERATED_COMMENT, snakeToCamel } from "../utils";
 
-export function exportMethods(methods: MethodType[], neededSchemas: string[]) {
+export type BuildMethodsOptions = {
+  schemasLocation: string;
+  typesLocation: string;
+};
+
+export function buildMethods(
+  methods: MethodType[],
+  neededSchemas: string[],
+  options: BuildMethodsOptions
+) {
   const project = new Project();
 
   // create a virtual file to export the methods
-  const source = project.createSourceFile("__temp__exporter_methods.ts", "");
+  const source = project.createSourceFile("__temp__builder_methods.ts", "");
   source.insertStatements(0, GENERATED_COMMENT);
 
   source.addImportDeclaration({
-    moduleSpecifier: "./types",
+    moduleSpecifier: options.typesLocation,
     namedImports: ["defineMethod"],
   });
 
   source.addImportDeclaration({
-    moduleSpecifier: "./schemas",
+    moduleSpecifier: options.schemasLocation,
     namedImports: neededSchemas,
     isTypeOnly: true,
   });
@@ -51,5 +59,8 @@ export function exportMethods(methods: MethodType[], neededSchemas: string[]) {
 
   source.formatText();
 
-  return source.getFullText();
+  const text = source.getFullText();
+  project.removeSourceFile(source);
+
+  return text;
 }
