@@ -8,7 +8,8 @@
     "postinstall": "patch-package"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples"
   ],
   "devDependencies": {
     "patch-package": "^8.0.0"
