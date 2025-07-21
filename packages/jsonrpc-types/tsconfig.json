@@ -1,21 +1,13 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es2018",
-    "module": "commonjs",
+    "noEmit": false,
     "declaration": true,
-    "outDir": "./lib",
-    "strict": true,
-    "esModuleInterop": true
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
-  "include": [
-    "src",
-    "methods.ts",
-    "schemas.ts",
-    "types.ts",
-    "mapped-properties.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/__tests__/*"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]
 }

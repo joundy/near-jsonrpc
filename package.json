@@ -5,13 +5,22 @@
   "author": "Hafiz Joundy Syafie <hafizjoundys@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "check-types": "turbo run check-types",
+    "clean": "rm -rf dist && turbo run clean",
+    "generate": "yarn workspace @near-js/jsonrpc-generator generate"
   },
   "workspaces": [
     "packages/*",
     "examples"
   ],
   "devDependencies": {
-    "patch-package": "^8.0.0"
-  }
+    "patch-package": "^8.0.0",
+    "tsup": "^8.0.1",
+    "turbo": "^2.5.5",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "yarn@1.22.22"
 }
