@@ -2,31 +2,51 @@
   "name": "@near-js/jsonrpc-types",
   "version": "1.0.0",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
     "./methods": {
-      "require": "./lib/methods.js",
-      "import": "./lib/methods.js",
-      "types": "./lib/methods.d.ts"
+      "types": "./dist/methods.d.ts",
+      "require": "./dist/methods.js",
+      "import": "./dist/methods.mjs"
     },
     "./schemas": {
-      "require": "./lib/schemas.js",
-      "import": "./lib/schemas.js",
-      "types": "./lib/schemas.d.ts"
+      "types": "./dist/schemas.d.ts",
+      "require": "./dist/schemas.js",
+      "import": "./dist/schemas.mjs"
     },
     "./types": {
-      "require": "./lib/types.js",
-      "import": "./lib/types.js",
-      "types": "./lib/types.d.ts"
+      "types": "./dist/types.d.ts",
+      "require": "./dist/types.js",
+      "import": "./dist/types.mjs"
     },
     "./mapped-properties": {
-      "require": "./lib/mapped-properties.js",
-      "import": "./lib/mapped-properties.js",
-      "types": "./lib/mapped-properties.d.ts"
+      "types": "./dist/mapped-properties.d.ts",
+      "require": "./dist/mapped-properties.js",
+      "import": "./dist/mapped-properties.mjs"
     }
   },
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "check-types": "tsc --noEmit"
   },
-  "files": ["lib"]
+  "files": [
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
