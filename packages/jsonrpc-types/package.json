@@ -50,6 +50,7 @@
     "access": "public"
   },
   "dependencies": {
+    "expect-type": "^1.2.2",
     "zod": "^4.0.5"
   }
 }

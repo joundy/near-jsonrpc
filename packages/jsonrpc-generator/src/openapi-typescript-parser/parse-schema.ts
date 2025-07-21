@@ -38,9 +38,8 @@ export function parseSchemaTypes(source: SourceFile) {
       const name = property.getName();
       const camelize = snakeToCamel(name);
       if (name !== camelize) {
-        // TODO: uncomment this when the generator is ready
-        // mappedSnakeCamelProperty.set(name, camelize);
-        // property.rename(camelize);
+        mappedSnakeCamelProperty.set(name, camelize);
+        property.rename(camelize);
       }
     }
 
@@ -65,6 +64,6 @@ export function parseSchemaTypes(source: SourceFile) {
 
   return {
     schemaTypes,
-    mappedSnakeCamelProperty
+    mappedSnakeCamelProperty,
   };
 }

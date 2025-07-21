@@ -27,6 +27,7 @@ async function main() {
 
   const { gasPrice } = gasPriceResponse;
 
+
   console.log("Gas price:", gasPrice, "\n");
 }
 

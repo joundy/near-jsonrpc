@@ -5,7 +5,6 @@ import type { ZodSchemaType } from "../types";
 export type BuildZodSchemasOptions = {
   schemasLocation: string;
   schemaDependencies: string[];
-  zodSchemaSuffix: string;
 };
 
 export function buildZodSchemas(
