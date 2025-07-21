@@ -512,5 +512,4 @@ export const mappedSnakeCamelProperty = new Map<string, string>([["full_access_c
 ["vm_kind", "vmKind"],
 ["combined_transactions_size_limit", "combinedTransactionsSizeLimit"],
 ["main_storage_proof_size_soft_limit", "mainStorageProofSizeSoftLimit"],
-["new_transactions_validation_state_size_soft_limit", "newTransactionsValidationStateSizeSoftLimit"],
-]);
+["new_transactions_validation_state_size_soft_limit", "newTransactionsValidationStateSizeSoftLimit"]]);
