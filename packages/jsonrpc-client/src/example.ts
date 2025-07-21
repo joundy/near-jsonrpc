@@ -33,8 +33,6 @@ async function main() {
         console.error(req.error);
         throw new Error(req.error.message);
       }
-      req.result.blockHash
-
     }
 
     {

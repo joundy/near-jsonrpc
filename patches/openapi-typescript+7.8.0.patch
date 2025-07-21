@@ -8,7 +8,7 @@ index bfcae19..bafbae9 100644
    }
 -  const anyOfType = collectUnionCompositions(schemaObject.anyOf ?? []);
 +
-+  // PATCH: Treat the anyOf like oneOf
++  // PATCH: Treat the anyOf like oneOf, see the issue right here: https://github.com/openapi-ts/openapi-typescript/issues/2380
 +  // const anyOfType = collectUnionCompositions(schemaObject.anyOf ?? []);
 +  // if (anyOfType.length) {
 +  //   finalType = tsUnion([...finalType ? [finalType] : [], ...anyOfType]);
