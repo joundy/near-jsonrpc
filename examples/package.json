@@ -4,11 +4,14 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "access-keys": "tsx access-keys.ts"
+    "access-keys": "tsx access-keys.ts",
+    "gas": "tsx gas.ts",
+    "network": "tsx network.ts",
+    "view-account": "tsx view-account.ts"
   },
   "devDependencies": {
     "@near-js/jsonrpc-client": "*",
     "@near-js/jsonrpc-types": "*",
     "tsx": "^4.20.3"
   }
-} 
+}
