@@ -7,11 +7,14 @@
     "access-keys": "tsx access-keys.ts",
     "gas": "tsx gas.ts",
     "network": "tsx network.ts",
-    "view-account": "tsx view-account.ts"
+    "transactions": "tsx transactions.ts",
+    "view-account": "tsx view-account.ts",
+    "view-function": "tsx view-function.ts"
   },
   "devDependencies": {
     "@near-js/jsonrpc-client": "*",
     "@near-js/jsonrpc-types": "*",
+    "near-api-js": "^6.2.2",
     "tsx": "^4.20.3"
   }
 }
