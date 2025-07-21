@@ -1,7 +1,7 @@
 import { Project, VariableDeclarationKind } from "ts-morph";
 import { GENERATED_COMMENT } from "../utils";
 
-export function exportMappedProperties(
+export function buildMappedProperties(
   mappedSnakeCamelProperty: Map<string, string>
 ) {
   const project = new Project();
@@ -30,5 +30,8 @@ export function exportMappedProperties(
 
   source.formatText();
 
-  return source.getFullText();
+  const text = source.getFullText();
+  project.removeSourceFile(source);
+
+  return text;
 }

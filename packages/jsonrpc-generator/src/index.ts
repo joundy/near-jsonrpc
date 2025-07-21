@@ -1,23 +1,55 @@
-import { getOpenApiSpecLocal } from "./utils";
+import { getOpenApiSpecLocal, getUniqueSchemas } from "./utils";
 import { generateOpenapiTS } from "./utils/openapi-ts";
 import { parseOpenapiTS } from "./openapi-typescript-parser";
-import { exporter } from "./exporter";
+import { buildTypes } from "./builder/build-types";
+import { buildMethods } from "./builder/build-methods";
+import { buildSchemas } from "./builder/build-schema";
+import { buildMappedProperties } from "./builder/build-mapped-properties";
+import { writeFileSync } from "fs";
+import { generateZodSchemas } from "./zod-generator";
 
 async function main() {
-  console.info("# Getting OpenAPI spec");
+  console.info("📄 Getting OpenAPI spec...");
   const spec = getOpenApiSpecLocal();
 
-  console.info("# Generating OpenAPI TS");
+  console.info("🔄 Generating TypeScript from OpenAPI...");
   const openapiTS = await generateOpenapiTS(spec);
 
-  console.info("# Parsing OpenAPI TS");
+  console.info("🔍 Parsing generated TypeScript...");
   const parsed = parseOpenapiTS(openapiTS);
 
-  console.info("# Exporting");
-  exporter(
-    parsed.methods,
-    parsed.schemas.schemaTypes,
+  console.info("🏗️ Building output files...");
+  const neededSchemas = getUniqueSchemas(parsed.methods);
+
+  console.info("  ├─ 📝 Building types...");
+  const builtTypes = buildTypes();
+
+  console.info("  ├─ 🔌 Building methods...");
+  const builtMethods = buildMethods(parsed.methods, neededSchemas, {
+    schemasLocation: "./schemas",
+    typesLocation: "./types",
+  });
+
+  console.info("  ├─ 📊 Building schemas...");
+  const builtSchemas = buildSchemas(parsed.schemas.schemaTypes);
+
+  console.info("  └─ 🔄 Building property mappings...");
+  const builtMappedProperties = buildMappedProperties(
     parsed.schemas.mappedSnakeCamelProperty
+  );
+
+  console.info("✨ Generating Zod from schemas...");
+  const zodSchemas = generateZodSchemas(builtSchemas);
+
+  // console.log(zodSchemas);
+
+  console.info("💾 Saving output files...");
+  writeFileSync("../../packages/jsonrpc-types/src/types.ts", builtTypes);
+  writeFileSync("../../packages/jsonrpc-types/src/methods.ts", builtMethods);
+  writeFileSync("../../packages/jsonrpc-types/src/schemas.ts", builtSchemas);
+  writeFileSync(
+    "../../packages/jsonrpc-types/src/mapped-properties.ts",
+    builtMappedProperties
   );
 }
 

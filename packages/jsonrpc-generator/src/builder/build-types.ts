@@ -1,7 +1,7 @@
 import { Project } from "ts-morph";
 import { GENERATED_COMMENT } from "../utils";
 
-export function exportTypes() {
+export function buildTypes() {
   const project = new Project();
 
   // create a virtual file to export the methods
@@ -79,5 +79,8 @@ export function exportTypes() {
 
   source.formatText();
 
-  return source.getFullText();
+  const text = source.getFullText();
+  project.removeSourceFile(source);
+
+  return text;
 }
