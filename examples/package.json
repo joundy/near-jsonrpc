@@ -9,7 +9,8 @@
     "network": "tsx network.ts",
     "transactions": "tsx transactions.ts",
     "view-account": "tsx view-account.ts",
-    "view-function": "tsx view-function.ts"
+    "view-function": "tsx view-function.ts",
+    "accessing-error": "tsx accessing-error.ts"
   },
   "devDependencies": {
     "@near-js/jsonrpc-client": "*",

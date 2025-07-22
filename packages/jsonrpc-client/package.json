@@ -26,7 +26,8 @@
     "example": "tsx src/example.ts"
   },
   "dependencies": {
-    "@near-js/jsonrpc-types": "*"
+    "@near-js/jsonrpc-types": "*",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "tsup": "^8.0.1",
