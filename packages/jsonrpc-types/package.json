@@ -45,7 +45,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "devDependencies": {
     "tsup": "^8.0.1",
