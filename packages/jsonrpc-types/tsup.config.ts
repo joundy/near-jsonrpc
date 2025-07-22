@@ -8,7 +8,6 @@ export default defineConfig({
     types: "src/types.ts",
     "mapped-properties": "src/mapped-properties.ts",
     "zod-schemas": "src/zod-schemas.ts",
-    "zod-type-checker": "src/_zod-type-checker.ts",
   },
   format: ["cjs", "esm"],
   dts: true,

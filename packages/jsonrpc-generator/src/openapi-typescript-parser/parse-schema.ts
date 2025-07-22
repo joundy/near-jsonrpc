@@ -27,21 +27,29 @@ export function parseSchemaTypes(source: SourceFile) {
 
   // TODO: add property mapper, to make sure the camelize and snakekies are parsed correctly
   for (const property of propertySignatures) {
-    const descendants = property.getDescendantsOfKind(
+    const propertyDescendants = property.getDescendantsOfKind(
       SyntaxKind.PropertySignature
     );
-
-    // TODO: optimize this, this is a heavy operation: -> https://ts-morph.com/manipulation/performance,
-    // ^^ not necessary for the generator because it's will be used rarely, but it's a good practice
-    // convert property name from snake_case to camelCase
-    for (const property of descendants) {
-      const name = property.getName();
-      const camelize = snakeToCamel(name);
-      if (name !== camelize) {
-        mappedSnakeCamelProperty.set(name, camelize);
-        property.rename(camelize);
+    if (propertyDescendants.length > 0) {
+      // TODO: optimize this, this is a heavy operation: -> https://ts-morph.com/manipulation/performance,
+      // ^^ not necessary for the generator because it's will be used rarely, but it's a good practice
+      // convert property name from snake_case to camelCase, TYPE SAFE!!
+      console.info(
+        `🔄 Processing ${
+          propertyDescendants.length
+        } properties from ${property.getName()} for snake_case to camelCase conversion`
+      );
+      for (const property of propertyDescendants) {
+        const name = property.getName();
+        const camelize = snakeToCamel(name);
+        if (name !== camelize) {
+          mappedSnakeCamelProperty.set(name, camelize);
+          property.rename(camelize);
+        }
       }
     }
+
+    console.info(`✅ Property renaming complete for ${property.getName()}`);
 
     const typeName = property.getName();
     const typeNode = property.getTypeNodeOrThrow();
