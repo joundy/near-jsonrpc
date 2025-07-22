@@ -6,8 +6,8 @@
  */
 
 import {
-  createJsonRpcTransporter,
-  createRpcClient,
+  jsonRpcTransporter,
+  createClient,
   type RpcClient,
 } from "@near-js/jsonrpc-client";
 
@@ -148,10 +148,10 @@ async function displayValidators(client: RpcClient): Promise<void> {
  * Main function that demonstrates all network-related queries
  */
 async function main(): Promise<void> {
-  const transporter = createJsonRpcTransporter({
+  const transporter = jsonRpcTransporter({
     endpoint: "https://rpc.testnet.near.org",
   });
-  const client = createRpcClient(transporter);
+  const client = createClient(transporter);
 
   console.log("🌐 NEAR JSON-RPC Client - Network Example\n");
 

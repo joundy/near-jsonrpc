@@ -30,6 +30,11 @@
       "types": "./dist/mapped-properties.d.ts",
       "require": "./dist/mapped-properties.js",
       "import": "./dist/mapped-properties.mjs"
+    },
+    "./zod-schemas": {
+      "types": "./dist/zod-schemas.d.ts",
+      "require": "./dist/zod-schemas.js",
+      "import": "./dist/zod-schemas.mjs"
     }
   },
   "scripts": {
@@ -40,7 +45,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "devDependencies": {
     "tsup": "^8.0.1",

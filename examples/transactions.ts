@@ -5,10 +5,7 @@
  * It covers transaction creation, signing with a keypair, and sending signed_tx_base64 to the network.
  */
 
-import {
-  createJsonRpcTransporter,
-  createRpcClient,
-} from "@near-js/jsonrpc-client";
+import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 import { transactions, utils, KeyPairSigner } from "near-api-js";
 
 // Configuration
@@ -26,8 +23,8 @@ const PRIVATE_KEY = (process.env.NEAR_PRIVATE_KEY ||
 async function sendTransactionExample() {
   try {
     // 1. Create JSON-RPC client
-    const transporter = createJsonRpcTransporter({ endpoint: RPC_URL });
-    const client = createRpcClient(transporter);
+    const transporter = jsonRpcTransporter({ endpoint: RPC_URL });
+    const client = createClient(transporter);
 
     // 2. Setup keypair for signing
     const keyPair = KeyPairSigner.fromSecretKey(PRIVATE_KEY);
@@ -115,6 +112,21 @@ async function sendTransactionExample() {
 
     const hash = result.result.transaction.hash;
     const gasBurnt = result.result.transactionOutcome.outcome.gasBurnt;
+
+    // Get transaction status
+    const { result: txStatus, error: txError } = await client.tx({
+      txHash: hash,
+      senderAccountId: SENDER_ACCOUNT_ID,
+      waitUntil: "FINAL",
+    });
+
+    if (txError) {
+      console.error("❌ Error getting transaction status:", txError);
+      return;
+    }
+
+    console.log("   ✓ Transaction status confirmed");
+    // console.log(txStatus);
 
     // 6. Display results
     console.log("✅ Transaction successful!\n");

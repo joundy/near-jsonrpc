@@ -4,16 +4,13 @@
  * This example demonstrates how to get the gas price for a NEAR account.
  */
 
-import {
-  createJsonRpcTransporter,
-  createRpcClient,
-} from "@near-js/jsonrpc-client";
+import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 
 async function main() {
-  const transporter = createJsonRpcTransporter({
+  const transporter = jsonRpcTransporter({
     endpoint: "https://rpc.testnet.near.org",
   });
-  const client = createRpcClient(transporter);
+  const client = createClient(transporter);
 
   console.log("🔑 NEAR JSON-RPC Client - Gas Price Example\n");
 
@@ -26,7 +23,6 @@ async function main() {
   }
 
   const { gasPrice } = gasPriceResponse;
-
 
   console.log("Gas price:", gasPrice, "\n");
 }
