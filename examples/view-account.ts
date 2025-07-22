@@ -6,8 +6,8 @@
  */
 
 import {
-  createJsonRpcTransporter,
-  createRpcClient,
+  jsonRpcTransporter,
+  createClient,
   type RpcClient,
 } from "@near-js/jsonrpc-client";
 
@@ -152,10 +152,10 @@ async function checkAccountExists(
  * Main function that demonstrates account viewing functionality
  */
 async function main(): Promise<void> {
-  const transporter = createJsonRpcTransporter({
+  const transporter = jsonRpcTransporter({
     endpoint: "https://rpc.testnet.near.org",
   });
-  const client = createRpcClient(transporter);
+  const client = createClient(transporter);
 
   console.log("👁️  NEAR JSON-RPC Client - View Account Example\n");
 

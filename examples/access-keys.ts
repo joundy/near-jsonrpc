@@ -4,16 +4,13 @@
  * This example demonstrates how to list access keys for a NEAR account.
  */
 
-import {
-  createJsonRpcTransporter,
-  createRpcClient,
-} from "@near-js/jsonrpc-client";
+import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 
 async function main() {
-  const transporter = createJsonRpcTransporter({
+  const transporter = jsonRpcTransporter({
     endpoint: "https://rpc.testnet.near.org",
   });
-  const client = createRpcClient(transporter);
+  const client = createClient(transporter);
 
   console.log("🔑 NEAR JSON-RPC Client - Access Keys Example\n");
 
