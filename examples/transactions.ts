@@ -50,13 +50,23 @@ async function sendTransactionExample() {
     if (accessKeyResponse.error || (accessKeyResponse.result as any)?.error) {
       throw new Error(
         `Access key error: ${
-          accessKeyResponse.error?.message ||
+          accessKeyResponse.error?.rpc?.message ||
           (accessKeyResponse.result as any)?.error
         }`
       );
     }
+    if (statusResponse.error?.rpc) {
+      throw new Error(`Status error: ${statusResponse.error.rpc?.message}`);
+    }
+    if (statusResponse.error?.validation) {
+      throw new Error(
+        `Status error: ${statusResponse.error.validation?.error}`
+      );
+    }
+
     if (statusResponse.error) {
-      throw new Error(`Status error: ${statusResponse.error.message}`);
+      console.error("Error fetching status:", statusResponse.error);
+      throw new Error("Error fetching status");
     }
 
     const {
