@@ -4,14 +4,19 @@
  * 
  * @generated
  */
+import { z } from "zod/v4";
+
 /** Type alias for a method with type parameters */
 export type Method<TRequest, TResponse, TError> = {
     readonly methodName: string;
+    readonly zodRequest: z.ZodType<TRequest>;
+    readonly zodResponse: z.ZodType<TResponse>;
+    readonly zodError: z.ZodType<TError>;
 };
 
 /** Function to create a method definition with type parameters */
-export function defineMethod<TRequest, TResponse, TError>(methodName: string): Method<TRequest, TResponse, TError> {
-    return { methodName };
+export function defineMethod<TRequest, TResponse, TError>(methodName: string, zodRequest: z.ZodType<TRequest>, zodResponse: z.ZodType<TResponse>, zodError: z.ZodType<TError>): Method<TRequest, TResponse, TError> {
+    return { methodName, zodRequest, zodResponse, zodError };
 }
 
 /** Type helper to extract the request type from a method */

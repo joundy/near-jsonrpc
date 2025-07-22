@@ -5,6 +5,8 @@ import { GENERATED_COMMENT, snakeToCamel } from "../utils";
 export type BuildMethodsOptions = {
   schemasLocation: string;
   typesLocation: string;
+  zodSchemaLocation: string;
+  zodSuffix: string;
 };
 
 export function buildMethods(
@@ -19,6 +21,11 @@ export function buildMethods(
   source.insertStatements(0, GENERATED_COMMENT);
 
   source.addImportDeclaration({
+    moduleSpecifier: "zod/v4",
+    namedImports: ["z"],
+  });
+
+  source.addImportDeclaration({
     moduleSpecifier: options.typesLocation,
     namedImports: ["defineMethod"],
   });
@@ -27,6 +34,13 @@ export function buildMethods(
     moduleSpecifier: options.schemasLocation,
     namedImports: neededSchemas,
     isTypeOnly: true,
+  });
+
+  source.addImportDeclaration({
+    moduleSpecifier: options.zodSchemaLocation,
+    namedImports: neededSchemas.map(
+      (schema) => `${schema}${options.zodSuffix}`
+    ),
   });
 
   source.addVariableStatements(
@@ -39,13 +53,34 @@ export function buildMethods(
         response = `${method.response.schema} | null`;
       }
 
+      let zodResponse = method.response.schema + options.zodSuffix;
+      if (method.response.isArray) {
+        zodResponse = `z.array(${zodResponse})`;
+      }
+      if (method.response.isNullable) {
+        zodResponse = `z.union([${zodResponse}, z.null()])`;
+      }
+
       return {
         declarationKind: VariableDeclarationKind.Const,
         isExported: true,
         declarations: [
           {
             name: snakeToCamel(method.request.method),
-            initializer: `defineMethod<${method.request.schema}, ${response}, RpcError>("${method.request.method}")`,
+            initializer: (writer) => {
+              writer
+                .write(
+                  `defineMethod<${method.request.schema}, ${response}, RpcError>(`
+                )
+                .quote(method.request.method)
+                .write(", ")
+                .write(`${method.request.schema}${options.zodSuffix}`)
+                .write(", ")
+                .write(`${zodResponse}`)
+                .write(", ")
+                .write(`${method.error.schema}${options.zodSuffix}`)
+                .write(")");
+            },
           },
         ],
         docs: [

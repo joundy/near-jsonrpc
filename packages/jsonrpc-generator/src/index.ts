@@ -23,6 +23,7 @@ const MAPPED_PROPERTIES_FILE = "mapped-properties.ts";
 // Import locations
 const SCHEMAS_LOCATION = "./schemas";
 const TYPES_LOCATION = "./types";
+const ZOD_LOCATION = "./zod-schemas";
 
 async function main() {
   console.info("📄 Getting OpenAPI spec...");
@@ -44,6 +45,8 @@ async function main() {
   const builtMethods = buildMethods(parsed.methods, neededSchemas, {
     schemasLocation: SCHEMAS_LOCATION,
     typesLocation: TYPES_LOCATION,
+    zodSchemaLocation: ZOD_LOCATION,
+    zodSuffix: ZOD_SCHEMA_SUFFIX,
   });
 
   console.info("📊 Building schemas...");

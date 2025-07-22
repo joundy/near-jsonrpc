@@ -42,10 +42,11 @@ export function parseSchemaTypes(source: SourceFile) {
       for (const property of propertyDescendants) {
         const name = property.getName();
         const camelize = snakeToCamel(name);
-        if (name !== camelize) {
-          mappedSnakeCamelProperty.set(name, camelize);
-          property.rename(camelize);
-        }
+        //TODO: uncomment this
+        // if (name !== camelize) {
+        //   mappedSnakeCamelProperty.set(name, camelize);
+        //   property.rename(camelize);
+        // }
       }
     }
 
