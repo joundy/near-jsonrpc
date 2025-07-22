@@ -8,7 +8,7 @@ import { buildMappedProperties } from "./builder/build-mapped-properties";
 import { writeFileSync } from "fs";
 import { generateZodSchemas } from "./zod-generator";
 import { buildZodSchemas } from "./builder/build-zod-schema";
-import { buildZodTypeChecker } from "./builder/build-zod-type-checker";
+import { validateZodSchema } from "./zod-validator";
 
 const SCHEMA_SUFFIX = "Type";
 const ZOD_SCHEMA_SUFFIX = "Schema";
@@ -51,26 +51,25 @@ async function main() {
     schemaDependencies: zodSchemas.dependencies,
   });
 
-  const builtZodTypeChecker = buildZodTypeChecker(parsed.schemas.schemaTypes, {
-    schemasLocation: "./schemas",
-    zodSchemasLocation: "./zod-schemas",
+  console.info("  ├─ 📊 Validating Zod schemas to ensure 1:1 with TS schemas...");
+  await validateZodSchema({
+    schemas: parsed.schemas.schemaTypes.map((schema) => schema.schema),
+    schemaTs: builtSchemas,
+    zodSchemaTs: builtZodSchemas,
     zodSchemaSuffix: ZOD_SCHEMA_SUFFIX,
   });
-
-  // console.log(zodSchemas);
 
   console.info("💾 Saving output files...");
   writeFileSync("../../packages/jsonrpc-types/src/types.ts", builtTypes);
   writeFileSync("../../packages/jsonrpc-types/src/methods.ts", builtMethods);
   writeFileSync("../../packages/jsonrpc-types/src/schemas.ts", builtSchemas);
-  writeFileSync("../../packages/jsonrpc-types/src/zod-schemas.ts", builtZodSchemas);
+  writeFileSync(
+    "../../packages/jsonrpc-types/src/zod-schemas.ts",
+    builtZodSchemas
+  );
   writeFileSync(
     "../../packages/jsonrpc-types/src/mapped-properties.ts",
     builtMappedProperties
-  );
-  writeFileSync(
-    "../../packages/jsonrpc-types/src/_zod-type-checker.ts",
-    builtZodTypeChecker
   );
 }
 

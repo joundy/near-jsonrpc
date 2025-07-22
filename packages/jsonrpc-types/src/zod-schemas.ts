@@ -1702,10 +1702,10 @@ export const RpcQueryRequestSchema = z.union([z.object({
     accountId: AccountIdSchema,
     requestType: z.literal("view_global_contract_code_by_account_id")
 })]));
-export const RpcQueryResponseSchema = z.object({
+export const RpcQueryResponseSchema = z.union([z.object({
     blockHash: CryptoHashSchema,
     blockHeight: z.number()
-}).and(z.union([AccountViewSchema, ContractCodeViewSchema, z.lazy(() => ViewStateResultSchema), CallResultSchema, AccessKeyViewSchema, AccessKeyListSchema]));
+}), AccountViewSchema, ContractCodeViewSchema, z.lazy(() => ViewStateResultSchema), CallResultSchema, AccessKeyViewSchema, AccessKeyListSchema]);
 export const RpcReceiptRequestSchema = z.object({
     receiptId: CryptoHashSchema
 });
@@ -1799,17 +1799,17 @@ export const RpcStatusResponseSchema = z.object({
     validators: z.array(z.lazy(() => ValidatorInfoSchema)),
     version: z.lazy(() => VersionSchema)
 });
-export const RpcTransactionResponseSchema = z.object({
+export const RpcTransactionResponseSchema = z.union([z.object({
     finalExecutionStatus: z.lazy(() => TxExecutionStatusSchema)
-}).and(z.union([FinalExecutionOutcomeWithReceiptViewSchema, FinalExecutionOutcomeViewSchema]));
-export const RpcTransactionStatusRequestSchema = z.object({
+}), FinalExecutionOutcomeWithReceiptViewSchema, FinalExecutionOutcomeViewSchema]);
+export const RpcTransactionStatusRequestSchema = z.union([z.object({
     waitUntil: z.lazy(() => TxExecutionStatusSchema)
-}).and(z.union([z.object({
+}), z.object({
     signedTxBase64: z.lazy(() => SignedTransactionSchema)
 }), z.object({
     senderAccountId: AccountIdSchema,
     txHash: CryptoHashSchema
-})]));
+})]);
 export const RpcValidatorRequestSchema = z.union([z.literal("latest"), z.object({
     epochId: EpochIdSchema
 }), z.object({
