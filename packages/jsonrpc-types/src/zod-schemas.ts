@@ -256,7 +256,7 @@ export const ActionViewSchema = z.union([z.literal("CreateAccount"), z.object({
     })
 }), z.object({
     FunctionCall: z.object({
-        args: z.string(),
+        args: z.lazy(() => FunctionArgsSchema),
         deposit: z.string(),
         gas: z.number(),
         methodName: z.string()
@@ -380,7 +380,7 @@ export const CallResultSchema = z.object({
 });
 export const CatchupStatusViewSchema = z.object({
     blocksToCatchup: z.array(BlockStatusViewSchema),
-    shardSyncStatus: z.record(z.string(), z.string()),
+    shardSyncStatus: z.record(z.string(), z.unknown()),
     syncBlockHash: z.lazy(() => CryptoHashSchema),
     syncBlockHeight: z.number()
 });
@@ -688,6 +688,7 @@ export const FinalExecutionStatusSchema = z.union([z.literal("NotStarted"), z.li
     SuccessValue: z.string()
 })]);
 export const FinalitySchema = z.union([z.literal("optimistic"), z.literal("near-final"), z.literal("final")]);
+export const FunctionArgsSchema = z.string();
 export const FunctionCallActionSchema = z.object({
     args: z.string(),
     deposit: z.string(),
@@ -766,7 +767,7 @@ export const GenesisConfigSchema = z.object({
     useProductionConfig: z.boolean(),
     validators: z.array(AccountInfoSchema)
 });
-export const GenesisConfigRequestSchema = z.record(z.string(), z.unknown());
+export const GenesisConfigRequestSchema = z.null();
 export const GlobalContractDeployModeSchema = z.union([z.literal("CodeHash"), z.literal("AccountId")]);
 export const GlobalContractIdentifierSchema = z.union([z.object({
     CodeHash: CryptoHashSchema
@@ -1471,7 +1472,7 @@ export const RpcChunkResponseSchema = z.object({
     receipts: z.array(ReceiptViewSchema),
     transactions: z.array(z.lazy(() => SignedTransactionViewSchema))
 });
-export const RpcClientConfigRequestSchema = z.record(z.string(), z.unknown());
+export const RpcClientConfigRequestSchema = z.null();
 export const RpcClientConfigResponseSchema = z.object({
     archive: z.boolean(),
     blockFetchHorizon: z.number(),
@@ -1530,6 +1531,7 @@ export const RpcClientConfigResponseSchema = z.object({
     ttlAccountIdRouter: z.array(z.number()),
     txRoutingHeightHorizon: z.number(),
     version: z.lazy(() => VersionSchema),
+    viewClientNumStateRequestsPerThrottlePeriod: z.number(),
     viewClientThreads: z.number(),
     viewClientThrottlePeriod: z.array(z.number())
 });
@@ -1564,8 +1566,8 @@ export const RpcGasPriceRequestSchema = z.object({
 export const RpcGasPriceResponseSchema = z.object({
     gasPrice: z.string()
 });
-export const RpcHealthRequestSchema = z.record(z.string(), z.unknown());
-export const RpcHealthResponseSchema = z.record(z.string(), z.unknown());
+export const RpcHealthRequestSchema = z.null();
+export const RpcHealthResponseSchema = z.null();
 export const RpcKnownProducerSchema = z.object({
     accountId: AccountIdSchema,
     addr: z.union([z.string(), z.null()]).optional(),
@@ -1610,7 +1612,7 @@ export const RpcLightClientNextBlockResponseSchema = z.object({
 export const RpcMaintenanceWindowsRequestSchema = z.object({
     accountId: AccountIdSchema
 });
-export const RpcNetworkInfoRequestSchema = z.record(z.string(), z.unknown());
+export const RpcNetworkInfoRequestSchema = z.null();
 export const RpcNetworkInfoResponseSchema = z.object({
     activePeers: z.array(z.lazy(() => RpcPeerInfoSchema)),
     knownProducers: z.array(RpcKnownProducerSchema),
@@ -1668,40 +1670,140 @@ export const RpcProtocolConfigResponseSchema = z.object({
 });
 export const RpcQueryRequestSchema = z.union([z.object({
     blockId: BlockIdSchema
-}), z.object({
-    finality: FinalitySchema
-}), z.object({
-    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
-})]).and(z.union([z.object({
+}).and(z.object({
     accountId: AccountIdSchema,
     requestType: z.literal("view_account")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountId: AccountIdSchema,
     requestType: z.literal("view_code")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountId: AccountIdSchema,
     includeProof: z.boolean().optional(),
-    prefixBase64: z.string(),
+    prefixBase64: z.lazy(() => StoreKeySchema),
     requestType: z.literal("view_state")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountId: AccountIdSchema,
     publicKey: PublicKeySchema,
     requestType: z.literal("view_access_key")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountId: AccountIdSchema,
     requestType: z.literal("view_access_key_list")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountId: AccountIdSchema,
-    argsBase64: z.string(),
+    argsBase64: FunctionArgsSchema,
     methodName: z.string(),
     requestType: z.literal("call_function")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     codeHash: CryptoHashSchema,
     requestType: z.literal("view_global_contract_code")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountId: AccountIdSchema,
     requestType: z.literal("view_global_contract_code_by_account_id")
-})]));
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_account")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_code")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    includeProof: z.boolean().optional(),
+    prefixBase64: z.lazy(() => StoreKeySchema),
+    requestType: z.literal("view_state")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    publicKey: PublicKeySchema,
+    requestType: z.literal("view_access_key")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_access_key_list")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    argsBase64: FunctionArgsSchema,
+    methodName: z.string(),
+    requestType: z.literal("call_function")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    codeHash: CryptoHashSchema,
+    requestType: z.literal("view_global_contract_code")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_global_contract_code_by_account_id")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_account")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_code")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountId: AccountIdSchema,
+    includeProof: z.boolean().optional(),
+    prefixBase64: z.lazy(() => StoreKeySchema),
+    requestType: z.literal("view_state")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountId: AccountIdSchema,
+    publicKey: PublicKeySchema,
+    requestType: z.literal("view_access_key")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_access_key_list")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountId: AccountIdSchema,
+    argsBase64: FunctionArgsSchema,
+    methodName: z.string(),
+    requestType: z.literal("call_function")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    codeHash: CryptoHashSchema,
+    requestType: z.literal("view_global_contract_code")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_global_contract_code_by_account_id")
+}))]);
 export const RpcQueryResponseSchema = z.object({
     blockHash: CryptoHashSchema,
     blockHeight: z.number()
@@ -1740,33 +1842,113 @@ export const RpcSplitStorageInfoResponseSchema = z.object({
 });
 export const RpcStateChangesInBlockByTypeRequestSchema = z.union([z.object({
     blockId: BlockIdSchema
-}), z.object({
-    finality: FinalitySchema
-}), z.object({
-    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
-})]).and(z.union([z.object({
+}).and(z.object({
     accountIds: z.array(AccountIdSchema),
     changesType: z.literal("account_changes")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     changesType: z.literal("single_access_key_changes"),
     keys: z.array(AccountWithPublicKeySchema)
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     changesType: z.literal("single_gas_key_changes"),
     keys: z.array(AccountWithPublicKeySchema)
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountIds: z.array(AccountIdSchema),
     changesType: z.literal("all_access_key_changes")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountIds: z.array(AccountIdSchema),
     changesType: z.literal("all_gas_key_changes")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountIds: z.array(AccountIdSchema),
     changesType: z.literal("contract_code_changes")
-}), z.object({
+})), z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
     accountIds: z.array(AccountIdSchema),
     changesType: z.literal("data_changes"),
-    keyPrefixBase64: z.string()
-})]));
+    keyPrefixBase64: z.lazy(() => StoreKeySchema)
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("account_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    changesType: z.literal("single_access_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    changesType: z.literal("single_gas_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_access_key_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_gas_key_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("contract_code_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("data_changes"),
+    keyPrefixBase64: z.lazy(() => StoreKeySchema)
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("account_changes")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    changesType: z.literal("single_access_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    changesType: z.literal("single_gas_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_access_key_changes")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_gas_key_changes")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("contract_code_changes")
+})), z.object({
+    syncCheckpoint: z.lazy(() => SyncCheckpointSchema)
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("data_changes"),
+    keyPrefixBase64: z.lazy(() => StoreKeySchema)
+}))]);
 export const RpcStateChangesInBlockByTypeResponseSchema = z.object({
     blockHash: CryptoHashSchema,
     changes: z.array(z.lazy(() => StateChangeKindViewSchema))
@@ -1782,7 +1964,7 @@ export const RpcStateChangesInBlockResponseSchema = z.object({
     blockHash: CryptoHashSchema,
     changes: z.array(z.lazy(() => StateChangeWithCauseViewSchema))
 });
-export const RpcStatusRequestSchema = z.record(z.string(), z.unknown());
+export const RpcStatusRequestSchema = z.null();
 export const RpcStatusResponseSchema = z.object({
     chainId: z.string(),
     detailedDebugStatus: z.union([DetailedDebugStatusSchema, z.null()]).optional(),
@@ -1996,14 +2178,14 @@ export const StateChangeWithCauseViewSchema = z.object({
 }), z.object({
     change: z.object({
         accountId: AccountIdSchema,
-        keyBase64: z.string(),
-        valueBase64: z.string()
+        keyBase64: z.lazy(() => StoreKeySchema),
+        valueBase64: z.lazy(() => StoreValueSchema)
     }),
     type: z.literal("data_update")
 }), z.object({
     change: z.object({
         accountId: AccountIdSchema,
-        keyBase64: z.string()
+        keyBase64: z.lazy(() => StoreKeySchema)
     }),
     type: z.literal("data_deletion")
 }), z.object({
@@ -2019,8 +2201,8 @@ export const StateChangeWithCauseViewSchema = z.object({
     type: z.literal("contract_code_deletion")
 })]));
 export const StateItemSchema = z.object({
-    key: z.string(),
-    value: z.string()
+    key: z.lazy(() => StoreKeySchema),
+    value: z.lazy(() => StoreValueSchema)
 });
 export const StateSyncConfigSchema = z.object({
     concurrency: z.lazy(() => SyncConcurrencySchema).optional(),
@@ -2053,6 +2235,8 @@ export const StorageUsageConfigViewSchema = z.object({
     numBytesAccount: z.number(),
     numExtraBytesRecord: z.number()
 });
+export const StoreKeySchema = z.string();
+export const StoreValueSchema = z.string();
 export const SyncCheckpointSchema = z.union([z.literal("genesis"), z.literal("earliest_available")]);
 export const SyncConcurrencySchema = z.object({
     apply: z.number(),
@@ -2161,3 +2345,6 @@ export const WitnessConfigViewSchema = z.object({
     mainStorageProofSizeSoftLimit: z.number(),
     newTransactionsValidationStateSizeSoftLimit: z.number()
 });
+export const JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponseSchema = z.array(Range_of_uint64Schema);
+export const JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponseSchema = z.array(ValidatorStakeViewSchema);
+export const JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponseSchema = z.union([RpcHealthResponseSchema, z.null()]);

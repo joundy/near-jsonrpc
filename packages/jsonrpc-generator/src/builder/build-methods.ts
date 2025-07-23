@@ -45,22 +45,6 @@ export function buildMethods(
 
   source.addVariableStatements(
     methods.map((method) => {
-      let response = method.response.schema;
-      if (method.response.isArray) {
-        response = `${method.response.schema}[]`;
-      }
-      if (method.response.isNullable) {
-        response = `${method.response.schema} | null`;
-      }
-
-      let zodResponse = method.response.schema + options.zodSuffix;
-      if (method.response.isArray) {
-        zodResponse = `z.array(${zodResponse})`;
-      }
-      if (method.response.isNullable) {
-        zodResponse = `z.union([${zodResponse}, z.null()])`;
-      }
-
       return {
         declarationKind: VariableDeclarationKind.Const,
         isExported: true,
@@ -70,15 +54,15 @@ export function buildMethods(
             initializer: (writer) => {
               writer
                 .write(
-                  `defineMethod<${method.request.schema}, ${response}, RpcError>(`
+                  `defineMethod<${method.request.type}, ${method.response.type}, RpcError>(`
                 )
                 .quote(method.request.method)
                 .write(", ")
-                .write(`${method.request.schema}${options.zodSuffix}`)
+                .write(`${method.request.type}${options.zodSuffix}`)
                 .write(", ")
-                .write(`${zodResponse}`)
+                .write(`${method.response.type}${options.zodSuffix}`)
                 .write(", ")
-                .write(`${method.error.schema}${options.zodSuffix}`)
+                .write(`${method.error.type}${options.zodSuffix}`)
                 .write(")");
             },
           },

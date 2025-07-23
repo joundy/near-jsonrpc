@@ -16,7 +16,7 @@ export function parseOpenapiTS(openapiTS: string) {
   project.removeSourceFile(source);
 
   return {
-    methods,
     schemas,
+    methods,
   };
 }

@@ -17,7 +17,7 @@ import {
 async function displayNetworkStatus(client: RpcClient): Promise<void> {
   console.log("=== Network Status ===");
 
-  const { result: status, error } = await client.status({});
+  const { result: status, error } = await client.status(null);
 
   if (error) {
     console.error("❌ Error fetching network status:", error);
@@ -41,7 +41,7 @@ async function displayNetworkStatus(client: RpcClient): Promise<void> {
 async function displayNetworkInfo(client: RpcClient): Promise<void> {
   console.log("=== Network Info ===");
 
-  const { result: networkInfo, error } = await client.networkInfo({});
+  const { result: networkInfo, error } = await client.networkInfo(null);
 
   if (error) {
     console.error("❌ Error fetching network info:", error);

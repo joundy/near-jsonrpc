@@ -44,7 +44,7 @@ async function sendTransactionExample() {
         accountId: SENDER_ACCOUNT_ID,
         publicKey: publicKey.toString(),
       }),
-      client.status({}),
+      client.status(null),
     ]);
 
     if (accessKeyResponse.error || (accessKeyResponse.result as any)?.error) {

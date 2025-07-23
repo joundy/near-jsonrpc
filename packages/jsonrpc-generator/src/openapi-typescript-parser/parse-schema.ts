@@ -1,9 +1,12 @@
 import { SourceFile, SyntaxKind } from "ts-morph";
-import { OPENAPI_TS_COMPONENTS, OPENAPI_TS_SCHEMAS } from "../utils/openapi-ts";
+import {
+  OPENAPI_TS_COMPONENTS,
+  OPENAPI_TS_SCHEMAS,
+  parseOpenapiTSSchemaType,
+} from "../utils/openapi-ts";
 import type { SchemaType } from "../types";
 import { snakeToCamel } from "../utils";
 
-// TODO: change property from snake_case to camelCase
 // This basically grabbing the schema types from the openapi.ts file and exporting them by its name
 export function parseSchemaTypes(source: SourceFile) {
   const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
@@ -27,6 +30,11 @@ export function parseSchemaTypes(source: SourceFile) {
 
   // TODO: add property mapper, to make sure the camelize and snakekies are parsed correctly
   for (const property of propertySignatures) {
+    // // ignore the json rpc schemas, it's already parsed in the parseMethods
+    // if (jsonRpcSchemaSet.has(property.getName())) {
+    //   continue;
+    // }
+
     const propertyDescendants = property.getDescendantsOfKind(
       SyntaxKind.PropertySignature
     );
@@ -54,19 +62,9 @@ export function parseSchemaTypes(source: SourceFile) {
     const typeName = property.getName();
     const typeNode = property.getTypeNodeOrThrow();
 
-    let typeDefinition = typeNode.getText();
-
-    // TODO: find a better way to do this, this is a HACK!! but maybe it's the most efficient way
-    // replacing using finding references are type safed but it expensive and slow
-    //
-    // Replace the type definition with the coresponding type
-    // components["schemas"]["AccessKey"] -> AccessKey
-    const regex = /components\["schemas"\]\["([^"]+)"\]/g;
-    typeDefinition = typeDefinition.replace(regex, "$1");
-
     schemaTypes.push({
       schema: typeName,
-      type: typeDefinition,
+      type: parseOpenapiTSSchemaType(typeNode.getText()),
     });
   }
 

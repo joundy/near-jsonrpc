@@ -1,4 +1,4 @@
-import { getOpenApiSpecLocal, getUniqueSchemas } from "./utils";
+import { getOpenApiSpec, getUniqueSchemas } from "./utils";
 import { generateOpenapiTS } from "./utils/openapi-ts";
 import { parseOpenapiTS } from "./openapi-typescript-parser";
 import { buildTypes } from "./builder/build-types";
@@ -9,6 +9,7 @@ import { writeFileSync } from "fs";
 import { generateZodSchemas } from "./zod-generator";
 import { buildZodSchemas } from "./builder/build-zod-schema";
 import { validateZodSchema } from "./zod-validator";
+import { MethodType, SchemaType } from "./types";
 
 const ZOD_SCHEMA_SUFFIX = "Schema";
 
@@ -26,8 +27,8 @@ const TYPES_LOCATION = "./types";
 const ZOD_LOCATION = "./zod-schemas";
 
 async function main() {
-  console.info("📄 Getting OpenAPI spec...");
-  const spec = getOpenApiSpecLocal();
+  console.info("📄 Getting OpenAPI spec from nearcore repository...");
+  const spec = await getOpenApiSpec();
 
   console.info("🔄 Generating TypeScript from OpenAPI...");
   const openapiTS = await generateOpenapiTS(spec);
@@ -36,18 +37,9 @@ async function main() {
   const parsed = parseOpenapiTS(openapiTS);
 
   console.info("🏗️ Building output files...");
-  const neededSchemas = getUniqueSchemas(parsed.methods);
 
   console.info(" 📝 Building types...");
   const builtTypes = buildTypes();
-
-  console.info("🔌 Building methods...");
-  const builtMethods = buildMethods(parsed.methods, neededSchemas, {
-    schemasLocation: SCHEMAS_LOCATION,
-    typesLocation: TYPES_LOCATION,
-    zodSchemaLocation: ZOD_LOCATION,
-    zodSuffix: ZOD_SCHEMA_SUFFIX,
-  });
 
   console.info("📊 Building schemas...");
   const builtSchemas = buildSchemas(parsed.schemas.schemaTypes);
@@ -63,6 +55,15 @@ async function main() {
   const builtZodSchemas = buildZodSchemas(zodSchemas.zodSchemas, {
     schemasLocation: SCHEMAS_LOCATION,
     schemaDependencies: zodSchemas.dependencies,
+  });
+
+  console.info("🔌 Building methods...");
+  const neededSchemas = getUniqueSchemas(parsed.methods);
+  const builtMethods = buildMethods(parsed.methods, neededSchemas, {
+    schemasLocation: SCHEMAS_LOCATION,
+    typesLocation: TYPES_LOCATION,
+    zodSchemaLocation: ZOD_LOCATION,
+    zodSuffix: ZOD_SCHEMA_SUFFIX,
   });
 
   console.info(
@@ -81,7 +82,10 @@ async function main() {
   writeFileSync(`${OUTPUT_BASE_PATH}/${METHODS_FILE}`, builtMethods);
   writeFileSync(`${OUTPUT_BASE_PATH}/${SCHEMAS_FILE}`, builtSchemas);
   writeFileSync(`${OUTPUT_BASE_PATH}/${ZOD_SCHEMAS_FILE}`, builtZodSchemas);
-  writeFileSync(`${OUTPUT_BASE_PATH}/${MAPPED_PROPERTIES_FILE}`, builtMappedProperties);
+  writeFileSync(
+    `${OUTPUT_BASE_PATH}/${MAPPED_PROPERTIES_FILE}`,
+    builtMappedProperties
+  );
 }
 
 main();

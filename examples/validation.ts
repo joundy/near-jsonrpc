@@ -138,7 +138,7 @@ async function typeSafeResponseHandlingExample(client: RpcClient) {
   console.log("📋 Example 6: Type-Safe Response Handling");
   console.log("Demonstrating proper typing of response objects...");
 
-  const statusResponse = await client.status({});
+  const statusResponse = await client.status(null);
 
   if (statusResponse.error) {
     console.log("❌ Error getting status:", statusResponse.error);

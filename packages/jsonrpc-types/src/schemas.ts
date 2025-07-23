@@ -8,8 +8,8 @@ export type AccessKey = {
     /**
      * Format: uint64
      * @description Nonce for this access key, used for tx nonce generation. When access key is created, nonce
-     *      is set to `(block_height - 1) * 1e6` to avoid tx hash collision on access key re-creation.
-     *      See <https://github.com/near/nearcore/issues/3779> for more details.
+     *     is set to `(block_height - 1) * 1e6` to avoid tx hash collision on access key re-creation.
+     *     See <https://github.com/near/nearcore/issues/3779> for more details.
      */
     nonce: number;
     /** @description Defines permissions for this access key. */
@@ -52,13 +52,20 @@ export type AccountCreationConfigView = {
      */
     minAllowedTopLevelAccountLength: number;
     /** @description The account ID of the account registrar. This account ID allowed to create top-level
-     *      accounts of any valid length. */
+     *     accounts of any valid length. */
     registrarAccountId: AccountId;
 };
 export type AccountDataView = {
+    /** @description Account key of the validator signing this AccountData. */
     accountKey: PublicKey;
+    /** @description ID of the node that handles the account key (aka validator key). */
     peerId: PublicKey;
+    /** @description Proxy nodes that are directly connected to the validator node
+     *     (this list may include the validator node itself).
+     *     TIER1 nodes should connect to one of the proxies to sent TIER1
+     *     messages to the validator. */
     proxies: Tier1ProxyView[];
+    /** @description UTC timestamp of when the AccountData has been signed. */
     timestamp: string;
 };
 export type AccountId = string;
@@ -71,8 +78,8 @@ export type AccountInfo = {
 export type AccountView = {
     amount: string;
     codeHash: CryptoHash;
-    globalContractAccountId?: AccountId | null;
-    globalContractHash?: CryptoHash | null;
+    globalContractAccountId?: AccountId | (null);
+    globalContractHash?: CryptoHash | (null);
     locked: string;
     /**
      * Format: uint64
@@ -117,7 +124,7 @@ export type ActionCreationConfigView = {
     createAccountCost: Fee;
     /** @description Base cost for processing a delegate action.
      *
-     *      This is on top of the costs for the actions inside the delegate action. */
+     *     This is on top of the costs for the actions inside the delegate action. */
     delegateCost: Fee;
     /** @description Base cost of deleting an account. */
     deleteAccountCost: Fee;
@@ -140,7 +147,7 @@ export type ActionError = {
     /**
      * Format: uint64
      * @description Index of the failed action in the transaction.
-     *      Action index is not defined if ActionError.kind is `ActionErrorKind::LackBalanceForState`
+     *     Action index is not defined if ActionError.kind is `ActionErrorKind::LackBalanceForState`
      */
     index?: number | null;
     /** @description The kind of ActionError happened */
@@ -317,8 +324,7 @@ export type ActionView = "CreateAccount" | {
     };
 } | {
     FunctionCall: {
-        /** Format: bytes */
-        args: string;
+        args: FunctionArgs;
         deposit: string;
         /** Format: uint64 */
         gas: number;
@@ -395,11 +401,15 @@ export type BandwidthRequestsV1 = {
     requests: BandwidthRequest[];
 };
 export type BlockHeaderInnerLiteView = {
+    /** @description The merkle root of all the block hashes */
     blockMerkleRoot: CryptoHash;
+    /** @description The epoch to which the block that is the current known head belongs */
     epochId: CryptoHash;
     /** Format: uint64 */
     height: number;
+    /** @description The hash of the block producers set for the next epoch */
     nextBpHash: CryptoHash;
+    /** @description The epoch that will follow the current epoch */
     nextEpochId: CryptoHash;
     outcomeRoot: CryptoHash;
     prevStateRoot: CryptoHash;
@@ -411,8 +421,8 @@ export type BlockHeaderInnerLiteView = {
     timestampNanosec: string;
 };
 export type BlockHeaderView = {
-    approvals: (Signature | null)[];
-    blockBodyHash?: CryptoHash | null;
+    approvals: (Signature | (null))[];
+    blockBodyHash?: CryptoHash | (null);
     blockMerkleRoot: CryptoHash;
     /** Format: uint64 */
     blockOrdinal?: number | null;
@@ -426,7 +436,7 @@ export type BlockHeaderView = {
     /** Format: uint64 */
     chunksIncluded: number;
     epochId: CryptoHash;
-    epochSyncDataHash?: CryptoHash | null;
+    epochSyncDataHash?: CryptoHash | (null);
     gasPrice: string;
     hash: CryptoHash;
     /** Format: uint64 */
@@ -438,6 +448,7 @@ export type BlockHeaderView = {
     nextBpHash: CryptoHash;
     nextEpochId: CryptoHash;
     outcomeRoot: CryptoHash;
+    /** @description The hash of the previous Block */
     prevHash: CryptoHash;
     /** Format: uint64 */
     prevHeight?: number | null;
@@ -445,6 +456,7 @@ export type BlockHeaderView = {
     randomValue: CryptoHash;
     /** @description TODO(2271): deprecated. */
     rentPaid: string;
+    /** @description Signature of the block producer. */
     signature: Signature;
     /**
      * Format: uint64
@@ -469,9 +481,7 @@ export type CallResult = {
 };
 export type CatchupStatusView = {
     blocksToCatchup: BlockStatusView[];
-    shardSyncStatus: {
-        [key: string]: string;
-    };
+    shardSyncStatus: Record<string, unknown>;
     syncBlockHash: CryptoHash;
     /** Format: uint64 */
     syncBlockHeight: number;
@@ -488,9 +498,9 @@ export type ChunkDistributionUris = {
 };
 export type ChunkHeaderView = {
     balanceBurnt: string;
-    bandwidthRequests?: BandwidthRequests | null;
+    bandwidthRequests?: BandwidthRequests | (null);
     chunkHash: CryptoHash;
-    congestionInfo?: CongestionInfoView | null;
+    congestionInfo?: CongestionInfoView | (null);
     /** Format: uint64 */
     encodedLength: number;
     encodedMerkleRoot: CryptoHash;
@@ -531,22 +541,22 @@ export type CongestionControlConfigView = {
      * Format: uint64
      * @description How much gas the chosen allowed shard can send to a 100% congested shard.
      *
-     *      See [`CongestionControlConfig`] for more details.
+     *     See [`CongestionControlConfig`] for more details.
      */
     allowedShardOutgoingGas: number;
     /**
      * Format: uint64
      * @description How much gas in delayed receipts of a shard is 100% incoming congestion.
      *
-     *      See [`CongestionControlConfig`] for more details.
+     *     See [`CongestionControlConfig`] for more details.
      */
     maxCongestionIncomingGas: number;
     /**
      * Format: uint64
      * @description How much memory space of all delayed and buffered receipts in a shard is
-     *      considered 100% congested.
+     *     considered 100% congested.
      *
-     *      See [`CongestionControlConfig`] for more details.
+     *     See [`CongestionControlConfig`] for more details.
      */
     maxCongestionMemoryConsumption: number;
     /**
@@ -558,59 +568,59 @@ export type CongestionControlConfigView = {
      * Format: uint64
      * @description How much gas in outgoing buffered receipts of a shard is 100% congested.
      *
-     *      Outgoing congestion contributes to overall congestion, which reduces how
-     *      much other shards are allowed to forward to this shard.
+     *     Outgoing congestion contributes to overall congestion, which reduces how
+     *     much other shards are allowed to forward to this shard.
      */
     maxCongestionOutgoingGas: number;
     /**
      * Format: uint64
      * @description The maximum amount of gas attached to receipts a shard can forward to
-     *      another shard per chunk.
+     *     another shard per chunk.
      *
-     *      See [`CongestionControlConfig`] for more details.
+     *     See [`CongestionControlConfig`] for more details.
      */
     maxOutgoingGas: number;
     /**
      * Format: uint64
      * @description The maximum amount of gas in a chunk spent on converting new transactions to
-     *      receipts.
+     *     receipts.
      *
-     *      See [`CongestionControlConfig`] for more details.
+     *     See [`CongestionControlConfig`] for more details.
      */
     maxTxGas: number;
     /**
      * Format: uint64
      * @description The minimum gas each shard can send to a shard that is not fully congested.
      *
-     *      See [`CongestionControlConfig`] for more details.
+     *     See [`CongestionControlConfig`] for more details.
      */
     minOutgoingGas: number;
     /**
      * Format: uint64
      * @description The minimum amount of gas in a chunk spent on converting new transactions
-     *      to receipts, as long as the receiving shard is not congested.
+     *     to receipts, as long as the receiving shard is not congested.
      *
-     *      See [`CongestionControlConfig`] for more details.
+     *     See [`CongestionControlConfig`] for more details.
      */
     minTxGas: number;
     /**
      * Format: uint64
      * @description Large size limit for outgoing receipts to a shard, used when it's safe
-     *      to send a lot of receipts without making the state witness too large.
-     *      It limits the total sum of outgoing receipts, not individual receipts.
+     *     to send a lot of receipts without making the state witness too large.
+     *     It limits the total sum of outgoing receipts, not individual receipts.
      */
     outgoingReceiptsBigSizeLimit: number;
     /**
      * Format: uint64
      * @description The standard size limit for outgoing receipts aimed at a single shard.
-     *      This limit is pretty small to keep the size of source_receipt_proofs under control.
-     *      It limits the total sum of outgoing receipts, not individual receipts.
+     *     This limit is pretty small to keep the size of source_receipt_proofs under control.
+     *     It limits the total sum of outgoing receipts, not individual receipts.
      */
     outgoingReceiptsUsualSizeLimit: number;
     /**
      * Format: double
      * @description How much congestion a shard can tolerate before it stops all shards from
-     *      accepting new transactions with the receiver set to the congested shard.
+     *     accepting new transactions with the receiver set to the congested shard.
      */
     rejectTxCongestionThreshold: number;
 };
@@ -628,6 +638,7 @@ export type ContractCodeView = {
 };
 export type CostGasUsed = {
     cost: string;
+    /** @description Either ACTION_COST or WASM_HOST_COST. */
     costCategory: string;
     gasUsed: string;
 };
@@ -645,7 +656,7 @@ export type CurrentEpochValidatorInfo = {
     numExpectedChunks: number;
     /**
      * @description Number of chunks this validator was expected to produce in each shard.
-     *      Each entry in the array corresponds to the shard in the `shards_produced` array.
+     *     Each entry in the array corresponds to the shard in the `shards_produced` array.
      * @default []
      */
     numExpectedChunksPerShard: number[];
@@ -656,7 +667,7 @@ export type CurrentEpochValidatorInfo = {
     numExpectedEndorsements: number;
     /**
      * @description Number of chunks this validator was expected to validate and endorse in each shard.
-     *      Each entry in the array corresponds to the shard in the `shards_endorsed` array.
+     *     Each entry in the array corresponds to the shard in the `shards_endorsed` array.
      * @default []
      */
     numExpectedEndorsementsPerShard: number[];
@@ -688,17 +699,17 @@ export type CurrentEpochValidatorInfo = {
 };
 export type DataReceiptCreationConfigView = {
     /** @description Base cost of creating a data receipt.
-     *      Both `send` and `exec` costs are burned when a new receipt has input dependencies. The gas
-     *      is charged for each input dependency. The dependencies are specified when a receipt is
-     *      created using `promise_then` and `promise_batch_then`.
-     *      NOTE: Any receipt with output dependencies will produce data receipts. Even if it fails.
-     *      Even if the last action is not a function call (in case of success it will return empty
-     *      value). */
+     *     Both `send` and `exec` costs are burned when a new receipt has input dependencies. The gas
+     *     is charged for each input dependency. The dependencies are specified when a receipt is
+     *     created using `promise_then` and `promise_batch_then`.
+     *     NOTE: Any receipt with output dependencies will produce data receipts. Even if it fails.
+     *     Even if the last action is not a function call (in case of success it will return empty
+     *     value). */
     baseCost: Fee;
     /** @description Additional cost per byte sent.
-     *      Both `send` and `exec` costs are burned when a function call finishes execution and returns
-     *      `N` bytes of data to every output dependency. For each output dependency the cost is
-     *      `(send(sir) + exec()) * N`. */
+     *     Both `send` and `exec` costs are burned when a function call finishes execution and returns
+     *     `N` bytes of data to every output dependency. For each output dependency the cost is
+     *     `(send(sir) + exec()) * N`. */
     costPerByte: Fee;
 };
 export type DataReceiverView = {
@@ -708,8 +719,8 @@ export type DataReceiverView = {
 export type DelegateAction = {
     /** @description List of actions to be executed.
      *
-     *      With the meta transactions MVP defined in NEP-366, nested
-     *      DelegateActions are not allowed. A separate type is used to enforce it. */
+     *     With the meta transactions MVP defined in NEP-366, nested
+     *     DelegateActions are not allowed. A separate type is used to enforce it. */
     actions: NonDelegateAction[];
     /**
      * Format: uint64
@@ -719,8 +730,8 @@ export type DelegateAction = {
     /**
      * Format: uint64
      * @description Nonce to ensure that the same delegate action is not sent twice by a
-     *      relayer and should match for given account's `public_key`.
-     *      After this action is processed it will increment.
+     *     relayer and should match for given account's `public_key`.
+     *     After this action is processed it will increment.
      */
     nonce: number;
     /** @description Public key used to sign this delegated action. */
@@ -760,12 +771,12 @@ export type DumpConfig = {
     /** @description Location of a json file with credentials allowing write access to the bucket. */
     credentialsFile?: string | null;
     /** @description How often to check if a new epoch has started.
-     *      Feel free to set to `None`, defaults are sensible. */
-    iterationDelay?: DurationAsStdSchemaProvider | null;
+     *     Feel free to set to `None`, defaults are sensible. */
+    iterationDelay?: DurationAsStdSchemaProvider | (null);
     /** @description Specifies where to write the obtained state parts. */
     location: ExternalStorageLocation;
     /** @description Use in case a node that dumps state to the external storage
-     *      gets in trouble. */
+     *     gets in trouble. */
     restartDumpForShards?: ShardId[] | null;
 };
 export type DurationAsStdSchemaProvider = {
@@ -778,31 +789,31 @@ export type EpochId = CryptoHash;
 export type EpochSyncConfig = {
     /**
      * @description If true, even if the node started from genesis, it will not perform epoch sync.
-     *      There should be no reason to set this flag in production, because on both mainnet
-     *      and testnet it would be infeasible to catch up from genesis without epoch sync.
+     *     There should be no reason to set this flag in production, because on both mainnet
+     *     and testnet it would be infeasible to catch up from genesis without epoch sync.
      * @default false
      */
     disableEpochSyncForBootstrapping: boolean;
     /**
      * Format: uint64
      * @description This serves as two purposes: (1) the node will not epoch sync and instead resort to
-     *      header sync, if the genesis block is within this many blocks from the current block;
-     *      (2) the node will reject an epoch sync proof if the provided proof is for an epoch
-     *      that is more than this many blocks behind the current block.
+     *     header sync, if the genesis block is within this many blocks from the current block;
+     *     (2) the node will reject an epoch sync proof if the provided proof is for an epoch
+     *     that is more than this many blocks behind the current block.
      */
     epochSyncHorizon: number;
     /**
      * @description If true, the node will ignore epoch sync requests from the network. It is strongly
-     *      recommended not to set this flag, because it will prevent other nodes from
-     *      bootstrapping. This flag is only included as a kill-switch and may be removed in a
-     *      future release. Please note that epoch sync requests are heavily rate limited and
-     *      cached, and therefore should not affect the performance of the node or introduce
-     *      any non-negligible increase in network traffic.
+     *     recommended not to set this flag, because it will prevent other nodes from
+     *     bootstrapping. This flag is only included as a kill-switch and may be removed in a
+     *     future release. Please note that epoch sync requests are heavily rate limited and
+     *     cached, and therefore should not affect the performance of the node or introduce
+     *     any non-negligible increase in network traffic.
      * @default false
      */
     ignoreEpochSyncNetworkRequests: boolean;
     /** @description Timeout for epoch sync requests. The node will continue retrying indefinitely even
-     *      if this timeout is exceeded. */
+     *     if this timeout is exceeded. */
     timeoutForEpochSync: DurationAsStdSchemaProvider;
 };
 export type ExecutionMetadataView = {
@@ -812,7 +823,7 @@ export type ExecutionMetadataView = {
 };
 export type ExecutionOutcomeView = {
     /** @description The id of the account on which the execution happens. For transaction this is signer_id,
-     *      for receipt this is receiver_id. */
+     *     for receipt this is receiver_id. */
     executorId: AccountId;
     /**
      * Format: uint64
@@ -833,10 +844,10 @@ export type ExecutionOutcomeView = {
     /** @description Execution status. Contains the result in case of successful execution. */
     status: ExecutionStatusView;
     /** @description The amount of tokens burnt corresponding to the burnt gas amount.
-     *      This value doesn't always equal to the `gas_burnt` multiplied by the gas price, because
-     *      the prepaid gas price might be lower than the actual gas price and it creates a deficit.
-     *      `tokens_burnt` also contains the penalty subtracted from refunds, while
-     *      `gas_burnt` only contains the gas that we actually burn for the execution. */
+     *     This value doesn't always equal to the `gas_burnt` multiplied by the gas price, because
+     *     the prepaid gas price might be lower than the actual gas price and it creates a deficit.
+     *     `tokens_burnt` also contains the penalty subtracted from refunds, while
+     *     `gas_burnt` only contains the gas that we actually burn for the execution. */
     tokensBurnt: string;
 };
 export type ExecutionOutcomeWithIdView = {
@@ -1233,7 +1244,7 @@ export type ExternalStorageConfig = {
     /**
      * Format: uint64
      * @description The number of attempts the node will make to obtain a part from peers in
-     *      the network before it fetches from external storage.
+     *     the network before it fetches from external storage.
      * @default 3
      */
     externalStorageFallbackThreshold: number;
@@ -1242,14 +1253,14 @@ export type ExternalStorageConfig = {
     /**
      * Format: uint8
      * @description When fetching state parts from external storage, throttle fetch requests
-     *      to this many concurrent requests.
+     *     to this many concurrent requests.
      * @default 25
      */
     numConcurrentRequests: number;
     /**
      * Format: uint8
      * @description During catchup, the node will use a different number of concurrent requests
-     *      to reduce the performance impact of state sync.
+     *     to reduce the performance impact of state sync.
      * @default 5
      */
     numConcurrentRequestsDuringCatchup: number;
@@ -1284,7 +1295,7 @@ export type Fee = {
     /**
      * Format: uint64
      * @description Fee for sending an object from the sender to itself, guaranteeing that it does not leave
-     *      the shard.
+     *     the shard.
      */
     sendSir: number;
 };
@@ -1292,10 +1303,10 @@ export type FinalExecutionOutcomeView = {
     /** @description The execution outcome of receipts. */
     receiptsOutcome: ExecutionOutcomeWithIdView[];
     /** @description Execution status defined by chain.rs:get_final_transaction_result
-     *      FinalExecutionStatus::NotStarted - the tx is not converted to the receipt yet
-     *      FinalExecutionStatus::Started - we have at least 1 receipt, but the first leaf receipt_id (using dfs) hasn't finished the execution
-     *      FinalExecutionStatus::Failure - the result of the first leaf receipt_id
-     *      FinalExecutionStatus::SuccessValue - the result of the first leaf receipt_id */
+     *     FinalExecutionStatus::NotStarted - the tx is not converted to the receipt yet
+     *     FinalExecutionStatus::Started - we have at least 1 receipt, but the first leaf receipt_id (using dfs) hasn't finished the execution
+     *     FinalExecutionStatus::Failure - the result of the first leaf receipt_id
+     *     FinalExecutionStatus::SuccessValue - the result of the first leaf receipt_id */
     status: FinalExecutionStatus;
     /** @description Signed Transaction */
     transaction: SignedTransactionView;
@@ -1308,10 +1319,10 @@ export type FinalExecutionOutcomeWithReceiptView = {
     /** @description The execution outcome of receipts. */
     receiptsOutcome: ExecutionOutcomeWithIdView[];
     /** @description Execution status defined by chain.rs:get_final_transaction_result
-     *      FinalExecutionStatus::NotStarted - the tx is not converted to the receipt yet
-     *      FinalExecutionStatus::Started - we have at least 1 receipt, but the first leaf receipt_id (using dfs) hasn't finished the execution
-     *      FinalExecutionStatus::Failure - the result of the first leaf receipt_id
-     *      FinalExecutionStatus::SuccessValue - the result of the first leaf receipt_id */
+     *     FinalExecutionStatus::NotStarted - the tx is not converted to the receipt yet
+     *     FinalExecutionStatus::Started - we have at least 1 receipt, but the first leaf receipt_id (using dfs) hasn't finished the execution
+     *     FinalExecutionStatus::Failure - the result of the first leaf receipt_id
+     *     FinalExecutionStatus::SuccessValue - the result of the first leaf receipt_id */
     status: FinalExecutionStatus;
     /** @description Signed Transaction */
     transaction: SignedTransactionView;
@@ -1324,6 +1335,7 @@ export type FinalExecutionStatus = "NotStarted" | "Started" | {
     SuccessValue: string;
 };
 export type Finality = "optimistic" | "near-final" | "final";
+export type FunctionArgs = string;
 export type FunctionCallAction = {
     args: string;
     deposit: string;
@@ -1348,15 +1360,15 @@ export type FunctionCallError = ("WasmUnknownError" | "_EVMError") | {
 };
 export type FunctionCallPermission = {
     /** @description Allowance is a balance limit to use by this access key to pay for function call gas and
-     *      transaction fees. When this access key is used, both account balance and the allowance is
-     *      decreased by the same value.
-     *      `None` means unlimited allowance.
-     *      NOTE: To change or increase the allowance, the old access key needs to be deleted and a new
-     *      access key should be created. */
+     *     transaction fees. When this access key is used, both account balance and the allowance is
+     *     decreased by the same value.
+     *     `None` means unlimited allowance.
+     *     NOTE: To change or increase the allowance, the old access key needs to be deleted and a new
+     *     access key should be created. */
     allowance?: string | null;
     /** @description A list of method names that can be used. The access key only allows transactions with the
-     *      function call of one of the given method names.
-     *      Empty list means any method name can be used. */
+     *     function call of one of the given method names.
+     *     Empty list means any method name can be used. */
     methodNames: string[];
     /** @description The access key only allows transactions with the given receiver's account id. */
     receiverId: string;
@@ -1372,14 +1384,14 @@ export type GCConfig = {
     /**
      * Format: uint64
      * @description Maximum number of blocks to garbage collect at every garbage collection
-     *      call.
+     *     call.
      * @default 2
      */
     gcBlocksLimit: number;
     /**
      * Format: uint64
      * @description Maximum number of height to go through at each garbage collection step
-     *      when cleaning forks during garbage collection.
+     *     when cleaning forks during garbage collection.
      * @default 100
      */
     gcForkCleanStep: number;
@@ -1407,13 +1419,13 @@ export type GenesisConfig = {
      */
     blockProducerKickoutThreshold: number;
     /** @description ID of the blockchain. This must be unique for every blockchain.
-     *      If your testnet blockchains do not have unique chain IDs, you will have a bad time. */
+     *     If your testnet blockchains do not have unique chain IDs, you will have a bad time. */
     chainId: string;
     /**
      * Format: uint64
      * @description Limits the number of shard changes in chunk producer assignments,
-     *      if algorithm is able to choose assignment with better balance of
-     *      number of chunk producers for shards.
+     *     if algorithm is able to choose assignment with better balance of
+     *     number of chunk producers for shards.
      * @default 5
      */
     chunkProducerAssignmentChangesLimit: number;
@@ -1473,7 +1485,7 @@ export type GenesisConfig = {
     minimumStakeDivisor: number;
     /**
      * @description The lowest ratio s/s_total any block producer can have.
-     *      See <https://github.com/near/NEPs/pull/167> for details
+     *     See <https://github.com/near/NEPs/pull/167> for details
      * @default [
      *       1,
      *       6250
@@ -1492,8 +1504,8 @@ export type GenesisConfig = {
      */
     numBlockProducerSeats: number;
     /** @description Defines number of shards and number of block producer seats per each shard at genesis.
-     *      Note: not used with protocol_feature_chunk_only_producers -- replaced by minimum_validators_per_shard
-     *      Note: not used before as all block producers produce chunks for all shards */
+     *     Note: not used with protocol_feature_chunk_only_producers -- replaced by minimum_validators_per_shard
+     *     Note: not used before as all block producers produce chunks for all shards */
     numBlockProducerSeatsPerShard: number[];
     /**
      * Format: uint64
@@ -1509,7 +1521,7 @@ export type GenesisConfig = {
     /**
      * Format: uint64
      * @description Number of chunk producers.
-     *      Don't mess it up with chunk-only producers feature which is deprecated.
+     *     Don't mess it up with chunk-only producers feature which is deprecated.
      * @default 100
      */
     numChunkProducerSeats: number;
@@ -1574,9 +1586,9 @@ export type GenesisConfig = {
     shardLayout: ShardLayout;
     /**
      * @description If true, shuffle the chunk producers across shards. In other words, if
-     *      the shard assignments were `[S_0, S_1, S_2, S_3]` where `S_i` represents
-     *      the set of chunk producers for shard `i`, if this flag were true, the
-     *      shard assignments might become, for example, `[S_2, S_0, S_3, S_1]`.
+     *     the shard assignments were `[S_0, S_1, S_2, S_3]` where `S_i` represents
+     *     the set of chunk producers for shard `i`, if this flag were true, the
+     *     shard assignments might become, for example, `[S_2, S_0, S_3, S_1]`.
      * @default false
      */
     shuffleShardAssignmentForChunkProducers: boolean;
@@ -1595,15 +1607,15 @@ export type GenesisConfig = {
     transactionValidityPeriod: number;
     /**
      * @description This is only for test purposes. We hard code some configs for mainnet and testnet
-     *      in AllEpochConfig, and we want to have a way to test that code path. This flag is for that.
-     *      If set to true, the node will use the same config override path as mainnet and testnet.
+     *     in AllEpochConfig, and we want to have a way to test that code path. This flag is for that.
+     *     If set to true, the node will use the same config override path as mainnet and testnet.
      * @default false
      */
     useProductionConfig: boolean;
     /** @description List of initial validators. */
     validators: AccountInfo[];
 };
-export type GenesisConfigRequest = Record<string, unknown>;
+export type GenesisConfigRequest = null;
 export type GlobalContractDeployMode = "CodeHash" | "AccountId";
 export type GlobalContractIdentifier = {
     CodeHash: CryptoHash;
@@ -2052,7 +2064,7 @@ export type JsonRpcResponse_for_Nullable_RpcHealthResponse_and_RpcError = {
     id: string;
     jsonrpc: string;
 } & ({
-    result: RpcHealthResponse | null;
+    result: RpcHealthResponse | (null);
 } | {
     error: RpcError;
 });
@@ -2213,14 +2225,14 @@ export type LightClientBlockLiteView = {
 export type LimitConfig = {
     /**
      * @description Whether to enforce account_id well-formed-ness where it wasn't enforced
-     *      historically.
+     *     historically.
      * @default 0
      */
     accountIdValidityRulesVersion: AccountIdValidityRulesVersion;
     /**
      * Format: uint32
      * @description The initial number of memory pages.
-     *      NOTE: It's not a limiter itself, but it's a value we use for initial_memory_pages.
+     *     NOTE: It's not a limiter itself, but it's a value we use for initial_memory_pages.
      */
     initialMemoryPages: number;
     /**
@@ -2281,7 +2293,7 @@ export type LimitConfig = {
     /**
      * Format: uint64
      * @description Max total length of all method names (including terminating character) for a function call
-     *      permission access key.
+     *     permission access key.
      */
     maxNumberBytesMethodNames: number;
     /**
@@ -2298,9 +2310,9 @@ export type LimitConfig = {
      * Format: uint64
      * @description Maximum number of registers that can be used simultaneously.
      *
-     *      Note that due to an implementation quirk [read: a bug] in VMLogic, if we
-     *      have this number of registers, no subsequent writes to the registers
-     *      will succeed even if they replace an existing register.
+     *     Note that due to an implementation quirk [read: a bug] in VMLogic, if we
+     *     have this number of registers, no subsequent writes to the registers
+     *     will succeed even if they replace an existing register.
      */
     maxNumberRegisters: number;
     /**
@@ -2322,8 +2334,8 @@ export type LimitConfig = {
      * Format: uint32
      * @description How tall the stack is allowed to grow?
      *
-     *      See <https://wiki.parity.io/WebAssembly-StackHeight> to find out how the stack frame cost
-     *      is calculated.
+     *     See <https://wiki.parity.io/WebAssembly-StackHeight> to find out how the stack frame cost
+     *     is calculated.
      */
     maxStackHeight: number;
     /**
@@ -2394,10 +2406,10 @@ export type NextEpochValidatorInfo = {
 export type NonDelegateAction = Action;
 export type PeerId = PublicKey;
 export type PeerInfoView = {
-    accountId?: AccountId | null;
+    accountId?: AccountId | (null);
     addr: string;
     archival: boolean;
-    blockHash?: CryptoHash | null;
+    blockHash?: CryptoHash | (null);
     /** Format: uint64 */
     connectionEstablishedTimeMillis: number;
     /** Format: uint64 */
@@ -2514,6 +2526,7 @@ export type RpcBlockRequest = {
     syncCheckpoint: SyncCheckpoint;
 };
 export type RpcBlockResponse = {
+    /** @description The AccountId of the author of the Block */
     author: AccountId;
     chunks: ChunkHeaderView[];
     header: BlockHeaderView;
@@ -2530,7 +2543,7 @@ export type RpcChunkResponse = {
     receipts: ReceiptView[];
     transactions: SignedTransactionView[];
 };
-export type RpcClientConfigRequest = Record<string, unknown>;
+export type RpcClientConfigRequest = null;
 export type RpcClientConfigResponse = {
     /** @description Not clear old data, set `true` for archive nodes. */
     archive: boolean;
@@ -2551,10 +2564,10 @@ export type RpcClientConfigResponse = {
     /** @description Chain id for status. */
     chainId: string;
     /** @description Optional config for the Chunk Distribution Network feature.
-     *      If set to `None` then this node does not participate in the Chunk Distribution Network.
-     *      Nodes not participating will still function fine, but possibly with higher
-     *      latency due to the need of requesting chunks over the peer-to-peer network. */
-    chunkDistributionNetwork?: ChunkDistributionNetworkConfig | null;
+     *     If set to `None` then this node does not participate in the Chunk Distribution Network.
+     *     Nodes not participating will still function fine, but possibly with higher
+     *     latency due to the need of requesting chunks over the peer-to-peer network. */
+    chunkDistributionNetwork?: ChunkDistributionNetworkConfig | (null);
     /** @description Time between checking to re-request chunks. */
     chunkRequestRetryPeriod: number[];
     /** @description Multiplier for the wait time for all chunks to be received. */
@@ -2602,8 +2615,8 @@ export type RpcClientConfigResponse = {
     /**
      * Format: uint64
      * @description Max burnt gas per view method.  If present, overrides value stored in
-     *      genesis file.  The value only affects the RPCs without influencing the
-     *      protocol thus changing it per-node doesn’t affect the blockchain.
+     *     genesis file.  The value only affects the RPCs without influencing the
+     *     protocol thus changing it per-node doesn’t affect the blockchain.
      */
     maxGasBurntView?: number | null;
     /** @description Minimum duration before producing block. */
@@ -2622,21 +2635,21 @@ export type RpcClientConfigResponse = {
      * Format: uint64
      * @description Maximum size of state witnesses in the OrphanStateWitnessPool.
      *
-     *      We keep only orphan witnesses which are smaller than this size.
-     *      This limits the maximum memory usage of OrphanStateWitnessPool.
+     *     We keep only orphan witnesses which are smaller than this size.
+     *     This limits the maximum memory usage of OrphanStateWitnessPool.
      */
     orphanStateWitnessMaxSize: number;
     /**
      * Format: uint
      * @description OrphanStateWitnessPool keeps instances of ChunkStateWitness which can't be processed
-     *      because the previous block isn't available. The witnesses wait in the pool until the
-     *      required block appears. This variable controls how many witnesses can be stored in the pool.
+     *     because the previous block isn't available. The witnesses wait in the pool until the
+     *     required block appears. This variable controls how many witnesses can be stored in the pool.
      */
     orphanStateWitnessPoolSize: number;
     /** @description Limit the time of adding transactions to a chunk.
-     *      A node produces a chunk by adding transactions from the transaction pool until
-     *      some limit is reached. This time limit ensures that adding transactions won't take
-     *      longer than the specified duration, which helps to produce the chunk quickly. */
+     *     A node produces a chunk by adding transactions from the transaction pool until
+     *     some limit is reached. This time limit ensures that adding transactions won't take
+     *     longer than the specified duration, which helps to produce the chunk quickly. */
     produceChunkAddTransactionsTimeLimit: string;
     /** @description Produce empty blocks, use `false` for testing. */
     produceEmptyBlocks: boolean;
@@ -2644,17 +2657,17 @@ export type RpcClientConfigResponse = {
     /** @description Listening rpc port for status. */
     rpcAddr?: string | null;
     /** @description Save observed instances of invalid ChunkStateWitness to the database in DBCol::InvalidChunkStateWitnesses.
-     *      Saving invalid witnesses is useful for analysis and debugging.
-     *      This option can cause extra load on the database and is not recommended for production use. */
+     *     Saving invalid witnesses is useful for analysis and debugging.
+     *     This option can cause extra load on the database and is not recommended for production use. */
     saveInvalidWitnesses: boolean;
     /** @description Save observed instances of ChunkStateWitness to the database in DBCol::LatestChunkStateWitnesses.
-     *      Saving the latest witnesses is useful for analysis and debugging.
-     *      This option can cause extra load on the database and is not recommended for production use. */
+     *     Saving the latest witnesses is useful for analysis and debugging.
+     *     This option can cause extra load on the database and is not recommended for production use. */
     saveLatestWitnesses: boolean;
     /** @description save_trie_changes should be set to true iff
-     *      - archive if false - non-archival nodes need trie changes to perform garbage collection
-     *      - archive is true, cold_store is configured and migration to split_storage is finished - node
-     *      working in split storage mode needs trie changes in order to do garbage collection on hot. */
+     *     - archive if false - non-archival nodes need trie changes to perform garbage collection
+     *     - archive is true, cold_store is configured and migration to split_storage is finished - node
+     *     working in split storage mode needs trie changes in order to do garbage collection on hot. */
     saveTrieChanges: boolean;
     /** @description Whether to persist transaction outcomes to disk or not. */
     saveTxOutcomes: boolean;
@@ -2663,7 +2676,7 @@ export type RpcClientConfigResponse = {
     /** @description Options for syncing state. */
     stateSync: StateSyncConfig;
     /** @description Whether to use the State Sync mechanism.
-     *      If disabled, the node will do Block Sync instead of State Sync. */
+     *     If disabled, the node will do Block Sync instead of State Sync. */
     stateSyncEnabled: boolean;
     /** @description Additional waiting period after a failed request to external storage */
     stateSyncExternalBackoff: number[];
@@ -2691,7 +2704,7 @@ export type RpcClientConfigResponse = {
     /**
      * Format: uint64
      * @description Limit of the size of per-shard transaction pool measured in bytes. If not set, the size
-     *      will be unbounded.
+     *     will be unbounded.
      */
     transactionPoolSizeLimit?: number | null;
     /** Format: uint */
@@ -2706,17 +2719,22 @@ export type RpcClientConfigResponse = {
     /**
      * Format: uint64
      * @description If the node is not a chunk producer within that many blocks, then route
-     *      to upcoming chunk producers.
+     *     to upcoming chunk producers.
      */
     txRoutingHeightHorizon: number;
     /** @description Version of the binary. */
     version: Version;
     /**
      * Format: uint
+     * @description Maximum number of state requests served per `view_client_throttle_period`
+     */
+    viewClientNumStateRequestsPerThrottlePeriod: number;
+    /**
+     * Format: uint
      * @description Number of threads for ViewClientActor pool.
      */
     viewClientThreads: number;
-    /** @description Number of seconds between state requests for view client. */
+    /** @description Throttling window for state requests (headers and parts). */
     viewClientThrottlePeriod: number[];
 };
 export type RpcCongestionLevelRequest = {
@@ -2755,13 +2773,13 @@ export type RpcError = {
     name: "INTERNAL_ERROR";
 });
 export type RpcGasPriceRequest = {
-    blockId?: BlockId | null;
+    blockId?: BlockId | (null);
 };
 export type RpcGasPriceResponse = {
     gasPrice: string;
 };
-export type RpcHealthRequest = Record<string, unknown>;
-export type RpcHealthResponse = Record<string, unknown>;
+export type RpcHealthRequest = null;
+export type RpcHealthResponse = null;
 export type RpcKnownProducer = {
     accountId: AccountId;
     addr?: string | null;
@@ -2798,7 +2816,9 @@ export type RpcLightClientNextBlockRequest = {
     lastBlockHash: CryptoHash;
 };
 export type RpcLightClientNextBlockResponse = {
-    approvalsAfterNext?: (Signature | null)[];
+    approvalsAfterNext?: (Signature | (null))[];
+    /** @description Inner part of the block header that gets hashed, split into two parts, one that is sent
+     *        to light clients, and the rest */
     innerLite?: BlockHeaderInnerLiteView;
     innerRestHash?: CryptoHash;
     nextBlockInnerHash?: CryptoHash;
@@ -2808,7 +2828,7 @@ export type RpcLightClientNextBlockResponse = {
 export type RpcMaintenanceWindowsRequest = {
     accountId: AccountId;
 };
-export type RpcNetworkInfoRequest = Record<string, unknown>;
+export type RpcNetworkInfoRequest = null;
 export type RpcNetworkInfoResponse = {
     activePeers: RpcPeerInfo[];
     /** @description Accounts of known block and chunk producers from routing table. */
@@ -2823,7 +2843,7 @@ export type RpcNetworkInfoResponse = {
     sentBytesPerSec: number;
 };
 export type RpcPeerInfo = {
-    accountId?: AccountId | null;
+    accountId?: AccountId | (null);
     addr?: string | null;
     id: PeerId;
 };
@@ -2843,7 +2863,7 @@ export type RpcProtocolConfigResponse = {
      */
     blockProducerKickoutThreshold: number;
     /** @description ID of the blockchain. This must be unique for every blockchain.
-     *      If your testnet blockchains do not have unique chain IDs, you will have a bad time. */
+     *     If your testnet blockchains do not have unique chain IDs, you will have a bad time. */
     chainId: string;
     /**
      * Format: uint8
@@ -2898,7 +2918,7 @@ export type RpcProtocolConfigResponse = {
      */
     minimumStakeDivisor: number;
     /** @description The lowest ratio s/s_total any block producer can have.
-     *      See <https://github.com/near/NEPs/pull/167> for details */
+     *     See <https://github.com/near/NEPs/pull/167> for details */
     minimumStakeRatio: number[];
     /**
      * Format: uint64
@@ -2937,9 +2957,9 @@ export type RpcProtocolConfigResponse = {
     /** @description Layout information regarding how to split accounts to shards */
     shardLayout: ShardLayout;
     /** @description If true, shuffle the chunk producers across shards. In other words, if
-     *      the shard assignments were `[S_0, S_1, S_2, S_3]` where `S_i` represents
-     *      the set of chunk producers for shard `i`, if this flag were true, the
-     *      shard assignments might become, for example, `[S_2, S_0, S_3, S_1]`. */
+     *     the shard assignments were `[S_0, S_1, S_2, S_3]` where `S_i` represents
+     *     the set of chunk producers for shard `i`, if this flag were true, the
+     *     shard assignments might become, for example, `[S_2, S_0, S_3, S_1]`. */
     shuffleShardAssignmentForChunkProducers: boolean;
     /**
      * Format: uint64
@@ -2954,46 +2974,160 @@ export type RpcProtocolConfigResponse = {
 };
 export type RpcQueryRequest = ({
     blockId: BlockId;
-} | {
-    finality: Finality;
-} | {
-    syncCheckpoint: SyncCheckpoint;
-}) & ({
+} & {
     accountId: AccountId;
     /** @enum {string} */
     requestType: "view_account";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountId: AccountId;
     /** @enum {string} */
     requestType: "view_code";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountId: AccountId;
     includeProof?: boolean;
-    /** Format: bytes */
-    prefixBase64: string;
+    prefixBase64: StoreKey;
     /** @enum {string} */
     requestType: "view_state";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountId: AccountId;
     publicKey: PublicKey;
     /** @enum {string} */
     requestType: "view_access_key";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountId: AccountId;
     /** @enum {string} */
     requestType: "view_access_key_list";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountId: AccountId;
-    /** Format: bytes */
-    argsBase64: string;
+    argsBase64: FunctionArgs;
     methodName: string;
     /** @enum {string} */
     requestType: "call_function";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     codeHash: CryptoHash;
     /** @enum {string} */
     requestType: "view_global_contract_code";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_global_contract_code_by_account_id";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_account";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_code";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    includeProof?: boolean;
+    prefixBase64: StoreKey;
+    /** @enum {string} */
+    requestType: "view_state";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    publicKey: PublicKey;
+    /** @enum {string} */
+    requestType: "view_access_key";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_access_key_list";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    argsBase64: FunctionArgs;
+    methodName: string;
+    /** @enum {string} */
+    requestType: "call_function";
+}) | ({
+    finality: Finality;
+} & {
+    codeHash: CryptoHash;
+    /** @enum {string} */
+    requestType: "view_global_contract_code";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_global_contract_code_by_account_id";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_account";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_code";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    includeProof?: boolean;
+    prefixBase64: StoreKey;
+    /** @enum {string} */
+    requestType: "view_state";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    publicKey: PublicKey;
+    /** @enum {string} */
+    requestType: "view_access_key";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_access_key_list";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    argsBase64: FunctionArgs;
+    methodName: string;
+    /** @enum {string} */
+    requestType: "call_function";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    codeHash: CryptoHash;
+    /** @enum {string} */
+    requestType: "view_global_contract_code";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
     accountId: AccountId;
     /** @enum {string} */
     requestType: "view_global_contract_code_by_account_id";
@@ -3047,40 +3181,133 @@ export type RpcSplitStorageInfoResponse = {
 };
 export type RpcStateChangesInBlockByTypeRequest = ({
     blockId: BlockId;
-} | {
-    finality: Finality;
-} | {
-    syncCheckpoint: SyncCheckpoint;
-}) & ({
+} & {
     accountIds: AccountId[];
     /** @enum {string} */
     changesType: "account_changes";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     /** @enum {string} */
     changesType: "single_access_key_changes";
     keys: AccountWithPublicKey[];
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     /** @enum {string} */
     changesType: "single_gas_key_changes";
     keys: AccountWithPublicKey[];
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountIds: AccountId[];
     /** @enum {string} */
     changesType: "all_access_key_changes";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountIds: AccountId[];
     /** @enum {string} */
     changesType: "all_gas_key_changes";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountIds: AccountId[];
     /** @enum {string} */
     changesType: "contract_code_changes";
-} | {
+}) | ({
+    blockId: BlockId;
+} & {
     accountIds: AccountId[];
     /** @enum {string} */
     changesType: "data_changes";
-    /** Format: bytes */
-    keyPrefixBase64: string;
+    keyPrefixBase64: StoreKey;
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "account_changes";
+}) | ({
+    finality: Finality;
+} & {
+    /** @enum {string} */
+    changesType: "single_access_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    finality: Finality;
+} & {
+    /** @enum {string} */
+    changesType: "single_gas_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_access_key_changes";
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_gas_key_changes";
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "contract_code_changes";
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "data_changes";
+    keyPrefixBase64: StoreKey;
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "account_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    /** @enum {string} */
+    changesType: "single_access_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    /** @enum {string} */
+    changesType: "single_gas_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_access_key_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_gas_key_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "contract_code_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "data_changes";
+    keyPrefixBase64: StoreKey;
 });
 export type RpcStateChangesInBlockByTypeResponse = {
     blockHash: CryptoHash;
@@ -3097,12 +3324,12 @@ export type RpcStateChangesInBlockResponse = {
     blockHash: CryptoHash;
     changes: StateChangeWithCauseView[];
 };
-export type RpcStatusRequest = Record<string, unknown>;
+export type RpcStatusRequest = null;
 export type RpcStatusResponse = {
     /** @description Unique chain id. */
     chainId: string;
     /** @description Information about last blocks, network, epoch and chain & chunk info. */
-    detailedDebugStatus?: DetailedDebugStatus | null;
+    detailedDebugStatus?: DetailedDebugStatus | (null);
     /** @description Genesis hash of the chain. */
     genesisHash: CryptoHash;
     /**
@@ -3111,7 +3338,7 @@ export type RpcStatusResponse = {
      */
     latestProtocolVersion: number;
     /** @description Deprecated; same as `validator_public_key` which you should use instead. */
-    nodeKey?: PublicKey | null;
+    nodeKey?: PublicKey | (null);
     /** @description Public key of the node. */
     nodePublicKey: PublicKey;
     /**
@@ -3129,9 +3356,9 @@ export type RpcStatusResponse = {
      */
     uptimeSec: number;
     /** @description Validator id of the node */
-    validatorAccountId?: AccountId | null;
+    validatorAccountId?: AccountId | (null);
     /** @description Public key of the validator. */
-    validatorPublicKey?: PublicKey | null;
+    validatorPublicKey?: PublicKey | (null);
     /** @description Current epoch validators. */
     validators: ValidatorInfo[];
     /** @description Binary version. */
@@ -3179,7 +3406,7 @@ export type RpcValidatorResponse = {
     prevEpochKickout: ValidatorKickoutView[];
 };
 export type RpcValidatorsOrderedRequest = {
-    blockId?: BlockId | null;
+    blockId?: BlockId | (null);
 };
 export type RuntimeConfigView = {
     /** @description Config that defines rules for account creation. */
@@ -3187,10 +3414,10 @@ export type RuntimeConfigView = {
     /** @description The configuration for congestion control. */
     congestionControlConfig: CongestionControlConfigView;
     /** @description Amount of yN per byte required to have on the account.  See
-     *      <https://nomicon.io/Economics/Economic#state-stake> for details. */
+     *     <https://nomicon.io/Economics/Economic#state-stake> for details. */
     storageAmountPerByte: string;
     /** @description Costs of different actions that need to be performed when sending and
-     *      processing transaction and receipts. */
+     *     processing transaction and receipts. */
     transactionCosts: RuntimeFeesConfigView;
     /** @description Config of wasm operations. */
     wasmConfig: VMConfigView;
@@ -3201,10 +3428,10 @@ export type RuntimeFeesConfigView = {
     /** @description Describes the cost of creating a certain action, `Action`. Includes all variants. */
     actionCreationConfig: ActionCreationConfigView;
     /** @description Describes the cost of creating an action receipt, `ActionReceipt`, excluding the actual cost
-     *      of actions.
-     *      - `send` cost is burned when a receipt is created using `promise_create` or
-     *          `promise_batch_create`
-     *      - `exec` cost is burned when the receipt is being executed. */
+     *     of actions.
+     *     - `send` cost is burned when a receipt is created using `promise_create` or
+     *         `promise_batch_create`
+     *     - `exec` cost is burned when the receipt is being executed. */
     actionReceiptCreationConfig: Fee;
     /** @description Fraction of the burnt gas to reward to the contract account for execution. */
     burntGasReward: number[];
@@ -3237,16 +3464,16 @@ export type ShardLayoutV0 = {
 };
 export type ShardLayoutV1 = {
     /** @description The boundary accounts are the accounts on boundaries between shards.
-     *      Each shard contains a range of accounts from one boundary account to
-     *      another - or the smallest or largest account possible. The total
-     *      number of shards is equal to the number of boundary accounts plus 1. */
+     *     Each shard contains a range of accounts from one boundary account to
+     *     another - or the smallest or largest account possible. The total
+     *     number of shards is equal to the number of boundary accounts plus 1. */
     boundaryAccounts: AccountId[];
     /** @description Maps shards from the last shard layout to shards that it splits to in this shard layout,
-     *      Useful for constructing states for the shards.
-     *      None for the genesis shard layout */
+     *     Useful for constructing states for the shards.
+     *     None for the genesis shard layout */
     shardsSplitMap?: ShardId[][] | null;
     /** @description Maps shard in this shard layout to their parent shard
-     *      Since shard_ids always range from 0 to num_shards - 1, we use vec instead of a hashmap */
+     *     Since shard_ids always range from 0 to num_shards - 1, we use vec instead of a hashmap */
     toParentShardMap?: ShardId[] | null;
     /**
      * Format: uint32
@@ -3373,8 +3600,8 @@ export type StateChangeWithCauseView = {
         accountId: AccountId;
         amount: string;
         codeHash: CryptoHash;
-        globalContractAccountId?: AccountId | null;
-        globalContractHash?: CryptoHash | null;
+        globalContractAccountId?: AccountId | (null);
+        globalContractHash?: CryptoHash | (null);
         locked: string;
         /**
          * Format: uint64
@@ -3437,18 +3664,15 @@ export type StateChangeWithCauseView = {
 } | {
     change: {
         accountId: AccountId;
-        /** Format: bytes */
-        keyBase64: string;
-        /** Format: bytes */
-        valueBase64: string;
+        keyBase64: StoreKey;
+        valueBase64: StoreValue;
     };
     /** @enum {string} */
     type: "data_update";
 } | {
     change: {
         accountId: AccountId;
-        /** Format: bytes */
-        keyBase64: string;
+        keyBase64: StoreKey;
     };
     /** @enum {string} */
     type: "data_deletion";
@@ -3467,23 +3691,21 @@ export type StateChangeWithCauseView = {
     type: "contract_code_deletion";
 });
 export type StateItem = {
-    /** Format: bytes */
-    key: string;
-    /** Format: bytes */
-    value: string;
+    key: StoreKey;
+    value: StoreValue;
 };
 export type StateSyncConfig = {
     concurrency?: SyncConcurrency;
     /** @description `none` value disables state dump to external storage. */
-    dump?: DumpConfig | null;
+    dump?: DumpConfig | (null);
     sync?: SyncConfig;
 };
 export type StatusSyncInfo = {
-    earliestBlockHash?: CryptoHash | null;
+    earliestBlockHash?: CryptoHash | (null);
     /** Format: uint64 */
     earliestBlockHeight?: number | null;
     earliestBlockTime?: string | null;
-    epochId?: EpochId | null;
+    epochId?: EpochId | (null);
     /** Format: uint64 */
     epochStartHeight?: number | null;
     latestBlockHash: CryptoHash;
@@ -3515,20 +3737,22 @@ export type StorageUsageConfigView = {
      */
     numExtraBytesRecord: number;
 };
+export type StoreKey = string;
+export type StoreValue = string;
 export type SyncCheckpoint = "genesis" | "earliest_available";
 export type SyncConcurrency = {
     /**
      * Format: uint8
      * @description Maximum number of "apply parts" tasks that can be performed in parallel.
-     *      This is a very disk-heavy task and therefore we set this to a low limit,
-     *      or else the rocksdb contention makes the whole server freeze up.
+     *     This is a very disk-heavy task and therefore we set this to a low limit,
+     *     or else the rocksdb contention makes the whole server freeze up.
      */
     apply: number;
     /**
      * Format: uint8
      * @description Maximum number of "apply parts" tasks that can be performed in parallel
-     *      during catchup. We set this to a very low value to avoid overloading the
-     *      node while it is still performing normal tasks.
+     *     during catchup. We set this to a very low value to avoid overloading the
+     *     node while it is still performing normal tasks.
      */
     applyDuringCatchup: number;
     /**
@@ -3539,8 +3763,8 @@ export type SyncConcurrency = {
     /**
      * Format: uint8
      * @description The maximum parallelism to use per shard. This is mostly for fairness, because
-     *      the actual rate limiting is done by the TaskTrackers, but this is useful for
-     *      balancing the shards a little.
+     *     the actual rate limiting is done by the TaskTrackers, but this is useful for
+     *     balancing the shards a little.
      */
     perShard: number;
 };
@@ -3653,8 +3877,8 @@ export type VMConfigView = {
     implicitAccountCreation: boolean;
     /** @description Describes limits for VM and Runtime.
      *
-     *      TODO: Consider changing this to `VMLimitConfigView` to avoid dependency
-     *      on runtime. */
+     *     TODO: Consider changing this to `VMLimitConfigView` to avoid dependency
+     *     on runtime. */
     limitConfig: LimitConfig;
     /** @description See [VMConfig::reftypes_bulk_memory](crate::vm::Config::reftypes_bulk_memory). */
     reftypesBulkMemory: boolean;
@@ -3677,14 +3901,14 @@ export type WitnessConfigView = {
      * Format: uint
      * @description Maximum size of transactions contained inside ChunkStateWitness.
      *
-     *      A witness contains transactions from both the previous chunk and the current one.
-     *      This parameter limits the sum of sizes of transactions from both of those chunks.
+     *     A witness contains transactions from both the previous chunk and the current one.
+     *     This parameter limits the sum of sizes of transactions from both of those chunks.
      */
     combinedTransactionsSizeLimit: number;
     /**
      * Format: uint64
      * @description Size limit for storage proof generated while executing receipts in a chunk.
-     *      After this limit is reached we defer execution of any new receipts.
+     *     After this limit is reached we defer execution of any new receipts.
      */
     mainStorageProofSizeSoftLimit: number;
     /**
@@ -3693,3 +3917,6 @@ export type WitnessConfigView = {
      */
     newTransactionsValidationStateSizeSoftLimit: number;
 };
+export type JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse = Range_of_uint64[];
+export type JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse = ValidatorStakeView[];
+export type JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse = RpcHealthResponse | (null);

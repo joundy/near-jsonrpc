@@ -14,8 +14,7 @@ export enum JsonRpcResponseType {
 }
 
 const OPEN_API_LINK =
-  // "https://raw.githubusercontent.com/near/nearcore/refs/heads/master/chain/jsonrpc/openapi/openapi.json";
-  "https://raw.githubusercontent.com/near/nearcore/refs/heads/master/chain/jsonrpc/openapi/progenitor.json";
+  "https://raw.githubusercontent.com/near/nearcore/refs/heads/master/chain/jsonrpc/openapi/openapi.json";
 
 export async function getOpenApiSpec() {
   const response = await fetch(OPEN_API_LINK);
@@ -48,9 +47,9 @@ export function removeQuotes(text: string) {
 export function getUniqueSchemas(methods: MethodType[]) {
   const uniqueNeededSchemasSet = new Set<string>();
   for (const methodType of methods) {
-    uniqueNeededSchemasSet.add(methodType.request.schema);
-    uniqueNeededSchemasSet.add(methodType.response.schema);
-    uniqueNeededSchemasSet.add(methodType.error.schema);
+    uniqueNeededSchemasSet.add(methodType.request.type);
+    uniqueNeededSchemasSet.add(methodType.response.type);
+    uniqueNeededSchemasSet.add(methodType.error.type);
   }
   return Array.from(uniqueNeededSchemasSet);
 }

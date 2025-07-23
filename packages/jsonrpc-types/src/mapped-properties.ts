@@ -404,6 +404,7 @@ export const mappedSnakeCamelProperty = new Map<string, string>([["full_access_c
 ["trie_viewer_state_size_limit", "trieViewerStateSizeLimit"],
 ["ttl_account_id_router", "ttlAccountIdRouter"],
 ["tx_routing_height_horizon", "txRoutingHeightHorizon"],
+["view_client_num_state_requests_per_throttle_period", "viewClientNumStateRequestsPerThrottlePeriod"],
 ["view_client_threads", "viewClientThreads"],
 ["view_client_throttle_period", "viewClientThrottlePeriod"],
 ["light_client_head", "lightClientHead"],

@@ -68,7 +68,7 @@ export function createClient(
         if (result.result) {
           const resultValidation = parseZod<ResponseType<typeof method>>(
             "response",
-            method.zodError,
+            method.zodResponse,
             result.result
           );
           if (resultValidation) {

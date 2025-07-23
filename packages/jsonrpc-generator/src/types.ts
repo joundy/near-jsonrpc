@@ -1,16 +1,17 @@
 export type ResponseType = {
-  schema: string;
-  isArray: boolean;
-  isNullable: boolean;
+  type: string;
+  fromSchema: string;
 };
 
 export type RequestType = {
-  schema: string;
+  type: string;
   method: string;
+  fromSchema: string;
 };
 
 export type ErrorType = {
-  schema: string;
+  type: string;
+  fromSchema: string;
 };
 
 export type MethodType = {

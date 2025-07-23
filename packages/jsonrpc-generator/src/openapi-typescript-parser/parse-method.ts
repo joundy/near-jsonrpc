@@ -8,8 +8,14 @@ import {
   OPENAPI_TS_OPERATION_RESPONSES_200,
   OPENAPI_TS_OPERATIONS,
   OPENAPI_TS_SCHEMAS,
+  parseOpenapiTSSchemaType,
 } from "../utils/openapi-ts";
-import { JsonRPCBodyType, JsonRpcResponseType, removeQuotes } from "../utils";
+import {
+  JsonRPCBodyType,
+  JsonRpcResponseType,
+  removeQuotes,
+  snakeToCamel,
+} from "../utils";
 import type {
   ErrorType,
   MethodType,
@@ -17,14 +23,30 @@ import type {
   ResponseType,
 } from "../types";
 
-// TODO: validate is it valid json rpc request or not
-// TODO: validate the schema for request and response should be has a standard json rpc schema
-// TODO: rather than manually traverse the indexedAccess type, using regex is more efficient for getting the schema type
-// and also its' more usefull for getting the request type context: eg Schema[] or Schema | null, etc
+function getSchemaSet(source: SourceFile) {
+  const schemaSet = new Set<string>();
+
+  const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
+  const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
+    SyntaxKind.TypeLiteral
+  );
+
+  const properties = typeLiteral
+    .getPropertyOrThrow(OPENAPI_TS_SCHEMAS)
+    .asKindOrThrow(SyntaxKind.PropertySignature)
+    .getTypeNodeOrThrow()
+    .asKindOrThrow(SyntaxKind.TypeLiteral)
+    .getProperties();
+
+  for (const property of properties) {
+    schemaSet.add(property.getName());
+  }
+
+  return schemaSet;
+}
 
 function getSchemaProperty(source: SourceFile, schemaType: string) {
   const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
-
   const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
     SyntaxKind.TypeLiteral
   );
@@ -39,8 +61,11 @@ function getSchemaProperty(source: SourceFile, schemaType: string) {
   return schemaLiteral;
 }
 
-// TODO: validate valid json rpc request schema
-function getRequestType(schemaType: string, source: SourceFile) {
+function getRequestType(
+  schemaType: string,
+  source: SourceFile,
+  schemaSet: Set<string>
+): RequestType {
   const schema = getSchemaProperty(
     source,
     schemaType
@@ -51,102 +76,36 @@ function getRequestType(schemaType: string, source: SourceFile) {
     .getFirstDescendantByKindOrThrow(SyntaxKind.LiteralType)
     .getText();
 
-  const paramIndex = schema
+  let paramsType = schema
     .getPropertyOrThrow(JsonRPCBodyType.params)
-    .getFirstDescendantByKindOrThrow(SyntaxKind.IndexedAccessType)
-    .getIndexTypeNode()
-    .asKindOrThrow(SyntaxKind.LiteralType)
+    .getTypeNodeOrThrow()
     .getText();
+
+  const parsedType = parseOpenapiTSSchemaType(paramsType);
+  if (schemaSet.has(parsedType)) {
+    return {
+      method: removeQuotes(methodName),
+      type: parsedType,
+      fromSchema: schemaType,
+    };
+  }
 
   return {
     method: removeQuotes(methodName),
-    requestType: removeQuotes(paramIndex),
+    type: paramsType,
+    fromSchema: schemaType,
   };
 }
 
-// TODO: handle more possible cases for the result type
-function resultToResponseType(result: PropertySignature) {
-  const resultChild = result.getChildAtIndex(2);
-
-  switch (resultChild.getKind()) {
-    case SyntaxKind.ArrayType:
-      const arrayType = resultChild.asKindOrThrow(SyntaxKind.ArrayType);
-
-      const arrayindexed = arrayType.getChildAtIndexIfKindOrThrow(
-        0,
-        SyntaxKind.IndexedAccessType
-      );
-
-      return {
-        schema: removeQuotes(arrayindexed.getIndexTypeNode().getText()),
-        isArray: true,
-        isNullable: false,
-      };
-
-    case SyntaxKind.UnionType:
-      const unionType = resultChild.asKindOrThrow(SyntaxKind.UnionType);
-      const type = unionType.getTypeNodes();
-
-      if (type.length !== 2) {
-        throw new Error("Unsupported union result type");
-      }
-
-      // this should be expected as a indexed access type
-      const unionIndexed = type[0]!.asKindOrThrow(SyntaxKind.IndexedAccessType);
-
-      // this should be expected as a nulled type
-      type[1]!
-        .asKindOrThrow(SyntaxKind.LiteralType)
-        .getFirstDescendantByKindOrThrow(SyntaxKind.NullKeyword);
-
-      return {
-        schema: removeQuotes(unionIndexed.getIndexTypeNode().getText()),
-        isArray: false,
-        isNullable: true,
-      };
-
-    case SyntaxKind.IndexedAccessType:
-      const directIndexed = resultChild.asKindOrThrow(
-        SyntaxKind.IndexedAccessType
-      );
-
-      return {
-        schema: removeQuotes(directIndexed.getIndexTypeNode().getText()),
-        isArray: false,
-        isNullable: false,
-      };
-
-    default:
-      throw new Error("Unsupported result type");
-  }
-}
-
-function errorToErrorType(error: PropertySignature): ErrorType {
-  const indexed = error.getFirstDescendantByKindOrThrow(
-    SyntaxKind.IndexedAccessType
-  );
-
-  return {
-    schema: removeQuotes(indexed.getIndexTypeNode().getText()),
-  };
-}
-
-// TODO: validate valid json rpc response schema
-function getResponseType(schemaType: string, source: SourceFile) {
+function getResponseType(
+  schemaType: string,
+  source: SourceFile,
+  schemaSet: Set<string>
+) {
   const schema = getSchemaProperty(
     source,
     schemaType
   ).getFirstDescendantByKindOrThrow(SyntaxKind.IntersectionType);
-
-  // TODO: for jsonrpc validation
-  //   const literal = schema.getFirstDescendantByKindOrThrow(
-  //     SyntaxKind.TypeLiteral
-  //   );
-  //   const properties = literal.getProperties();
-  //   for (const prop of properties) {
-  //     console.log(prop.getName());
-  //   }
-
   const union = schema
     .getFirstDescendantByKindOrThrow(SyntaxKind.ParenthesizedType)
     .getFirstDescendantByKindOrThrow(SyntaxKind.UnionType);
@@ -163,10 +122,36 @@ function getResponseType(schemaType: string, source: SourceFile) {
       const error = literal.getProperty(JsonRpcResponseType.error);
 
       if (result) {
-        responseType = resultToResponseType(result);
+        const resultType = result.getTypeNodeOrThrow().getText();
+        const parsedResultType = parseOpenapiTSSchemaType(resultType);
+        if (schemaSet.has(parsedResultType)) {
+          responseType = {
+            type: parsedResultType,
+            fromSchema: schemaType,
+          };
+        } else {
+          responseType = {
+            type: resultType,
+            fromSchema: schemaType,
+          };
+        }
       }
+
       if (error) {
-        errorType = errorToErrorType(error);
+        const errorTypeNode = error.getTypeNodeOrThrow().getText();
+        const parsedErrorType = parseOpenapiTSSchemaType(errorTypeNode);
+
+        if (schemaSet.has(parsedErrorType)) {
+          errorType = {
+            type: parsedErrorType,
+            fromSchema: schemaType,
+          };
+        } else {
+          errorType = {
+            type: errorTypeNode,
+            fromSchema: schemaType,
+          };
+        }
       }
     }
   }
@@ -181,7 +166,7 @@ function getResponseType(schemaType: string, source: SourceFile) {
   };
 }
 
-function getSchemaTypeFromContent(property: PropertySignature) {
+function getSchemaNameFromContent(property: PropertySignature) {
   const indexed = property
     .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
     .getPropertyOrThrow(OPENAPI_TS_OPERATION_CONTENT_TYPE)
@@ -200,29 +185,77 @@ function getContentFromProperty(property: PropertySignature) {
     .getPropertyOrThrow(OPENAPI_TS_OPERATION_REQUEST_BODY_CONTENT);
 }
 
-function parseRequestBody(property: PropertySignature, source: SourceFile) {
+function parseRequestBody(
+  property: PropertySignature,
+  source: SourceFile,
+  schemaSet: Set<string>
+) {
   const contentProperty = getContentFromProperty(property);
-  const schemaType = getSchemaTypeFromContent(contentProperty);
+  const schemaName = getSchemaNameFromContent(contentProperty);
 
-  return getRequestType(schemaType, source);
+  return {
+    body: getRequestType(schemaName, source, schemaSet),
+  };
 }
 
-function parseResponse(property: PropertySignature, source: SourceFile) {
+function parseResponse(
+  property: PropertySignature,
+  source: SourceFile,
+  schemaSet: Set<string>
+) {
   const responseOkProperty = property
     .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
     .getPropertyOrThrow(OPENAPI_TS_OPERATION_RESPONSES_200);
 
   const contentProperty = getContentFromProperty(responseOkProperty);
-  const schemaType = getSchemaTypeFromContent(contentProperty);
+  const schemaName = getSchemaNameFromContent(contentProperty);
 
-  return getResponseType(schemaType, source);
+  return {
+    response: getResponseType(schemaName, source, schemaSet),
+    schemaName,
+  };
+}
+
+function addNewPropertyToSchema(
+  source: SourceFile,
+  newSchemaMethodMap: Map<string, string>
+) {
+  const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
+  const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
+    SyntaxKind.TypeLiteral
+  );
+
+  const literal = typeLiteral
+    .getPropertyOrThrow(OPENAPI_TS_SCHEMAS)
+    .asKindOrThrow(SyntaxKind.PropertySignature)
+    .getTypeNodeOrThrow()
+    .asKindOrThrow(SyntaxKind.TypeLiteral);
+
+  for (const [key, value] of newSchemaMethodMap) {
+    literal.addProperty({
+      name: key,
+      type: value,
+      docs: [
+        {
+          description: `Generated from ${value}`,
+        },
+      ],
+    });
+  }
 }
 
 export function parseMethodTypes(source: SourceFile) {
+  const schemaSet = getSchemaSet(source);
+
   const operation = source.getInterfaceOrThrow(OPENAPI_TS_OPERATIONS);
   const operationProperties = operation.getProperties();
 
-  const results: MethodType[] = [];
+  let results: MethodType[] = [];
+
+  // Get the non schema methods: example RpcHealthResponse | (null) or Range_of_uint64[]
+  // need to create a new schema for it latter
+  const newSchemaMethodMap = new Map<string, string>();
+
   for (const operation of operationProperties) {
     const methodProperties = operation
       .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
@@ -232,23 +265,61 @@ export function parseMethodTypes(source: SourceFile) {
     let responseType: ResponseType | undefined;
     let errorType: ErrorType | undefined;
 
+    // getting the coresponding request, response, and error type
     for (const methodProperty of methodProperties) {
       if (methodProperty.getName() === OPENAPI_TS_OPERATION_REQUEST_BODY) {
-        const requestBody = parseRequestBody(methodProperty, source);
+        const requestBody = parseRequestBody(methodProperty, source, schemaSet);
+
+        // getting the request type
+        let type = requestBody.body.type;
+        if (!schemaSet.has(requestBody.body.type)) {
+          type = snakeToCamel(requestBody.body.fromSchema + "_request");
+          newSchemaMethodMap.set(type, requestBody.body.type);
+        }
         requestType = {
-          method: requestBody.method,
-          schema: requestBody.requestType,
+          method: requestBody.body.method,
+          type,
+          fromSchema: requestBody.body.fromSchema,
         };
       }
+
       if (methodProperty.getName() === OPENAPI_TS_OPERATION_RESPONSES) {
-        const response = parseResponse(methodProperty, source);
-        responseType = response.responseType;
-        errorType = response.errorType;
+        const response = parseResponse(methodProperty, source, schemaSet);
+
+        // getting the response type
+        let _responseType = response.response.responseType.type;
+        if (!schemaSet.has(_responseType)) {
+          _responseType = snakeToCamel(
+            response.response.responseType.fromSchema + "_response"
+          );
+          newSchemaMethodMap.set(
+            _responseType,
+            response.response.responseType.type
+          );
+        }
+        responseType = {
+          type: _responseType,
+          fromSchema: response.response.responseType.fromSchema,
+        };
+
+        // getting the error type
+        let _errorType = response.response.errorType.type;
+        if (!schemaSet.has(_errorType)) {
+          _errorType = snakeToCamel(
+            response.response.errorType.fromSchema + "_error"
+          );
+          newSchemaMethodMap.set(_errorType, response.response.errorType.type);
+        }
+        errorType = {
+          type: _errorType,
+          fromSchema: response.response.errorType.fromSchema,
+        };
       }
     }
 
+    // if not valid then it will ignore it
     if (!requestType || !responseType || !errorType) {
-      throw new Error("Invalid method type");
+      continue;
     }
 
     results.push({
@@ -257,6 +328,8 @@ export function parseMethodTypes(source: SourceFile) {
       error: errorType,
     });
   }
+
+  addNewPropertyToSchema(source, newSchemaMethodMap);
 
   return results;
 }
