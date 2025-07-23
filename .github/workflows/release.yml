@@ -2,12 +2,7 @@ name: Release
 
 on:
   push:
-    # TODO: Uncomment this if we are selected for the bounty
-    # branches: [master]
-
-    # Temporary release on branch release-please with package name @ahnafalfariza/jsonrpc-types and @ahnafalfariza/jsonrpc-client.
-    # TODO: Remove this after the bounty is over.
-    branches: [release-please]
+    branches: [master]
 
 permissions:
   contents: write
@@ -17,32 +12,32 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
           config-file: release-please-config.json
 
       - name: Checkout repository
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
 
       - name: Enable corepack
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         run: corepack enable
 
       - name: Install dependencies
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         run: yarn install --frozen-lockfile
 
       - name: Build packages
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         run: yarn build
 
       - name: Publish jsonrpc-types
@@ -52,7 +47,6 @@ jobs:
         run: |
           cd packages/jsonrpc-types
           npm publish
-
       - name: Publish jsonrpc-client
         if: ${{ steps.release.outputs['packages/jsonrpc-client--release_created'] }}
         env:

@@ -1,6 +1,5 @@
 {
   "release-type": "node",
-  "include-component-in-tag": false,
   "packages": {
     "packages/jsonrpc-types": {
       "package-name": "@near-js/jsonrpc-types"
@@ -9,8 +8,8 @@
       "package-name": "@near-js/jsonrpc-client"
     }
   },
-  "group-pull-request-title-pattern": "chore: release ${version}",
-  "separate-pull-requests": false,
+  "pull-request-header": "## 🚀 NEAR JSONRPC Release\n\nThis automated release includes updates to both `@near-js/jsonrpc-types` and `@near-js/jsonrpc-client` packages.\n\n### 📦 Packages Being Released\n- `@near-js/jsonrpc-types`\n- `@near-js/jsonrpc-client`\n\n### 🔍 Review Checklist\n- [ ] Version bumps look correct\n- [ ] Changelog entries are accurate\n- [ ] Breaking changes are properly documented\n- [ ] Dependencies between packages are updated correctly",
+  "pull-request-footer": "---\n\n### 🤖 Automated Release Process\n\nThis PR was generated automatically by [release-please](https://github.com/googleapis/release-please).\n\n**To complete the release:**\n1. Review the changes above\n2. Merge this PR\n3. Packages will be automatically published to npm\n4. GitHub release will be created with tags\n\n**Need to make changes?** Push additional commits to master and this PR will be updated automatically.",
   "plugins": [
     {
       "type": "node-workspace",
