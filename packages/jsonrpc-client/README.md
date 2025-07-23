@@ -36,16 +36,63 @@ const txStatus = await client.tx({
 const gasPrice = await client.gasPrice({});
 ```
 
-## Networks
+## API
+
+### `createClient(transporter, runtimeValidation?)`
+
+Creates a type-safe JSON-RPC client for NEAR Protocol.
+
+#### Parameters
+
+- `transporter: Transporter` - The transport layer for making JSON-RPC requests
+- `runtimeValidation?: true` - Optional flag to enable runtime validation of requests and responses
+
+#### Runtime Validation
+
+When `runtimeValidation` is enabled, the client will validate both outgoing requests and incoming responses using Zod schemas. This provides additional type safety at runtime and helps catch issues early.
 
 ```typescript
-import { NearRpcEndpoint } from "@near-js/jsonrpc-client";
+import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 
-// Pre-defined endpoints
-NearRpcEndpoint.Mainnet; // https://rpc.mainnet.near.org
-NearRpcEndpoint.Testnet; // https://rpc.testnet.near.org
-NearRpcEndpoint.Localnet; // http://localhost:3030
+// Create client with runtime validation enabled
+const transporter = jsonRpcTransporter({
+  endpoint: "https://rpc.testnet.near.org",
+});
+const client = createClient(transporter, true);
+
+// If validation fails, the client will return validation errors
+const result = await client.query({
+  requestType: "view_account",
+  finality: "final",
+  accountId: "example.testnet",
+});
+
+// Check for validation errors
+if ("error" in result && "validation" in result.error) {
+  console.error("Validation error:", result.error.validation);
+  return;
+}
+
+// Safe to use the result
+console.log(result.result);
 ```
+
+#### Validation Error Format
+
+When runtime validation is enabled and validation fails, the client returns an error object with the following structure:
+
+```typescript
+{
+  error: {
+    validation: {
+      runtimeValidation: "request" | "response" | "error",
+      error: // Zod validation error details
+    }
+  }
+}
+```
+
+For a comprehensive example of how to handle different types of validation errors and access specific error properties, see the [accessing-error.ts example](../../examples/accessing-error.ts).
 
 ## Examples
 

@@ -5,12 +5,14 @@
   "license": "MIT",
   "scripts": {
     "access-keys": "tsx access-keys.ts",
+    "accessing-error": "tsx accessing-error.ts",
+    "block": "tsx block.ts",
     "gas": "tsx gas.ts",
     "network": "tsx network.ts",
     "transactions": "tsx transactions.ts",
+    "validation": "tsx validation.ts",
     "view-account": "tsx view-account.ts",
-    "view-function": "tsx view-function.ts",
-    "accessing-error": "tsx accessing-error.ts"
+    "view-function": "tsx view-function.ts"
   },
   "devDependencies": {
     "@near-js/jsonrpc-client": "*",
