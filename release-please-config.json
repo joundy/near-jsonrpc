@@ -1,0 +1,20 @@
+{
+  "release-type": "node",
+  "include-component-in-tag": false,
+  "packages": {
+    "packages/jsonrpc-types": {
+      "package-name": "@near-js/jsonrpc-types"
+    },
+    "packages/jsonrpc-client": {
+      "package-name": "@near-js/jsonrpc-client"
+    }
+  },
+  "group-pull-request-title-pattern": "chore: release ${version}",
+  "separate-pull-requests": false,
+  "plugins": [
+    {
+      "type": "node-workspace",
+      "merge": false
+    }
+  ]
+}
