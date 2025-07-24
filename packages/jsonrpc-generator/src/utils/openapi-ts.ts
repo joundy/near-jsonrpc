@@ -20,17 +20,3 @@ export async function generateOpenapiTS(spec: string) {
   });
   return astToString(ast);
 }
-
-// TODO: find a better way to do this, this is a HACK!! but maybe it's the most efficient way
-// replacing using finding references are type safed but it expensive and slow
-//
-// Replace the type definition with the coresponding type
-// components["schemas"]["AccessKey"] -> AccessKey
-export function parseOpenapiTSSchemaType(schemaType: string) {
-  const regex = /components\["schemas"\]\["([^"]+)"\]/g;
-  return schemaType.replace(regex, "$1");
-}
-
-export function toOpenApiTSSchemaType(schemaType: string) {
-  return `components["schemas"]["${schemaType}"]`;
-}

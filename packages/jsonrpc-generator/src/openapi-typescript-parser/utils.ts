@@ -1,16 +1,14 @@
 import { PropertySignature, SourceFile, SyntaxKind } from "ts-morph";
-import {
-  OPENAPI_TS_COMPONENTS,
-  OPENAPI_TS_SCHEMAS,
-  parseOpenapiTSSchemaType,
-} from "../utils/openapi-ts";
+import { OPENAPI_TS_COMPONENTS, OPENAPI_TS_SCHEMAS } from "../utils/openapi-ts";
 
 /**
  * Utility functions for working with OpenAPI TypeScript schemas
+ * TODO: cache when getting the data
  */
 
 /**
  * Gets the schema set from the source file
+ * schema from the type components.schemas
  */
 export function getSchemaSet(source: SourceFile): Set<string> {
   const schemaSet = new Set<string>();
@@ -35,28 +33,9 @@ export function getSchemaSet(source: SourceFile): Set<string> {
 }
 
 /**
- * Gets a specific schema property from the source file
- */
-export function getSchemaProperty(
-  source: SourceFile,
-  schemaType: string
-): PropertySignature {
-  const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
-  const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
-    SyntaxKind.TypeLiteral
-  );
-
-  return typeLiteral
-    .getPropertyOrThrow(OPENAPI_TS_SCHEMAS)
-    .asKindOrThrow(SyntaxKind.PropertySignature)
-    .getTypeNodeOrThrow()
-    .asKindOrThrow(SyntaxKind.TypeLiteral)
-    .getPropertyOrThrow(schemaType)
-    .asKindOrThrow(SyntaxKind.PropertySignature);
-}
-
-/**
  * Gets the schemas literal from the source file
+ * example of schema property: components.schemas.RpcRequestHealth = {<object_data>}
+ * {<object_data>} this is the type literal or the data/object of selected schema
  */
 export function getSchemasLiteral(source: SourceFile) {
   const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
@@ -72,24 +51,23 @@ export function getSchemasLiteral(source: SourceFile) {
 }
 
 /**
- * Processes a type and returns the appropriate type based on schema set
+ * Gets a specific schema property from the source file
+ * example of schema property: components.schemas.RpcRequestHealth
  */
-export function processTypeWithSchemaSet(
-  rawType: string,
-  schemaSet: Set<string>,
-  fromSchema: string
-): { type: string; fromSchema: string } {
-  const parsedType = parseOpenapiTSSchemaType(rawType);
+export function getSchemaProperty(
+  source: SourceFile,
+  schema: string
+): PropertySignature {
+  return getSchemasLiteral(source)
+    .getPropertyOrThrow(schema)
+    .asKindOrThrow(SyntaxKind.PropertySignature);
+}
 
-  if (schemaSet.has(parsedType)) {
-    return {
-      type: parsedType,
-      fromSchema,
-    };
-  }
-
-  return {
-    type: rawType,
-    fromSchema,
-  };
+// TODO: find a better way to do this, this is a HACK!! but maybe it's the most efficient way
+// replacing using finding references are type safed but it expensive and slow
+// Replace the type definition with the coresponding type
+// components["schemas"]["AccessKey"] -> AccessKey
+export function replaceAllIndexedSchemas(schemaType: string) {
+  const regex = /components\["schemas"\]\["([^"]+)"\]/g;
+  return schemaType.replace(regex, "$1");
 }

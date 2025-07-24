@@ -10,9 +10,12 @@ import type {
   RequestType,
   ResponseType,
 } from "../types";
-import { getSchemaSet, getSchemasLiteral } from "./schema-utils";
-import { parseRequestBody, parseResponse } from "./operation-parsers";
-import { processTypeForSchemaGeneration } from "./type-processors";
+import { getSchemaSet, getSchemasLiteral } from "./utils";
+import {
+  parseRequestBody,
+  parseResponse,
+  processTypeForSchemaGeneration,
+} from "./operation-parsers";
 
 /**
  * Adds new properties to the schema
@@ -27,11 +30,7 @@ function addNewPropertyToSchema(
     literal.addProperty({
       name: key,
       type: value,
-      docs: [
-        {
-          description: `Generated from ${value}`,
-        },
-      ],
+      docs: ["/**", ` * Generated from ${value}`, " */"],
     });
   }
 }

@@ -1,8 +1,7 @@
 import { PropertySignature, SourceFile, SyntaxKind } from "ts-morph";
-import { parseOpenapiTSSchemaType } from "../utils/openapi-ts";
 import type { SchemaType } from "../types";
 import { snakeToCamel } from "../utils";
-import { getSchemasLiteral } from "./schema-utils";
+import { getSchemasLiteral, replaceAllIndexedSchemas } from "./utils";
 
 /**
  * Processes property renaming for snake_case to camelCase conversion
@@ -10,10 +9,13 @@ import { getSchemasLiteral } from "./schema-utils";
  */
 function processPropertyRenaming(
   propertyDescendants: PropertySignature[],
-  propertyName: string
-): Map<string, string> {
-  const mappedSnakeCamelProperty = new Map<string, string>();
-  const renameOperations: Array<{ property: any; newName: string }> = [];
+  propertyName: string,
+  mappedSnakeCamelProperty: Map<string, string>
+) {
+  const renameOperations: Array<{
+    property: PropertySignature;
+    newName: string;
+  }> = [];
 
   console.info(
     `🔄 Processing ${propertyDescendants.length} properties from ${propertyName} for snake_case to camelCase conversion`
@@ -29,7 +31,8 @@ function processPropertyRenaming(
     }
   }
 
-  // Execution phase: batch all rename operations
+  // Rename the properties
+  // TODO: use batch rename for better performance
   for (const { property, newName } of renameOperations) {
     property.rename(newName);
   }
@@ -42,22 +45,17 @@ function processPropertyRenaming(
  */
 function processSchemaProperty(
   property: PropertySignature,
-  ignoreSchemaSet: Set<string>
-): { schemaType: SchemaType | null; mappedProperties: Map<string, string> } {
-  if (ignoreSchemaSet.has(property.getName())) {
-    return { schemaType: null, mappedProperties: new Map() };
-  }
-
+  mappedSnakeCamelProperty: Map<string, string>
+) {
   const propertyDescendants = property.getDescendantsOfKind(
     SyntaxKind.PropertySignature
   );
 
-  let mappedProperties = new Map<string, string>();
-
   if (propertyDescendants.length > 0) {
-    mappedProperties = processPropertyRenaming(
+    processPropertyRenaming(
       propertyDescendants,
-      property.getName()
+      property.getName(),
+      mappedSnakeCamelProperty
     );
   }
 
@@ -68,10 +66,10 @@ function processSchemaProperty(
 
   const schemaType: SchemaType = {
     schema: typeName,
-    type: parseOpenapiTSSchemaType(typeNode.getText()),
+    type: replaceAllIndexedSchemas(typeNode.getText()),
   };
 
-  return { schemaType, mappedProperties };
+  return schemaType;
 }
 
 /**
@@ -91,19 +89,15 @@ export function parseSchemaTypes(
   const schemaTypes: SchemaType[] = [];
 
   for (const property of propertySignatures) {
-    const { schemaType, mappedProperties } = processSchemaProperty(
+    if (ignoreSchemaSet.has(property.getName())) {
+      continue;
+    }
+
+    const schemaType = processSchemaProperty(
       property,
-      ignoreSchemaSet
+      mappedSnakeCamelProperty
     );
-
-    if (schemaType) {
-      schemaTypes.push(schemaType);
-    }
-
-    // Merge mapped properties
-    for (const [key, value] of mappedProperties) {
-      mappedSnakeCamelProperty.set(key, value);
-    }
+    schemaTypes.push(schemaType);
   }
 
   return {
