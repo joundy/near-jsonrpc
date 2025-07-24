@@ -23,13 +23,17 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "check-types": "tsc --noEmit",
-    "example": "tsx src/example.ts"
+    "example": "tsx src/example.ts",
+    "test": "jest"
   },
   "dependencies": {
     "@near-js/jsonrpc-types": "*",
     "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.0",
     "tsup": "^8.0.1",
     "tsx": "^4.20.3",
     "typescript": "^5.3.3"

@@ -1,6 +1,5 @@
 {
   "name": "near-jsonrpc",
-  "version": "1.0.0",
   "private": true,
   "author": "Hafiz Joundy Syafie <hafizjoundys@gmail.com>",
   "license": "MIT",
@@ -10,6 +9,7 @@
     "dev": "turbo run dev",
     "check-types": "turbo run check-types",
     "clean": "rm -rf dist && turbo run clean",
+    "test": "turbo run test",
     "generate": "yarn workspace @near-js/jsonrpc-generator generate"
   },
   "workspaces": [

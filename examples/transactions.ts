@@ -6,6 +6,7 @@
  */
 
 import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
+import type { AccessKey } from "@near-js/jsonrpc-types/schemas";
 import { transactions, utils, KeyPairSigner } from "near-api-js";
 
 // Configuration
@@ -75,7 +76,7 @@ async function sendTransactionExample() {
       },
     } = statusResponse;
 
-    const accessKey = accessKeyResponse.result as any;
+    const accessKey = accessKeyResponse.result as AccessKey;
     const nonce = accessKey.nonce + 1;
     const recentBlockHash = utils.serialize.base_decode(latestBlockHash);
 
