@@ -3,7 +3,7 @@ import {
   OPENAPI_TS_OPERATIONS,
   OPENAPI_TS_OPERATION_REQUEST_BODY,
   OPENAPI_TS_OPERATION_RESPONSES,
-} from "../utils/openapi-ts";
+} from "./constants";
 import type {
   ErrorType,
   MethodType,

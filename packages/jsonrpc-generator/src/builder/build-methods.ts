@@ -1,6 +1,7 @@
 import { Project, VariableDeclarationKind } from "ts-morph";
 import type { MethodType } from "../types";
-import { GENERATED_COMMENT, snakeToCamel } from "../utils";
+import { snakeToCamel } from "../utils";
+import { GENERATED_COMMENT } from "./constants";
 
 export type BuildMethodsOptions = {
   schemasLocation: string;
@@ -11,9 +12,16 @@ export type BuildMethodsOptions = {
 
 export function buildMethods(
   methods: MethodType[],
-  neededSchemas: string[],
   options: BuildMethodsOptions
 ) {
+  const uniqueNeededSchemasSet = new Set<string>();
+  for (const methodType of methods) {
+    uniqueNeededSchemasSet.add(methodType.request.type);
+    uniqueNeededSchemasSet.add(methodType.response.type);
+    uniqueNeededSchemasSet.add(methodType.error.type);
+  }
+  const neededSchemas = Array.from(uniqueNeededSchemasSet);
+
   const project = new Project();
 
   // create a virtual file to export the methods

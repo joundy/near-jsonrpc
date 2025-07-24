@@ -1,14 +1,6 @@
 import { mkdirSync, rmSync, writeFileSync } from "fs";
 import { Project } from "ts-morph";
-
-// Temp output paths
-const TEMP_DIR = "./_temp_zod_validator";
-const SCHEMA_FILE = "schemas.ts";
-const ZOD_SCHEMA_FILE = "zod-schemas.ts";
-
-// Import locations
-const SCHEMA_DIR = "./schemas";
-const ZOD_SCHEMA_DIR = "./zod-schemas";
+import { SCHEMA_DIR, SCHEMA_FILE, TEMP_DIR, ZOD_SCHEMA_DIR, ZOD_SCHEMA_FILE } from "./constants";
 
 // Validate a single schema, usefull for debugging
 export function validate(schema: string, zodSchema: string): string[] {

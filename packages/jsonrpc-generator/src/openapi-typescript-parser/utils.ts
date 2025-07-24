@@ -1,5 +1,5 @@
 import { PropertySignature, SourceFile, SyntaxKind } from "ts-morph";
-import { OPENAPI_TS_COMPONENTS, OPENAPI_TS_SCHEMAS } from "../utils/openapi-ts";
+import { OPENAPI_TS_COMPONENTS, OPENAPI_TS_SCHEMAS } from "./constants";
 
 /**
  * Utility functions for working with OpenAPI TypeScript schemas

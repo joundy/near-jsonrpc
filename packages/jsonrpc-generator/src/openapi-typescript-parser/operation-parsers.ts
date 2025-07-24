@@ -3,13 +3,12 @@ import {
   OPENAPI_TS_OPERATION_CONTENT_TYPE,
   OPENAPI_TS_OPERATION_REQUEST_BODY_CONTENT,
   OPENAPI_TS_OPERATION_RESPONSES_200,
-} from "../utils/openapi-ts";
-import {
-  JsonRPCBodyType,
-  JsonRpcResponseType,
-  removeQuotes,
-  snakeToCamel,
-} from "../utils";
+  RPC_BODY_METHOD,
+  RPC_BODY_PARAMS,
+  RPC_RESPONSE_ERROR,
+  RPC_RESPONSE_RESULT,
+} from "./constants";
+import { addQuote, removeQuotes, snakeToCamel } from "../utils";
 import type { ErrorType, RequestType, ResponseType } from "../types";
 import { getSchemaProperty, replaceAllIndexedSchemas } from "./utils";
 
@@ -61,7 +60,7 @@ export function parseResponse(
 export function getSchemaNameFromContent(property: PropertySignature): string {
   const indexed = property
     .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
-    .getPropertyOrThrow(OPENAPI_TS_OPERATION_CONTENT_TYPE)
+    .getPropertyOrThrow(addQuote(OPENAPI_TS_OPERATION_CONTENT_TYPE))
     .getFirstDescendantByKindOrThrow(SyntaxKind.IndexedAccessType);
 
   const indexType = indexed
@@ -95,12 +94,12 @@ export function getRequestType(
   ).getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral);
 
   const methodName = schema
-    .getPropertyOrThrow(JsonRPCBodyType.method)
+    .getPropertyOrThrow(RPC_BODY_METHOD)
     .getFirstDescendantByKindOrThrow(SyntaxKind.LiteralType)
     .getText();
 
   const paramsType = schema
-    .getPropertyOrThrow(JsonRPCBodyType.params)
+    .getPropertyOrThrow(RPC_BODY_PARAMS)
     .getTypeNodeOrThrow()
     .getText();
 
@@ -135,8 +134,8 @@ export function getResponseType(
     if (descendant.getKind() === SyntaxKind.TypeLiteral) {
       const literal = descendant.asKindOrThrow(SyntaxKind.TypeLiteral);
 
-      const result = literal.getProperty(JsonRpcResponseType.result);
-      const error = literal.getProperty(JsonRpcResponseType.error);
+      const result = literal.getProperty(RPC_RESPONSE_RESULT);
+      const error = literal.getProperty(RPC_RESPONSE_ERROR);
 
       if (result) {
         const resultType = result.getTypeNodeOrThrow().getText();

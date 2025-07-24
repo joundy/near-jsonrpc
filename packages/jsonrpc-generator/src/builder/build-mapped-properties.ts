@@ -1,5 +1,5 @@
 import { Project, VariableDeclarationKind } from "ts-morph";
-import { GENERATED_COMMENT } from "../utils";
+import { GENERATED_COMMENT } from "./constants";
 
 export function buildMappedProperties(
   mappedSnakeCamelProperty: Map<string, string>
