@@ -1,235 +1,27 @@
-import { PropertySignature, SyntaxKind, type SourceFile } from "ts-morph";
+import { PropertySignature, type SourceFile, SyntaxKind } from "ts-morph";
 import {
-  OPENAPI_TS_COMPONENTS,
-  OPENAPI_TS_OPERATION_CONTENT_TYPE,
-  OPENAPI_TS_OPERATION_REQUEST_BODY,
-  OPENAPI_TS_OPERATION_REQUEST_BODY_CONTENT,
-  OPENAPI_TS_OPERATION_RESPONSES,
-  OPENAPI_TS_OPERATION_RESPONSES_200,
   OPENAPI_TS_OPERATIONS,
-  OPENAPI_TS_SCHEMAS,
-  parseOpenapiTSSchemaType,
+  OPENAPI_TS_OPERATION_REQUEST_BODY,
+  OPENAPI_TS_OPERATION_RESPONSES,
 } from "../utils/openapi-ts";
-import {
-  JsonRPCBodyType,
-  JsonRpcResponseType,
-  removeQuotes,
-  snakeToCamel,
-} from "../utils";
 import type {
   ErrorType,
   MethodType,
   RequestType,
   ResponseType,
 } from "../types";
+import { getSchemaSet, getSchemasLiteral } from "./schema-utils";
+import { parseRequestBody, parseResponse } from "./operation-parsers";
+import { processTypeForSchemaGeneration } from "./type-processors";
 
-function getSchemaSet(source: SourceFile) {
-  const schemaSet = new Set<string>();
-
-  const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
-  const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
-    SyntaxKind.TypeLiteral
-  );
-
-  const properties = typeLiteral
-    .getPropertyOrThrow(OPENAPI_TS_SCHEMAS)
-    .asKindOrThrow(SyntaxKind.PropertySignature)
-    .getTypeNodeOrThrow()
-    .asKindOrThrow(SyntaxKind.TypeLiteral)
-    .getProperties();
-
-  for (const property of properties) {
-    schemaSet.add(property.getName());
-  }
-
-  return schemaSet;
-}
-
-function getSchemaProperty(source: SourceFile, schemaType: string) {
-  const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
-  const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
-    SyntaxKind.TypeLiteral
-  );
-
-  const schemaLiteral = typeLiteral
-    .getPropertyOrThrow(OPENAPI_TS_SCHEMAS)
-    .asKindOrThrow(SyntaxKind.PropertySignature)
-    .getTypeNodeOrThrow()
-    .asKindOrThrow(SyntaxKind.TypeLiteral)
-    .getPropertyOrThrow(schemaType);
-
-  return schemaLiteral;
-}
-
-function getRequestType(
-  schemaType: string,
-  source: SourceFile,
-  schemaSet: Set<string>
-): RequestType {
-  const schema = getSchemaProperty(
-    source,
-    schemaType
-  ).getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral);
-
-  const methodName = schema
-    .getPropertyOrThrow(JsonRPCBodyType.method)
-    .getFirstDescendantByKindOrThrow(SyntaxKind.LiteralType)
-    .getText();
-
-  let paramsType = schema
-    .getPropertyOrThrow(JsonRPCBodyType.params)
-    .getTypeNodeOrThrow()
-    .getText();
-
-  const parsedType = parseOpenapiTSSchemaType(paramsType);
-  if (schemaSet.has(parsedType)) {
-    return {
-      method: removeQuotes(methodName),
-      type: parsedType,
-      fromSchema: schemaType,
-    };
-  }
-
-  return {
-    method: removeQuotes(methodName),
-    type: paramsType,
-    fromSchema: schemaType,
-  };
-}
-
-function getResponseType(
-  schemaType: string,
-  source: SourceFile,
-  schemaSet: Set<string>
-) {
-  const schema = getSchemaProperty(
-    source,
-    schemaType
-  ).getFirstDescendantByKindOrThrow(SyntaxKind.IntersectionType);
-  const union = schema
-    .getFirstDescendantByKindOrThrow(SyntaxKind.ParenthesizedType)
-    .getFirstDescendantByKindOrThrow(SyntaxKind.UnionType);
-
-  let errorType: ErrorType | undefined;
-  let responseType: ResponseType | undefined;
-
-  const unionDescendants = union.getDescendants();
-  for (const descendant of unionDescendants) {
-    if (descendant.getKind() === SyntaxKind.TypeLiteral) {
-      const literal = descendant.asKindOrThrow(SyntaxKind.TypeLiteral);
-
-      const result = literal.getProperty(JsonRpcResponseType.result);
-      const error = literal.getProperty(JsonRpcResponseType.error);
-
-      if (result) {
-        const resultType = result.getTypeNodeOrThrow().getText();
-        const parsedResultType = parseOpenapiTSSchemaType(resultType);
-        if (schemaSet.has(parsedResultType)) {
-          responseType = {
-            type: parsedResultType,
-            fromSchema: schemaType,
-          };
-        } else {
-          responseType = {
-            type: resultType,
-            fromSchema: schemaType,
-          };
-        }
-      }
-
-      if (error) {
-        const errorTypeNode = error.getTypeNodeOrThrow().getText();
-        const parsedErrorType = parseOpenapiTSSchemaType(errorTypeNode);
-
-        if (schemaSet.has(parsedErrorType)) {
-          errorType = {
-            type: parsedErrorType,
-            fromSchema: schemaType,
-          };
-        } else {
-          errorType = {
-            type: errorTypeNode,
-            fromSchema: schemaType,
-          };
-        }
-      }
-    }
-  }
-
-  if (!errorType || !responseType) {
-    throw new Error("Invalid response type");
-  }
-
-  return {
-    errorType,
-    responseType,
-  };
-}
-
-function getSchemaNameFromContent(property: PropertySignature) {
-  const indexed = property
-    .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
-    .getPropertyOrThrow(OPENAPI_TS_OPERATION_CONTENT_TYPE)
-    .getFirstDescendantByKindOrThrow(SyntaxKind.IndexedAccessType);
-
-  const indexType = indexed
-    .getIndexTypeNode()
-    .asKindOrThrow(SyntaxKind.LiteralType);
-
-  return removeQuotes(indexType.getText());
-}
-
-function getContentFromProperty(property: PropertySignature) {
-  return property
-    .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
-    .getPropertyOrThrow(OPENAPI_TS_OPERATION_REQUEST_BODY_CONTENT);
-}
-
-function parseRequestBody(
-  property: PropertySignature,
-  source: SourceFile,
-  schemaSet: Set<string>
-) {
-  const contentProperty = getContentFromProperty(property);
-  const schemaName = getSchemaNameFromContent(contentProperty);
-
-  return {
-    body: getRequestType(schemaName, source, schemaSet),
-  };
-}
-
-function parseResponse(
-  property: PropertySignature,
-  source: SourceFile,
-  schemaSet: Set<string>
-) {
-  const responseOkProperty = property
-    .getFirstDescendantByKindOrThrow(SyntaxKind.TypeLiteral)
-    .getPropertyOrThrow(OPENAPI_TS_OPERATION_RESPONSES_200);
-
-  const contentProperty = getContentFromProperty(responseOkProperty);
-  const schemaName = getSchemaNameFromContent(contentProperty);
-
-  return {
-    response: getResponseType(schemaName, source, schemaSet),
-    schemaName,
-  };
-}
-
+/**
+ * Adds new properties to the schema
+ */
 function addNewPropertyToSchema(
   source: SourceFile,
   newSchemaMethodMap: Map<string, string>
 ) {
-  const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
-  const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
-    SyntaxKind.TypeLiteral
-  );
-
-  const literal = typeLiteral
-    .getPropertyOrThrow(OPENAPI_TS_SCHEMAS)
-    .asKindOrThrow(SyntaxKind.PropertySignature)
-    .getTypeNodeOrThrow()
-    .asKindOrThrow(SyntaxKind.TypeLiteral);
+  const literal = getSchemasLiteral(source);
 
   for (const [key, value] of newSchemaMethodMap) {
     literal.addProperty({
@@ -244,16 +36,15 @@ function addNewPropertyToSchema(
   }
 }
 
-export function parseMethodTypes(source: SourceFile) {
-  const schemaSet = getSchemaSet(source);
-
-  const operation = source.getInterfaceOrThrow(OPENAPI_TS_OPERATIONS);
-  const operationProperties = operation.getProperties();
-
-  let results: MethodType[] = [];
-
-  // Get the non schema methods: example RpcHealthResponse | (null) or Range_of_uint64[]
-  // need to create a new schema for it latter
+/**
+ * Processes method types and handles schema generation
+ */
+function processMethodTypes(
+  operationProperties: PropertySignature[],
+  source: SourceFile,
+  schemaSet: Set<string>
+): { results: MethodType[]; newSchemaMethodMap: Map<string, string> } {
+  const results: MethodType[] = [];
   const newSchemaMethodMap = new Map<string, string>();
 
   for (const operation of operationProperties) {
@@ -265,20 +56,22 @@ export function parseMethodTypes(source: SourceFile) {
     let responseType: ResponseType | undefined;
     let errorType: ErrorType | undefined;
 
-    // getting the coresponding request, response, and error type
+    // Process each method property
     for (const methodProperty of methodProperties) {
       if (methodProperty.getName() === OPENAPI_TS_OPERATION_REQUEST_BODY) {
         const requestBody = parseRequestBody(methodProperty, source, schemaSet);
 
-        // getting the request type
-        let type = requestBody.body.type;
-        if (!schemaSet.has(requestBody.body.type)) {
-          type = snakeToCamel(requestBody.body.fromSchema + "_request");
-          newSchemaMethodMap.set(type, requestBody.body.type);
-        }
+        const processedType = processTypeForSchemaGeneration(
+          requestBody.body.type,
+          requestBody.body.fromSchema,
+          "request",
+          schemaSet,
+          newSchemaMethodMap
+        );
+
         requestType = {
           method: requestBody.body.method,
-          type,
+          type: processedType,
           fromSchema: requestBody.body.fromSchema,
         };
       }
@@ -286,50 +79,67 @@ export function parseMethodTypes(source: SourceFile) {
       if (methodProperty.getName() === OPENAPI_TS_OPERATION_RESPONSES) {
         const response = parseResponse(methodProperty, source, schemaSet);
 
-        // getting the response type
-        let _responseType = response.response.responseType.type;
-        if (!schemaSet.has(_responseType)) {
-          _responseType = snakeToCamel(
-            response.response.responseType.fromSchema + "_response"
-          );
-          newSchemaMethodMap.set(
-            _responseType,
-            response.response.responseType.type
-          );
-        }
+        // Process response type
+        const processedResponseType = processTypeForSchemaGeneration(
+          response.response.responseType.type,
+          response.response.responseType.fromSchema,
+          "response",
+          schemaSet,
+          newSchemaMethodMap
+        );
+
         responseType = {
-          type: _responseType,
+          type: processedResponseType,
           fromSchema: response.response.responseType.fromSchema,
         };
 
-        // getting the error type
-        let _errorType = response.response.errorType.type;
-        if (!schemaSet.has(_errorType)) {
-          _errorType = snakeToCamel(
-            response.response.errorType.fromSchema + "_error"
-          );
-          newSchemaMethodMap.set(_errorType, response.response.errorType.type);
-        }
+        // Process error type
+        const processedErrorType = processTypeForSchemaGeneration(
+          response.response.errorType.type,
+          response.response.errorType.fromSchema,
+          "error",
+          schemaSet,
+          newSchemaMethodMap
+        );
+
         errorType = {
-          type: _errorType,
+          type: processedErrorType,
           fromSchema: response.response.errorType.fromSchema,
         };
       }
     }
 
-    // if not valid then it will ignore it
-    if (!requestType || !responseType || !errorType) {
-      continue;
+    // Only add valid method types
+    if (requestType && responseType && errorType) {
+      results.push({
+        request: requestType,
+        response: responseType,
+        error: errorType,
+      });
     }
-
-    results.push({
-      request: requestType,
-      response: responseType,
-      error: errorType,
-    });
   }
 
-  addNewPropertyToSchema(source, newSchemaMethodMap);
+  return { results, newSchemaMethodMap };
+}
+
+/**
+ * Main function to parse method types from OpenAPI TypeScript source
+ */
+export function parseMethodTypes(source: SourceFile): MethodType[] {
+  const schemaSet = getSchemaSet(source);
+  const operation = source.getInterfaceOrThrow(OPENAPI_TS_OPERATIONS);
+  const operationProperties = operation.getProperties();
+
+  const { results, newSchemaMethodMap } = processMethodTypes(
+    operationProperties,
+    source,
+    schemaSet
+  );
+
+  // Add new schema properties if any were generated
+  if (newSchemaMethodMap.size > 0) {
+    addNewPropertyToSchema(source, newSchemaMethodMap);
+  }
 
   return results;
 }
