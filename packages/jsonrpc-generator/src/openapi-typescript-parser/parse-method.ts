@@ -57,7 +57,7 @@ function processMethodTypes(
     // Process each method property
     for (const methodProperty of methodProperties) {
       if (methodProperty.getName() === OPENAPI_TS_OPERATION_REQUEST_BODY) {
-        const requestBody = parseRequestBody(methodProperty, source, schemaSet);
+        const requestBody = parseRequestBody(methodProperty, source);
 
         const processedType = processTypeForSchemaGeneration(
           requestBody.body.type,
@@ -75,7 +75,7 @@ function processMethodTypes(
       }
 
       if (methodProperty.getName() === OPENAPI_TS_OPERATION_RESPONSES) {
-        const response = parseResponse(methodProperty, source, schemaSet);
+        const response = parseResponse(methodProperty, source);
 
         // Process response type
         const processedResponseType = processTypeForSchemaGeneration(

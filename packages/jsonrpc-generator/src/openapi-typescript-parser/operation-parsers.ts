@@ -22,14 +22,13 @@ import { getSchemaProperty, replaceAllIndexedSchemas } from "./utils";
  */
 export function parseRequestBody(
   property: PropertySignature,
-  source: SourceFile,
-  schemaSet: Set<string>
+  source: SourceFile
 ): { body: RequestType } {
   const contentProperty = getContentFromProperty(property);
   const schemaName = getSchemaNameFromContent(contentProperty);
 
   return {
-    body: getRequestType(schemaName, source, schemaSet),
+    body: getRequestType(schemaName, source),
   };
 }
 
@@ -38,8 +37,7 @@ export function parseRequestBody(
  */
 export function parseResponse(
   property: PropertySignature,
-  source: SourceFile,
-  schemaSet: Set<string>
+  source: SourceFile
 ): {
   response: { errorType: ErrorType; responseType: ResponseType };
   schemaName: string;
@@ -52,7 +50,7 @@ export function parseResponse(
   const schemaName = getSchemaNameFromContent(contentProperty);
 
   return {
-    response: getResponseType(schemaName, source, schemaSet),
+    response: getResponseType(schemaName, source),
     schemaName,
   };
 }
@@ -89,8 +87,7 @@ export function getContentFromProperty(
  */
 export function getRequestType(
   schemaType: string,
-  source: SourceFile,
-  schemaSet: Set<string>
+  source: SourceFile
 ): RequestType {
   const schema = getSchemaProperty(
     source,
@@ -107,16 +104,10 @@ export function getRequestType(
     .getTypeNodeOrThrow()
     .getText();
 
-  const processedType = processTypeWithSchemaSet(
-    paramsType,
-    schemaSet,
-    schemaType
-  );
-
   return {
     method: removeQuotes(methodName),
-    type: processedType.type,
-    fromSchema: processedType.fromSchema,
+    type: paramsType,
+    fromSchema: schemaType,
   };
 }
 
@@ -125,8 +116,7 @@ export function getRequestType(
  */
 export function getResponseType(
   schemaType: string,
-  source: SourceFile,
-  schemaSet: Set<string>
+  source: SourceFile
 ): { errorType: ErrorType; responseType: ResponseType } {
   const schema = getSchemaProperty(
     source,
@@ -137,8 +127,8 @@ export function getResponseType(
     .getFirstDescendantByKindOrThrow(SyntaxKind.ParenthesizedType)
     .getFirstDescendantByKindOrThrow(SyntaxKind.UnionType);
 
-  let errorType: ErrorType | undefined;
   let responseType: ResponseType | undefined;
+  let errorType: ErrorType | undefined;
 
   const unionDescendants = union.getDescendants();
   for (const descendant of unionDescendants) {
@@ -150,28 +140,25 @@ export function getResponseType(
 
       if (result) {
         const resultType = result.getTypeNodeOrThrow().getText();
-        const processedType = processTypeWithSchemaSet(
-          resultType,
-          schemaSet,
-          schemaType
-        );
-        responseType = processedType;
+
+        responseType = {
+          type: resultType,
+          fromSchema: schemaType,
+        };
       }
 
       if (error) {
         const errorTypeNode = error.getTypeNodeOrThrow().getText();
-        const processedType = processTypeWithSchemaSet(
-          errorTypeNode,
-          schemaSet,
-          schemaType
-        );
-        errorType = processedType;
+        errorType = {
+          type: errorTypeNode,
+          fromSchema: schemaType,
+        };
       }
     }
   }
 
   if (!errorType || !responseType) {
-    throw new Error("Invalid response type");
+    throw new Error(`Invalid response structure for the ${schemaType}`);
   }
 
   return {
@@ -199,35 +186,12 @@ export function processTypeForSchemaGeneration(
   schemaSet: Set<string>,
   newSchemaMethodMap: Map<string, string>
 ): string {
-  if (schemaSet.has(type)) {
-    return type;
+  const replacedType = replaceAllIndexedSchemas(type);
+  if (schemaSet.has(replacedType)) {
+    return replacedType;
   }
 
   const newSchemaName = generateSchemaName(fromSchema, suffix);
   newSchemaMethodMap.set(newSchemaName, type);
   return newSchemaName;
-}
-
-/**
- * Processes a type and returns the appropriate type based on schema set
- * When the reference type is not in the schema set, it returns the raw type
- */
-export function processTypeWithSchemaSet(
-  rawType: string,
-  schemaSet: Set<string>,
-  fromSchema: string
-): { type: string; fromSchema: string } {
-  const parsedType = replaceAllIndexedSchemas(rawType);
-
-  if (schemaSet.has(parsedType)) {
-    return {
-      type: parsedType,
-      fromSchema,
-    };
-  }
-
-  return {
-    type: rawType,
-    fromSchema,
-  };
 }
