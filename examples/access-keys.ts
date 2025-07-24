@@ -5,6 +5,7 @@
  */
 
 import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
+import { AccessKeyList } from "@near-js/jsonrpc-types/schemas";
 
 async function main() {
   const transporter = jsonRpcTransporter({
@@ -32,7 +33,7 @@ async function main() {
   }
 
   // Display the access keys
-  const accessKeyList = accessKeyResponse as any;
+  const accessKeyList = accessKeyResponse as AccessKeyList;
   if (accessKeyList && accessKeyList.keys) {
     const accessKeys = accessKeyList.keys;
     for (const accessKey of accessKeys) {

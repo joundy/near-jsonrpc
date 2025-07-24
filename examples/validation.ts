@@ -7,6 +7,7 @@
 
 import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 import type { RpcClient } from "@near-js/jsonrpc-client";
+import type { AccountInfo } from "@near-js/jsonrpc-types/schemas";
 
 async function validBlockRequestExample(client: RpcClient) {
   console.log("📋 Example 1: Valid Block Request");
@@ -52,7 +53,7 @@ async function validAccountQueryExample(client: RpcClient) {
     }
   } else {
     console.log("✅ Valid query successful!");
-    const account = validAccountQuery.result as any;
+    const account = validAccountQuery.result as unknown as AccountInfo;
     console.log(`   Account ID: ${account.accountId}`);
     console.log(`   Balance: ${account.amount}`);
   }
