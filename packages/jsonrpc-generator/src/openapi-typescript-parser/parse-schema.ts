@@ -8,7 +8,10 @@ import type { SchemaType } from "../types";
 import { snakeToCamel } from "../utils";
 
 // This basically grabbing the schema types from the openapi.ts file and exporting them by its name
-export function parseSchemaTypes(source: SourceFile) {
+export function parseSchemaTypes(
+  source: SourceFile,
+  ignoreSchemaSet: Set<string>
+) {
   const componentAlias = source.getTypeAliasOrThrow(OPENAPI_TS_COMPONENTS);
 
   const typeLiteral = componentAlias.getFirstChildByKindOrThrow(
@@ -28,18 +31,16 @@ export function parseSchemaTypes(source: SourceFile) {
   const mappedSnakeCamelProperty = new Map<string, string>();
   const schemaTypes: SchemaType[] = [];
 
-  // TODO: add property mapper, to make sure the camelize and snakekies are parsed correctly
   for (const property of propertySignatures) {
-    // // ignore the json rpc schemas, it's already parsed in the parseMethods
-    // if (jsonRpcSchemaSet.has(property.getName())) {
-    //   continue;
-    // }
+    if (ignoreSchemaSet.has(property.getName())) {
+      continue;
+    }
 
     const propertyDescendants = property.getDescendantsOfKind(
       SyntaxKind.PropertySignature
     );
     if (propertyDescendants.length > 0) {
-      // TODO: optimize this, this is a heavy operation: -> https://ts-morph.com/manipulation/performance,
+      // TODO: optimize this, this is a heavy/expensive operation: -> https://ts-morph.com/manipulation/performance,
       // ^^ not necessary for the generator because it's will be used rarely, but it's a good practice
       // convert property name from snake_case to camelCase, TYPE SAFE!!
       console.info(

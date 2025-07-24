@@ -11,7 +11,15 @@ export function parseOpenapiTS(openapiTS: string) {
   const source = project.createSourceFile("__temp__openapi.ts", openapiTS);
 
   const methods = parseMethodTypes(source);
-  const schemas = parseSchemaTypes(source);
+
+  const ignoredSchemaSet = new Set<string>();
+  for (const method of methods) {
+    ignoredSchemaSet.add(method.error.fromSchema);
+    ignoredSchemaSet.add(method.response.fromSchema);
+    ignoredSchemaSet.add(method.request.fromSchema);
+  }
+
+  const schemas = parseSchemaTypes(source, ignoredSchemaSet);
 
   project.removeSourceFile(source);
 
