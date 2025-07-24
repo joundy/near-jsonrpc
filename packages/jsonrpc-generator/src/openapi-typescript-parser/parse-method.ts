@@ -30,7 +30,6 @@ function addNewPropertyToSchema(
     literal.addProperty({
       name: key,
       type: value,
-      docs: ["/**", ` * Generated from ${value}`, " */"],
     });
   }
 }
