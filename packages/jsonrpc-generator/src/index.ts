@@ -1,4 +1,4 @@
-import { getOpenApiSpec, getUniqueSchemas } from "./utils";
+import { getOpenApiSpecFromNearcore } from "./utils";
 import { generateOpenapiTS } from "./utils/openapi-ts";
 import { parseOpenapiTS } from "./openapi-typescript-parser";
 import { buildTypes } from "./builder/build-types";
@@ -10,25 +10,22 @@ import { generateZodSchemas } from "./zod-generator";
 import { buildZodSchemas } from "./builder/build-zod-schema";
 import { validateZodSchema } from "./zod-validator";
 import { MethodType, SchemaType } from "./types";
-
-const ZOD_SCHEMA_SUFFIX = "Schema";
-
-// Output paths
-const OUTPUT_BASE_PATH = "../../packages/jsonrpc-types/src";
-const TYPES_FILE = "types.ts";
-const METHODS_FILE = "methods.ts";
-const SCHEMAS_FILE = "schemas.ts";
-const ZOD_SCHEMAS_FILE = "zod-schemas.ts";
-const MAPPED_PROPERTIES_FILE = "mapped-properties.ts";
-
-// Import locations
-const SCHEMAS_LOCATION = "./schemas";
-const TYPES_LOCATION = "./types";
-const ZOD_LOCATION = "./zod-schemas";
+import {
+  ZOD_SCHEMA_SUFFIX,
+  OUTPUT_BASE_PATH,
+  TYPES_FILE,
+  METHODS_FILE,
+  SCHEMAS_FILE,
+  ZOD_SCHEMAS_FILE,
+  MAPPED_PROPERTIES_FILE,
+  SCHEMAS_LOCATION,
+  TYPES_LOCATION,
+  ZOD_LOCATION,
+} from "./constants";
 
 async function main() {
   console.info("📄 Getting OpenAPI spec from nearcore repository...");
-  const spec = await getOpenApiSpec();
+  const spec = await getOpenApiSpecFromNearcore();
 
   console.info("🔄 Generating TypeScript from OpenAPI...");
   const openapiTS = await generateOpenapiTS(spec);
@@ -58,8 +55,7 @@ async function main() {
   });
 
   console.info("🔌 Building methods...");
-  const neededSchemas = getUniqueSchemas(parsed.methods);
-  const builtMethods = buildMethods(parsed.methods, neededSchemas, {
+  const builtMethods = buildMethods(parsed.methods, {
     schemasLocation: SCHEMAS_LOCATION,
     typesLocation: TYPES_LOCATION,
     zodSchemaLocation: ZOD_LOCATION,

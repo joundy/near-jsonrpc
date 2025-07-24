@@ -1,5 +1,5 @@
 import { Project } from "ts-morph";
-import { GENERATED_COMMENT_WITH_CREDITS } from "../utils";
+import { GENERATED_COMMENT_WITH_OPENAPI_TS_CREDIT } from "./constants";
 import type { SchemaType } from "../types";
 
 export function buildSchemas(schemaTypes: SchemaType[]) {
@@ -7,7 +7,7 @@ export function buildSchemas(schemaTypes: SchemaType[]) {
 
   // create a virtual file to export the methods
   const source = project.createSourceFile("__temp__builder_schemas.ts", "");
-  source.insertStatements(0, GENERATED_COMMENT_WITH_CREDITS);
+  source.insertStatements(0, GENERATED_COMMENT_WITH_OPENAPI_TS_CREDIT);
 
   source.addTypeAliases(
     schemaTypes.map((schema) => ({
@@ -20,7 +20,7 @@ export function buildSchemas(schemaTypes: SchemaType[]) {
   source.formatText();
 
   const text = source.getFullText();
-  project.removeSourceFile(source)
+  project.removeSourceFile(source);
 
-  return text
+  return text;
 }

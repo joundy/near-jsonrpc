@@ -1,5 +1,5 @@
 import { Project } from "ts-morph";
-import { GENERATED_COMMENT } from "../utils";
+import { GENERATED_COMMENT } from "./constants";
 
 export function buildTypes() {
   const project = new Project();
