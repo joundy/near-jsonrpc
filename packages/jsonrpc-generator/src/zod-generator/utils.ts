@@ -1,7 +1,3 @@
-export function removeDuplicates<T>(array: T[]): T[] {
-  return [...new Set(array)];
-}
-
 /**
  * Detects circular dependencies in a dependency graph using DFS
  */
@@ -136,18 +132,4 @@ export function findMostCommonStringInCircles(
 
   const groups = groupCircularDependencies(circularDependencies);
   return groups.map(findMostCommonInGroup);
-}
-
-/**
- * Creates a type-safe error with context information
- */
-export function createError(
-  message: string,
-  context?: Record<string, unknown>
-): Error {
-  const error = new Error(message);
-  if (context) {
-    (error as any).context = context;
-  }
-  return error;
 }

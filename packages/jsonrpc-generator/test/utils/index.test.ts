@@ -4,7 +4,7 @@ import {
   snakeToCamel,
   getOpenApiSpecFromNearcore,
   getOpenApiSpecFromLocal,
-} from "./index";
+} from "../../src/utils/index";
 import { readFileSync } from "fs";
 
 // Mock fs module
