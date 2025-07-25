@@ -29,11 +29,6 @@ export function buildMethods(
   source.insertStatements(0, GENERATED_COMMENT);
 
   source.addImportDeclaration({
-    moduleSpecifier: "zod/v4",
-    namedImports: ["z"],
-  });
-
-  source.addImportDeclaration({
     moduleSpecifier: options.typesLocation,
     namedImports: ["defineMethod"],
   });
@@ -62,7 +57,7 @@ export function buildMethods(
             initializer: (writer) => {
               writer
                 .write(
-                  `defineMethod<${method.request.type}, ${method.response.type}, RpcError>(`
+                  `defineMethod<${method.request.type}, ${method.response.type}, ${method.error.type}>(`
                 )
                 .quote(method.request.method)
                 .write(", ")

@@ -3,8 +3,10 @@ import { GENERATED_COMMENT } from "./constants";
 import type { ZodSchemaType } from "../types";
 
 export type BuildZodSchemasOptions = {
-  schemasLocation: string;
-  schemaDependencies: string[];
+  schemaDependency?: {
+    location: string;
+    dependencies: string[];
+  };
 };
 
 export function buildZodSchemas(
@@ -22,11 +24,13 @@ export function buildZodSchemas(
     namedImports: ["z"],
   });
 
-  source.addImportDeclaration({
-    moduleSpecifier: options.schemasLocation,
-    namedImports: options.schemaDependencies,
-    isTypeOnly: true,
-  });
+  if (options.schemaDependency) {
+    source.addImportDeclaration({
+      moduleSpecifier: options.schemaDependency.location,
+      namedImports: options.schemaDependency.dependencies,
+      isTypeOnly: true,
+    });
+  }
 
   source.addVariableStatements(
     zodSchemasTypes.map((schema) => {

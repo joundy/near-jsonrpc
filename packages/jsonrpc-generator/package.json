@@ -24,15 +24,19 @@
     "clean": "rm -rf dist",
     "check-types": "tsc --noEmit",
     "generate": "tsx src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "openapi-typescript": "7.8.0",
     "ts-morph": "^26.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.14",
+    "babel-jest": "^30.0.5",
     "expect-type": "^1.2.2",
     "jest": "^30.0.5",
     "patch-package": "^8.0.0",

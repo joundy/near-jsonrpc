@@ -1,0 +1,125 @@
+{
+    "zodSchemas": [
+        {
+            "schema": "AccountIdZodSchema",
+            "type": "z.string()"
+        },
+        {
+            "schema": "BandwidthRequestZodSchema",
+            "type": "z.object({\n    requestedValuesBitmap: z.lazy(() => BandwidthRequestBitmapZodSchema),\n    toShard: z.number()\n  })"
+        },
+        {
+            "schema": "BandwidthRequestBitmapZodSchema",
+            "type": "z.object({\n    data: z.array(z.number())\n  })"
+        },
+        {
+            "schema": "BandwidthRequestsZodSchema",
+            "type": "z.object({\n    V1: z.lazy(() => BandwidthRequestsV1ZodSchema)\n  })"
+        },
+        {
+            "schema": "BandwidthRequestsV1ZodSchema",
+            "type": "z.object({\n    requests: z.array(BandwidthRequestZodSchema)\n  })"
+        },
+        {
+            "schema": "BlockHeaderViewZodSchema",
+            "type": "z.object({\n    approvals: z.array(z.union([z.lazy(() => SignatureZodSchema), z.null()])),\n    blockBodyHash: z.union([z.lazy(() => CryptoHashZodSchema), z.null()]).optional(),\n    blockMerkleRoot: z.lazy(() => CryptoHashZodSchema),\n    blockOrdinal: z.union([z.number(), z.null()]).optional(),\n    challengesResult: z.array(z.lazy(() => SlashedValidatorZodSchema)),\n    challengesRoot: z.lazy(() => CryptoHashZodSchema),\n    chunkEndorsements: z.union([z.array(z.array(z.number())), z.null()]).optional(),\n    chunkHeadersRoot: z.lazy(() => CryptoHashZodSchema),\n    chunkMask: z.array(z.boolean()),\n    chunkReceiptsRoot: z.lazy(() => CryptoHashZodSchema),\n    chunkTxRoot: z.lazy(() => CryptoHashZodSchema),\n    chunksIncluded: z.number(),\n    epochId: z.lazy(() => CryptoHashZodSchema),\n    epochSyncDataHash: z.union([z.lazy(() => CryptoHashZodSchema), z.null()]).optional(),\n    gasPrice: z.string(),\n    hash: z.lazy(() => CryptoHashZodSchema),\n    height: z.number(),\n    lastDsFinalBlock: z.lazy(() => CryptoHashZodSchema),\n    lastFinalBlock: z.lazy(() => CryptoHashZodSchema),\n    latestProtocolVersion: z.number(),\n    nextBpHash: z.lazy(() => CryptoHashZodSchema),\n    nextEpochId: z.lazy(() => CryptoHashZodSchema),\n    outcomeRoot: z.lazy(() => CryptoHashZodSchema),\n    prevHash: z.lazy(() => CryptoHashZodSchema),\n    prevHeight: z.union([z.number(), z.null()]).optional(),\n    prevStateRoot: z.lazy(() => CryptoHashZodSchema),\n    randomValue: z.lazy(() => CryptoHashZodSchema),\n    rentPaid: z.string(),\n    signature: z.lazy(() => SignatureZodSchema),\n    timestamp: z.number(),\n    timestampNanosec: z.string(),\n    totalSupply: z.string(),\n    validatorProposals: z.array(z.lazy(() => ValidatorStakeViewZodSchema)),\n    validatorReward: z.string()\n  })"
+        },
+        {
+            "schema": "BlockIdZodSchema",
+            "type": "z.union([z.number(), z.lazy(() => CryptoHashZodSchema)])"
+        },
+        {
+            "schema": "ChunkHeaderViewZodSchema",
+            "type": "z.object({\n    balanceBurnt: z.string(),\n    bandwidthRequests: z.union([BandwidthRequestsZodSchema, z.null()]).optional(),\n    chunkHash: z.lazy(() => CryptoHashZodSchema),\n    congestionInfo: z.union([z.lazy(() => CongestionInfoViewZodSchema), z.null()]).optional(),\n    encodedLength: z.number(),\n    encodedMerkleRoot: z.lazy(() => CryptoHashZodSchema),\n    gasLimit: z.number(),\n    gasUsed: z.number(),\n    heightCreated: z.number(),\n    heightIncluded: z.number(),\n    outcomeRoot: z.lazy(() => CryptoHashZodSchema),\n    outgoingReceiptsRoot: z.lazy(() => CryptoHashZodSchema),\n    prevBlockHash: z.lazy(() => CryptoHashZodSchema),\n    prevStateRoot: z.lazy(() => CryptoHashZodSchema),\n    rentPaid: z.string(),\n    shardId: z.lazy(() => ShardIdZodSchema),\n    signature: z.lazy(() => SignatureZodSchema),\n    txRoot: z.lazy(() => CryptoHashZodSchema),\n    validatorProposals: z.array(z.lazy(() => ValidatorStakeViewZodSchema)),\n    validatorReward: z.string()\n  })"
+        },
+        {
+            "schema": "CongestionInfoViewZodSchema",
+            "type": "z.object({\n    allowedShard: z.number(),\n    bufferedReceiptsGas: z.string(),\n    delayedReceiptsGas: z.string(),\n    receiptBytes: z.number()\n  })"
+        },
+        {
+            "schema": "CryptoHashZodSchema",
+            "type": "z.string()"
+        },
+        {
+            "schema": "FinalityZodSchema",
+            "type": "z.union([z.literal(\"optimistic\"), z.literal(\"near-final\"), z.literal(\"final\")])"
+        },
+        {
+            "schema": "PublicKeyZodSchema",
+            "type": "z.string()"
+        },
+        {
+            "schema": "Range_of_uint64ZodSchema",
+            "type": "z.object({\n    end: z.number(),\n    start: z.number()\n  })"
+        },
+        {
+            "schema": "RpcBlockRequestZodSchema",
+            "type": "z.union([z.object({\n    blockId: BlockIdZodSchema\n  }), z.object({\n    finality: FinalityZodSchema\n  }), z.object({\n    syncCheckpoint: z.lazy(() => SyncCheckpointZodSchema)\n  })])"
+        },
+        {
+            "schema": "RpcBlockResponseZodSchema",
+            "type": "z.object({\n    author: AccountIdZodSchema,\n    chunks: z.array(ChunkHeaderViewZodSchema),\n    header: BlockHeaderViewZodSchema\n  })"
+        },
+        {
+            "schema": "RpcErrorZodSchema",
+            "type": "z.object({\n    cause: z.unknown().optional(),\n    code: z.number(),\n    data: z.unknown().optional(),\n    message: z.string(),\n    name: z.unknown().optional()\n  }).and(z.union([z.object({\n    cause: z.lazy(() => RpcRequestValidationErrorKindZodSchema),\n    name: z.literal(\"REQUEST_VALIDATION_ERROR\")\n  }), z.object({\n    cause: z.unknown(),\n    name: z.literal(\"HANDLER_ERROR\")\n  }), z.object({\n    cause: z.unknown(),\n    name: z.literal(\"INTERNAL_ERROR\")\n  })]))"
+        },
+        {
+            "schema": "RpcHealthRequestZodSchema",
+            "type": "z.null()"
+        },
+        {
+            "schema": "RpcHealthResponseZodSchema",
+            "type": "z.null()"
+        },
+        {
+            "schema": "RpcMaintenanceWindowsRequestZodSchema",
+            "type": "z.object({\n    accountId: AccountIdZodSchema\n  })"
+        },
+        {
+            "schema": "RpcRequestValidationErrorKindZodSchema",
+            "type": "z.union([z.object({\n    info: z.object({\n    methodName: z.string()\n  }),\n    name: z.literal(\"METHOD_NOT_FOUND\")\n  }), z.object({\n    info: z.object({\n    errorMessage: z.string()\n  }),\n    name: z.literal(\"PARSE_ERROR\")\n  })])"
+        },
+        {
+            "schema": "RpcValidatorsOrderedRequestZodSchema",
+            "type": "z.object({\n    blockId: z.union([BlockIdZodSchema, z.null()]).optional()\n  })"
+        },
+        {
+            "schema": "ShardIdZodSchema",
+            "type": "z.number()"
+        },
+        {
+            "schema": "SignatureZodSchema",
+            "type": "z.string()"
+        },
+        {
+            "schema": "SlashedValidatorZodSchema",
+            "type": "z.object({\n    accountId: AccountIdZodSchema,\n    isDoubleSign: z.boolean()\n  })"
+        },
+        {
+            "schema": "SyncCheckpointZodSchema",
+            "type": "z.union([z.literal(\"genesis\"), z.literal(\"earliest_available\")])"
+        },
+        {
+            "schema": "ValidatorStakeViewZodSchema",
+            "type": "z.object({\n    validatorStakeStructVersion: z.literal(\"V1\")\n  }).and(z.lazy(() => ValidatorStakeViewV1ZodSchema))"
+        },
+        {
+            "schema": "ValidatorStakeViewV1ZodSchema",
+            "type": "z.object({\n    accountId: AccountIdZodSchema,\n    publicKey: PublicKeyZodSchema,\n    stake: z.string()\n  })"
+        },
+        {
+            "schema": "JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponseZodSchema",
+            "type": "z.array(Range_of_uint64ZodSchema)"
+        },
+        {
+            "schema": "JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponseZodSchema",
+            "type": "z.array(ValidatorStakeViewZodSchema)"
+        },
+        {
+            "schema": "JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponseZodSchema",
+            "type": "z.union([RpcHealthResponseZodSchema, z.null()])"
+        }
+    ],
+    "dependencies": []
+}

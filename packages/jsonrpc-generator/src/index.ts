@@ -50,8 +50,13 @@ async function main() {
   const zodSchemas = generateZodSchemas(builtSchemas, ZOD_SCHEMA_SUFFIX);
 
   const builtZodSchemas = buildZodSchemas(zodSchemas.zodSchemas, {
-    schemasLocation: SCHEMAS_LOCATION,
-    schemaDependencies: zodSchemas.dependencies,
+    schemaDependency:
+      zodSchemas.dependencies.length > 0
+        ? {
+            location: SCHEMAS_LOCATION,
+            dependencies: zodSchemas.dependencies,
+          }
+        : undefined,
   });
 
   console.info("🔌 Building methods...");
