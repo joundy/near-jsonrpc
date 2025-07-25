@@ -180,7 +180,7 @@ async function main() {
   });
 
   // Create client with runtime validation enabled
-  const client = createClient(transporter, true);
+  const client = createClient({ transporter, runtimeValidation: true });
 
   console.log("🛡️ NEAR JSON-RPC Client - Type-Safe & Zod Validation Example\n");
 
