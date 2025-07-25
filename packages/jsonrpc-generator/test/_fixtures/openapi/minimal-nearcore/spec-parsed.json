@@ -1,0 +1,247 @@
+{
+    "schemas": {
+        "schemaTypes": [
+            {
+                "schema": "AccountId",
+                "type": "string"
+            },
+            {
+                "schema": "BandwidthRequest",
+                "type": "{\n            /** @description Bitmap which describes what values of bandwidth are requested. */\n            requestedValuesBitmap: BandwidthRequestBitmap;\n            /**\n             * Format: uint16\n             * @description Requesting bandwidth to this shard.\n             */\n            toShard: number;\n        }"
+            },
+            {
+                "schema": "BandwidthRequestBitmap",
+                "type": "{\n            data: number[];\n        }"
+            },
+            {
+                "schema": "BandwidthRequests",
+                "type": "{\n            V1: BandwidthRequestsV1;\n        }"
+            },
+            {
+                "schema": "BandwidthRequestsV1",
+                "type": "{\n            requests: BandwidthRequest[];\n        }"
+            },
+            {
+                "schema": "BlockHeaderView",
+                "type": "{\n            approvals: (Signature | (null))[];\n            blockBodyHash?: CryptoHash | (null);\n            blockMerkleRoot: CryptoHash;\n            /** Format: uint64 */\n            blockOrdinal?: number | null;\n            challengesResult: SlashedValidator[];\n            challengesRoot: CryptoHash;\n            chunkEndorsements?: number[][] | null;\n            chunkHeadersRoot: CryptoHash;\n            chunkMask: boolean[];\n            chunkReceiptsRoot: CryptoHash;\n            chunkTxRoot: CryptoHash;\n            /** Format: uint64 */\n            chunksIncluded: number;\n            epochId: CryptoHash;\n            epochSyncDataHash?: CryptoHash | (null);\n            gasPrice: string;\n            hash: CryptoHash;\n            /** Format: uint64 */\n            height: number;\n            lastDsFinalBlock: CryptoHash;\n            lastFinalBlock: CryptoHash;\n            /** Format: uint32 */\n            latestProtocolVersion: number;\n            nextBpHash: CryptoHash;\n            nextEpochId: CryptoHash;\n            outcomeRoot: CryptoHash;\n            /** @description The hash of the previous Block */\n            prevHash: CryptoHash;\n            /** Format: uint64 */\n            prevHeight?: number | null;\n            prevStateRoot: CryptoHash;\n            randomValue: CryptoHash;\n            /** @description TODO(2271): deprecated. */\n            rentPaid: string;\n            /** @description Signature of the block producer. */\n            signature: Signature;\n            /**\n             * Format: uint64\n             * @description Legacy json number. Should not be used.\n             */\n            timestamp: number;\n            timestampNanosec: string;\n            totalSupply: string;\n            validatorProposals: ValidatorStakeView[];\n            /** @description TODO(2271): deprecated. */\n            validatorReward: string;\n        }"
+            },
+            {
+                "schema": "BlockId",
+                "type": "number | CryptoHash"
+            },
+            {
+                "schema": "ChunkHeaderView",
+                "type": "{\n            balanceBurnt: string;\n            bandwidthRequests?: BandwidthRequests | (null);\n            chunkHash: CryptoHash;\n            congestionInfo?: CongestionInfoView | (null);\n            /** Format: uint64 */\n            encodedLength: number;\n            encodedMerkleRoot: CryptoHash;\n            /** Format: uint64 */\n            gasLimit: number;\n            /** Format: uint64 */\n            gasUsed: number;\n            /** Format: uint64 */\n            heightCreated: number;\n            /** Format: uint64 */\n            heightIncluded: number;\n            outcomeRoot: CryptoHash;\n            outgoingReceiptsRoot: CryptoHash;\n            prevBlockHash: CryptoHash;\n            prevStateRoot: CryptoHash;\n            /** @description TODO(2271): deprecated. */\n            rentPaid: string;\n            shardId: ShardId;\n            signature: Signature;\n            txRoot: CryptoHash;\n            validatorProposals: ValidatorStakeView[];\n            /** @description TODO(2271): deprecated. */\n            validatorReward: string;\n        }"
+            },
+            {
+                "schema": "CongestionInfoView",
+                "type": "{\n            /** Format: uint16 */\n            allowedShard: number;\n            bufferedReceiptsGas: string;\n            delayedReceiptsGas: string;\n            /** Format: uint64 */\n            receiptBytes: number;\n        }"
+            },
+            {
+                "schema": "CryptoHash",
+                "type": "string"
+            },
+            {
+                "schema": "Finality",
+                "type": "\"optimistic\" | \"near-final\" | \"final\""
+            },
+            {
+                "schema": "PublicKey",
+                "type": "string"
+            },
+            {
+                "schema": "Range_of_uint64",
+                "type": "{\n            /** Format: uint64 */\n            end: number;\n            /** Format: uint64 */\n            start: number;\n        }"
+            },
+            {
+                "schema": "RpcBlockRequest",
+                "type": "{\n            blockId: BlockId;\n        } | {\n            finality: Finality;\n        } | {\n            syncCheckpoint: SyncCheckpoint;\n        }"
+            },
+            {
+                "schema": "RpcBlockResponse",
+                "type": "{\n            /** @description The AccountId of the author of the Block */\n            author: AccountId;\n            chunks: ChunkHeaderView[];\n            header: BlockHeaderView;\n        }"
+            },
+            {
+                "schema": "RpcError",
+                "type": "{\n            cause?: unknown;\n            /**\n             * Format: int64\n             * @description Deprecated please use the `error_struct` instead\n             */\n            code: number;\n            /** @description Deprecated please use the `error_struct` instead */\n            data?: unknown;\n            /** @description Deprecated please use the `error_struct` instead */\n            message: string;\n            name?: unknown;\n        } & ({\n            cause: RpcRequestValidationErrorKind;\n            /** @enum {string} */\n            name: \"REQUEST_VALIDATION_ERROR\";\n        } | {\n            cause: unknown;\n            /** @enum {string} */\n            name: \"HANDLER_ERROR\";\n        } | {\n            cause: unknown;\n            /** @enum {string} */\n            name: \"INTERNAL_ERROR\";\n        })"
+            },
+            {
+                "schema": "RpcHealthRequest",
+                "type": "null"
+            },
+            {
+                "schema": "RpcHealthResponse",
+                "type": "null"
+            },
+            {
+                "schema": "RpcMaintenanceWindowsRequest",
+                "type": "{\n            accountId: AccountId;\n        }"
+            },
+            {
+                "schema": "RpcRequestValidationErrorKind",
+                "type": "{\n            info: {\n                methodName: string;\n            };\n            /** @enum {string} */\n            name: \"METHOD_NOT_FOUND\";\n        } | {\n            info: {\n                errorMessage: string;\n            };\n            /** @enum {string} */\n            name: \"PARSE_ERROR\";\n        }"
+            },
+            {
+                "schema": "RpcValidatorsOrderedRequest",
+                "type": "{\n            blockId?: BlockId | (null);\n        }"
+            },
+            {
+                "schema": "ShardId",
+                "type": "number"
+            },
+            {
+                "schema": "Signature",
+                "type": "string"
+            },
+            {
+                "schema": "SlashedValidator",
+                "type": "{\n            accountId: AccountId;\n            isDoubleSign: boolean;\n        }"
+            },
+            {
+                "schema": "SyncCheckpoint",
+                "type": "\"genesis\" | \"earliest_available\""
+            },
+            {
+                "schema": "ValidatorStakeView",
+                "type": "{\n            /** @enum {string} */\n            validatorStakeStructVersion: \"V1\";\n        } & ValidatorStakeViewV1"
+            },
+            {
+                "schema": "ValidatorStakeViewV1",
+                "type": "{\n            accountId: AccountId;\n            publicKey: PublicKey;\n            stake: string;\n        }"
+            },
+            {
+                "schema": "JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse",
+                "type": "Range_of_uint64[]"
+            },
+            {
+                "schema": "JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse",
+                "type": "ValidatorStakeView[]"
+            },
+            {
+                "schema": "JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse",
+                "type": "RpcHealthResponse | (null)"
+            }
+        ],
+        "mappedSnakeCamelProperty": {
+            "requested_values_bitmap": "requestedValuesBitmap",
+            "to_shard": "toShard",
+            "block_body_hash": "blockBodyHash",
+            "block_merkle_root": "blockMerkleRoot",
+            "block_ordinal": "blockOrdinal",
+            "challenges_result": "challengesResult",
+            "challenges_root": "challengesRoot",
+            "chunk_endorsements": "chunkEndorsements",
+            "chunk_headers_root": "chunkHeadersRoot",
+            "chunk_mask": "chunkMask",
+            "chunk_receipts_root": "chunkReceiptsRoot",
+            "chunk_tx_root": "chunkTxRoot",
+            "chunks_included": "chunksIncluded",
+            "epoch_id": "epochId",
+            "epoch_sync_data_hash": "epochSyncDataHash",
+            "gas_price": "gasPrice",
+            "last_ds_final_block": "lastDsFinalBlock",
+            "last_final_block": "lastFinalBlock",
+            "latest_protocol_version": "latestProtocolVersion",
+            "next_bp_hash": "nextBpHash",
+            "next_epoch_id": "nextEpochId",
+            "outcome_root": "outcomeRoot",
+            "prev_hash": "prevHash",
+            "prev_height": "prevHeight",
+            "prev_state_root": "prevStateRoot",
+            "random_value": "randomValue",
+            "rent_paid": "rentPaid",
+            "timestamp_nanosec": "timestampNanosec",
+            "total_supply": "totalSupply",
+            "validator_proposals": "validatorProposals",
+            "validator_reward": "validatorReward",
+            "balance_burnt": "balanceBurnt",
+            "bandwidth_requests": "bandwidthRequests",
+            "chunk_hash": "chunkHash",
+            "congestion_info": "congestionInfo",
+            "encoded_length": "encodedLength",
+            "encoded_merkle_root": "encodedMerkleRoot",
+            "gas_limit": "gasLimit",
+            "gas_used": "gasUsed",
+            "height_created": "heightCreated",
+            "height_included": "heightIncluded",
+            "outgoing_receipts_root": "outgoingReceiptsRoot",
+            "prev_block_hash": "prevBlockHash",
+            "shard_id": "shardId",
+            "tx_root": "txRoot",
+            "allowed_shard": "allowedShard",
+            "buffered_receipts_gas": "bufferedReceiptsGas",
+            "delayed_receipts_gas": "delayedReceiptsGas",
+            "receipt_bytes": "receiptBytes",
+            "block_id": "blockId",
+            "sync_checkpoint": "syncCheckpoint",
+            "account_id": "accountId",
+            "method_name": "methodName",
+            "error_message": "errorMessage",
+            "is_double_sign": "isDoubleSign",
+            "validator_stake_struct_version": "validatorStakeStructVersion",
+            "public_key": "publicKey"
+        }
+    },
+    "methods": [
+        {
+            "request": {
+                "method": "block",
+                "type": "RpcBlockRequest",
+                "fromSchema": "JsonRpcRequest_for_block"
+            },
+            "response": {
+                "type": "RpcBlockResponse",
+                "fromSchema": "JsonRpcResponse_for_RpcBlockResponse_and_RpcError"
+            },
+            "error": {
+                "type": "RpcError",
+                "fromSchema": "JsonRpcResponse_for_RpcBlockResponse_and_RpcError"
+            }
+        },
+        {
+            "request": {
+                "method": "EXPERIMENTAL_maintenance_windows",
+                "type": "RpcMaintenanceWindowsRequest",
+                "fromSchema": "JsonRpcRequest_for_EXPERIMENTAL_maintenance_windows"
+            },
+            "response": {
+                "type": "JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse",
+                "fromSchema": "JsonRpcResponse_for_Array_of_Range_of_uint64_and_RpcError"
+            },
+            "error": {
+                "type": "RpcError",
+                "fromSchema": "JsonRpcResponse_for_Array_of_Range_of_uint64_and_RpcError"
+            }
+        },
+        {
+            "request": {
+                "method": "EXPERIMENTAL_validators_ordered",
+                "type": "RpcValidatorsOrderedRequest",
+                "fromSchema": "JsonRpcRequest_for_EXPERIMENTAL_validators_ordered"
+            },
+            "response": {
+                "type": "JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse",
+                "fromSchema": "JsonRpcResponse_for_Array_of_ValidatorStakeView_and_RpcError"
+            },
+            "error": {
+                "type": "RpcError",
+                "fromSchema": "JsonRpcResponse_for_Array_of_ValidatorStakeView_and_RpcError"
+            }
+        },
+        {
+            "request": {
+                "method": "health",
+                "type": "RpcHealthRequest",
+                "fromSchema": "JsonRpcRequest_for_health"
+            },
+            "response": {
+                "type": "JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse",
+                "fromSchema": "JsonRpcResponse_for_Nullable_RpcHealthResponse_and_RpcError"
+            },
+            "error": {
+                "type": "RpcError",
+                "fromSchema": "JsonRpcResponse_for_Nullable_RpcHealthResponse_and_RpcError"
+            }
+        }
+    ]
+}
