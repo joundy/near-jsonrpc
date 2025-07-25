@@ -5,3 +5,4 @@ packages/*/lib
 packages/*/dist
 dist/
 _temp*
+coverage

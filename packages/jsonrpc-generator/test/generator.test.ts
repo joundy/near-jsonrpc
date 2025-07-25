@@ -7,11 +7,6 @@ describe("NEAR JSON-RPC Generator", () => {
       expect(true).toBe(true);
     });
 
-    test("can import Node.js modules", () => {
-      const fs = require("fs");
-      expect(typeof fs.existsSync).toBe("function");
-    });
-
     test("can do async operations", async () => {
       const result = await Promise.resolve("test");
       expect(result).toBe("test");

@@ -1,0 +1,1221 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "NEAR Protocol JSON RPC API",
+        "version": "1.1.0"
+    },
+    "paths": {
+        "/EXPERIMENTAL_maintenance_windows": {
+            "post": {
+                "description": "Returns the future windows for maintenance in current epoch for the specified account. In the maintenance windows, the node will not be block producer or chunk producer",
+                "operationId": "EXPERIMENTAL_maintenance_windows",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JsonRpcRequest_for_EXPERIMENTAL_maintenance_windows"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonRpcResponse_for_Array_of_Range_of_uint64_and_RpcError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/EXPERIMENTAL_validators_ordered": {
+            "post": {
+                "description": "Returns the current epoch validators ordered in the block producer order with repetition. This endpoint is solely used for bridge currently and is not intended for other external use cases.",
+                "operationId": "EXPERIMENTAL_validators_ordered",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JsonRpcRequest_for_EXPERIMENTAL_validators_ordered"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonRpcResponse_for_Array_of_ValidatorStakeView_and_RpcError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/block": {
+            "post": {
+                "description": "Returns block details for given height or hash",
+                "operationId": "block",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JsonRpcRequest_for_block"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonRpcResponse_for_RpcBlockResponse_and_RpcError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "post": {
+                "description": "Returns the current health status of the RPC node the client connects to.",
+                "operationId": "health",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JsonRpcRequest_for_health"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonRpcResponse_for_Nullable_RpcHealthResponse_and_RpcError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "RpcHealthRequest": {
+                "enum": [
+                    null
+                ],
+                "nullable": true,
+                "title": "RpcHealthRequest"
+            },
+            "BandwidthRequests": {
+                "description": "A list of shard's bandwidth requests.\nDescribes how much the shard would like to send to other shards.",
+                "oneOf": [
+                    {
+                        "additionalProperties": false,
+                        "properties": {
+                            "V1": {
+                                "$ref": "#/components/schemas/BandwidthRequestsV1"
+                            }
+                        },
+                        "required": [
+                            "V1"
+                        ],
+                        "type": "object"
+                    }
+                ]
+            },
+            "JsonRpcResponse_for_Array_of_ValidatorStakeView_and_RpcError": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "result": {
+                                "items": {
+                                    "$ref": "#/components/schemas/ValidatorStakeView"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "result"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "error": {
+                                "$ref": "#/components/schemas/RpcError"
+                            }
+                        },
+                        "required": [
+                            "error"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id"
+                ],
+                "title": "JsonRpcResponse_for_Array_of_ValidatorStakeView_and_RpcError",
+                "type": "object"
+            },
+            "SyncCheckpoint": {
+                "enum": [
+                    "genesis",
+                    "earliest_available"
+                ],
+                "type": "string"
+            },
+            "JsonRpcResponse_for_Nullable_RpcHealthResponse_and_RpcError": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "result": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/components/schemas/RpcHealthResponse"
+                                    },
+                                    {
+                                        "enum": [
+                                            null
+                                        ],
+                                        "nullable": true
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "result"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "error": {
+                                "$ref": "#/components/schemas/RpcError"
+                            }
+                        },
+                        "required": [
+                            "error"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id"
+                ],
+                "title": "JsonRpcResponse_for_Nullable_RpcHealthResponse_and_RpcError",
+                "type": "object"
+            },
+            "RpcError": {
+                "additionalProperties": false,
+                "description": "This struct may be returned from JSON RPC server in case of error\nIt is expected that this struct has impl From<_> all other RPC errors\nlike [RpcBlockError](crate::types::blocks::RpcBlockError)",
+                "oneOf": [
+                    {
+                        "properties": {
+                            "cause": {
+                                "$ref": "#/components/schemas/RpcRequestValidationErrorKind"
+                            },
+                            "name": {
+                                "enum": [
+                                    "REQUEST_VALIDATION_ERROR"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "cause"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "cause": {},
+                            "name": {
+                                "enum": [
+                                    "HANDLER_ERROR"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "cause"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "cause": {},
+                            "name": {
+                                "enum": [
+                                    "INTERNAL_ERROR"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "cause"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "cause": {},
+                    "code": {
+                        "description": "Deprecated please use the `error_struct` instead",
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "data": {
+                        "description": "Deprecated please use the `error_struct` instead"
+                    },
+                    "message": {
+                        "description": "Deprecated please use the `error_struct` instead",
+                        "type": "string"
+                    },
+                    "name": {}
+                },
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "type": "object"
+            },
+            "BandwidthRequestsV1": {
+                "description": "Version 1 of [`BandwidthRequest`].",
+                "properties": {
+                    "requests": {
+                        "items": {
+                            "$ref": "#/components/schemas/BandwidthRequest"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "requests"
+                ],
+                "type": "object"
+            },
+            "SlashedValidator": {
+                "properties": {
+                    "account_id": {
+                        "$ref": "#/components/schemas/AccountId"
+                    },
+                    "is_double_sign": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "account_id",
+                    "is_double_sign"
+                ],
+                "type": "object"
+            },
+            "CryptoHash": {
+                "type": "string"
+            },
+            "Finality": {
+                "description": "Different types of finality.",
+                "enum": [
+                    "optimistic",
+                    "near-final",
+                    "final"
+                ],
+                "type": "string"
+            },
+            "JsonRpcRequest_for_health": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "enum": [
+                            "health"
+                        ],
+                        "type": "string"
+                    },
+                    "params": {
+                        "$ref": "#/components/schemas/RpcHealthRequest"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id",
+                    "params",
+                    "method"
+                ],
+                "title": "JsonRpcRequest_for_health",
+                "type": "object"
+            },
+            "BlockId": {
+                "anyOf": [
+                    {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "title": "block_height",
+                        "type": "integer"
+                    },
+                    {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    }
+                ]
+            },
+            "ShardId": {
+                "description": "The shard identifier. It may be an arbitrary number - it does not need to be\na number in the range 0..NUM_SHARDS. The shard ids do not need to be\nsequential or contiguous.\n\nThe shard id is wrapped in a new type to prevent the old pattern of using\nindices in range 0..NUM_SHARDS and casting to ShardId. Once the transition\nif fully complete it potentially may be simplified to a regular type alias.",
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+            },
+            "BlockHeaderView": {
+                "description": "Contains main info about the block.",
+                "properties": {
+                    "approvals": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/Signature"
+                                },
+                                {
+                                    "enum": [
+                                        null
+                                    ],
+                                    "nullable": true
+                                }
+                            ]
+                        },
+                        "type": "array"
+                    },
+                    "block_body_hash": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CryptoHash"
+                            },
+                            {
+                                "enum": [
+                                    null
+                                ],
+                                "nullable": true
+                            }
+                        ]
+                    },
+                    "block_merkle_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "block_ordinal": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "challenges_result": {
+                        "items": {
+                            "$ref": "#/components/schemas/SlashedValidator"
+                        },
+                        "type": "array"
+                    },
+                    "challenges_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "chunk_endorsements": {
+                        "items": {
+                            "items": {
+                                "format": "uint8",
+                                "maximum": 255,
+                                "minimum": 0,
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
+                    "chunk_headers_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "chunk_mask": {
+                        "items": {
+                            "type": "boolean"
+                        },
+                        "type": "array"
+                    },
+                    "chunk_receipts_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "chunk_tx_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "chunks_included": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "epoch_id": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "epoch_sync_data_hash": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CryptoHash"
+                            },
+                            {
+                                "enum": [
+                                    null
+                                ],
+                                "nullable": true
+                            }
+                        ]
+                    },
+                    "gas_price": {
+                        "type": "string"
+                    },
+                    "hash": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "height": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "last_ds_final_block": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "last_final_block": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "latest_protocol_version": {
+                        "format": "uint32",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "next_bp_hash": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "next_epoch_id": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "outcome_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "prev_hash": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CryptoHash"
+                            }
+                        ],
+                        "description": "The hash of the previous Block"
+                    },
+                    "prev_height": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "prev_state_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "random_value": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "rent_paid": {
+                        "description": "TODO(2271): deprecated.",
+                        "type": "string"
+                    },
+                    "signature": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Signature"
+                            }
+                        ],
+                        "description": "Signature of the block producer."
+                    },
+                    "timestamp": {
+                        "description": "Legacy json number. Should not be used.",
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "timestamp_nanosec": {
+                        "type": "string"
+                    },
+                    "total_supply": {
+                        "type": "string"
+                    },
+                    "validator_proposals": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidatorStakeView"
+                        },
+                        "type": "array"
+                    },
+                    "validator_reward": {
+                        "description": "TODO(2271): deprecated.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "height",
+                    "epoch_id",
+                    "next_epoch_id",
+                    "hash",
+                    "prev_hash",
+                    "prev_state_root",
+                    "chunk_receipts_root",
+                    "chunk_headers_root",
+                    "chunk_tx_root",
+                    "outcome_root",
+                    "chunks_included",
+                    "challenges_root",
+                    "timestamp",
+                    "timestamp_nanosec",
+                    "random_value",
+                    "validator_proposals",
+                    "chunk_mask",
+                    "gas_price",
+                    "rent_paid",
+                    "validator_reward",
+                    "total_supply",
+                    "challenges_result",
+                    "last_final_block",
+                    "last_ds_final_block",
+                    "next_bp_hash",
+                    "block_merkle_root",
+                    "approvals",
+                    "signature",
+                    "latest_protocol_version"
+                ],
+                "type": "object"
+            },
+            "RpcBlockResponse": {
+                "properties": {
+                    "author": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/AccountId"
+                            }
+                        ],
+                        "description": "The AccountId of the author of the Block"
+                    },
+                    "chunks": {
+                        "items": {
+                            "$ref": "#/components/schemas/ChunkHeaderView"
+                        },
+                        "type": "array"
+                    },
+                    "header": {
+                        "$ref": "#/components/schemas/BlockHeaderView"
+                    }
+                },
+                "required": [
+                    "author",
+                    "header",
+                    "chunks"
+                ],
+                "type": "object"
+            },
+            "RpcRequestValidationErrorKind": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "info": {
+                                "properties": {
+                                    "method_name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "method_name"
+                                ],
+                                "type": "object"
+                            },
+                            "name": {
+                                "enum": [
+                                    "METHOD_NOT_FOUND"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "info"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "info": {
+                                "properties": {
+                                    "error_message": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "error_message"
+                                ],
+                                "type": "object"
+                            },
+                            "name": {
+                                "enum": [
+                                    "PARSE_ERROR"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "info"
+                        ],
+                        "type": "object"
+                    }
+                ]
+            },
+            "ChunkHeaderView": {
+                "description": "Contains main info about the chunk.",
+                "properties": {
+                    "balance_burnt": {
+                        "type": "string"
+                    },
+                    "bandwidth_requests": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BandwidthRequests"
+                            },
+                            {
+                                "enum": [
+                                    null
+                                ],
+                                "nullable": true
+                            }
+                        ]
+                    },
+                    "chunk_hash": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "congestion_info": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CongestionInfoView"
+                            },
+                            {
+                                "enum": [
+                                    null
+                                ],
+                                "nullable": true
+                            }
+                        ]
+                    },
+                    "encoded_length": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "encoded_merkle_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "gas_limit": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "gas_used": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "height_created": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "height_included": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "outcome_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "outgoing_receipts_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "prev_block_hash": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "prev_state_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "rent_paid": {
+                        "description": "TODO(2271): deprecated.",
+                        "type": "string"
+                    },
+                    "shard_id": {
+                        "$ref": "#/components/schemas/ShardId"
+                    },
+                    "signature": {
+                        "$ref": "#/components/schemas/Signature"
+                    },
+                    "tx_root": {
+                        "$ref": "#/components/schemas/CryptoHash"
+                    },
+                    "validator_proposals": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidatorStakeView"
+                        },
+                        "type": "array"
+                    },
+                    "validator_reward": {
+                        "description": "TODO(2271): deprecated.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "chunk_hash",
+                    "prev_block_hash",
+                    "outcome_root",
+                    "prev_state_root",
+                    "encoded_merkle_root",
+                    "encoded_length",
+                    "height_created",
+                    "height_included",
+                    "shard_id",
+                    "gas_used",
+                    "gas_limit",
+                    "rent_paid",
+                    "validator_reward",
+                    "balance_burnt",
+                    "outgoing_receipts_root",
+                    "tx_root",
+                    "validator_proposals",
+                    "signature"
+                ],
+                "type": "object"
+            },
+            "RpcHealthResponse": {
+                "enum": [
+                    null
+                ],
+                "nullable": true
+            },
+            "Signature": {
+                "type": "string"
+            },
+            "PublicKey": {
+                "type": "string"
+            },
+            "RpcBlockRequest": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "block_id": {
+                                "$ref": "#/components/schemas/BlockId"
+                            }
+                        },
+                        "required": [
+                            "block_id"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "finality": {
+                                "$ref": "#/components/schemas/Finality"
+                            }
+                        },
+                        "required": [
+                            "finality"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "sync_checkpoint": {
+                                "$ref": "#/components/schemas/SyncCheckpoint"
+                            }
+                        },
+                        "required": [
+                            "sync_checkpoint"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "title": "RpcBlockRequest",
+                "type": "object"
+            },
+            "BandwidthRequest": {
+                "description": "`BandwidthRequest` describes the size of receipts that a shard would like to send to another shard.\nWhen a shard wants to send a lot of receipts to another shard, it needs to create a request and wait\nfor a bandwidth grant from the bandwidth scheduler.",
+                "properties": {
+                    "requested_values_bitmap": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/BandwidthRequestBitmap"
+                            }
+                        ],
+                        "description": "Bitmap which describes what values of bandwidth are requested."
+                    },
+                    "to_shard": {
+                        "description": "Requesting bandwidth to this shard.",
+                        "format": "uint16",
+                        "maximum": 65535,
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "to_shard",
+                    "requested_values_bitmap"
+                ],
+                "type": "object"
+            },
+            "BandwidthRequestBitmap": {
+                "description": "Bitmap which describes which values from the predefined list are being requested.\nThe nth bit is set to 1 when the nth value from the list is being requested.",
+                "properties": {
+                    "data": {
+                        "items": {
+                            "format": "uint8",
+                            "maximum": 255,
+                            "minimum": 0,
+                            "type": "integer"
+                        },
+                        "maxItems": 5,
+                        "minItems": 5,
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "type": "object"
+            },
+            "ValidatorStakeViewV1": {
+                "properties": {
+                    "account_id": {
+                        "$ref": "#/components/schemas/AccountId"
+                    },
+                    "public_key": {
+                        "$ref": "#/components/schemas/PublicKey"
+                    },
+                    "stake": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "account_id",
+                    "public_key",
+                    "stake"
+                ],
+                "type": "object"
+            },
+            "RpcMaintenanceWindowsRequest": {
+                "properties": {
+                    "account_id": {
+                        "$ref": "#/components/schemas/AccountId"
+                    }
+                },
+                "required": [
+                    "account_id"
+                ],
+                "title": "RpcMaintenanceWindowsRequest",
+                "type": "object"
+            },
+            "RpcValidatorsOrderedRequest": {
+                "properties": {
+                    "block_id": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BlockId"
+                            },
+                            {
+                                "enum": [
+                                    null
+                                ],
+                                "nullable": true
+                            }
+                        ]
+                    }
+                },
+                "title": "RpcValidatorsOrderedRequest",
+                "type": "object"
+            },
+            "JsonRpcResponse_for_RpcBlockResponse_and_RpcError": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "result": {
+                                "$ref": "#/components/schemas/RpcBlockResponse"
+                            }
+                        },
+                        "required": [
+                            "result"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "error": {
+                                "$ref": "#/components/schemas/RpcError"
+                            }
+                        },
+                        "required": [
+                            "error"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id"
+                ],
+                "title": "JsonRpcResponse_for_RpcBlockResponse_and_RpcError",
+                "type": "object"
+            },
+            "CongestionInfoView": {
+                "description": "Stores the congestion level of a shard. More info about congestion [here](https://near.github.io/nearcore/architecture/how/receipt-congestion.html?highlight=congestion#receipt-congestion)",
+                "properties": {
+                    "allowed_shard": {
+                        "format": "uint16",
+                        "maximum": 65535,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "buffered_receipts_gas": {
+                        "type": "string"
+                    },
+                    "delayed_receipts_gas": {
+                        "type": "string"
+                    },
+                    "receipt_bytes": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "delayed_receipts_gas",
+                    "buffered_receipts_gas",
+                    "receipt_bytes",
+                    "allowed_shard"
+                ],
+                "type": "object"
+            },
+            "Range_of_uint64": {
+                "properties": {
+                    "end": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "start": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "start",
+                    "end"
+                ],
+                "type": "object"
+            },
+            "JsonRpcRequest_for_block": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "enum": [
+                            "block"
+                        ],
+                        "type": "string"
+                    },
+                    "params": {
+                        "$ref": "#/components/schemas/RpcBlockRequest"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id",
+                    "params",
+                    "method"
+                ],
+                "title": "JsonRpcRequest_for_block",
+                "type": "object"
+            },
+            "ValidatorStakeView": {
+                "oneOf": [
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/ValidatorStakeViewV1"
+                            }
+                        ],
+                        "properties": {
+                            "validator_stake_struct_version": {
+                                "enum": [
+                                    "V1"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "validator_stake_struct_version"
+                        ],
+                        "type": "object"
+                    }
+                ]
+            },
+            "JsonRpcResponse_for_Array_of_Range_of_uint64_and_RpcError": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "result": {
+                                "items": {
+                                    "$ref": "#/components/schemas/Range_of_uint64"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "result"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "error": {
+                                "$ref": "#/components/schemas/RpcError"
+                            }
+                        },
+                        "required": [
+                            "error"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id"
+                ],
+                "title": "JsonRpcResponse_for_Array_of_Range_of_uint64_and_RpcError",
+                "type": "object"
+            },
+            "JsonRpcRequest_for_EXPERIMENTAL_maintenance_windows": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "enum": [
+                            "EXPERIMENTAL_maintenance_windows"
+                        ],
+                        "type": "string"
+                    },
+                    "params": {
+                        "$ref": "#/components/schemas/RpcMaintenanceWindowsRequest"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id",
+                    "params",
+                    "method"
+                ],
+                "title": "JsonRpcRequest_for_EXPERIMENTAL_maintenance_windows",
+                "type": "object"
+            },
+            "JsonRpcRequest_for_EXPERIMENTAL_validators_ordered": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "jsonrpc": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "enum": [
+                            "EXPERIMENTAL_validators_ordered"
+                        ],
+                        "type": "string"
+                    },
+                    "params": {
+                        "$ref": "#/components/schemas/RpcValidatorsOrderedRequest"
+                    }
+                },
+                "required": [
+                    "jsonrpc",
+                    "id",
+                    "params",
+                    "method"
+                ],
+                "title": "JsonRpcRequest_for_EXPERIMENTAL_validators_ordered",
+                "type": "object"
+            },
+            "AccountId": {
+                "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n```\nuse near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"\u0192elicia.near\".parse::<AccountId>().is_err()); // (\u0192 is not f)\n```",
+                "type": "string"
+            }
+        }
+    }
+}
