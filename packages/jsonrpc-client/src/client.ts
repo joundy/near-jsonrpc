@@ -1,12 +1,23 @@
 import * as methods from "@near-js/jsonrpc-types/methods";
 import { z } from "zod/v4";
-import type { RpcClient, RuntimeValidation, Transporter } from "./types";
+import type {
+  RpcClient,
+  RuntimeValidation,
+  SelectiveRpcClient,
+  CreateClientWithMethodsConfig,
+  CreateClientConfig,
+} from "./types";
 import { RuntimeValidationType } from "./types";
 import {
   transformCamelToSnake,
   transformSnakeToCamel,
 } from "./transform-property";
-import { ErrorType, RequestType, ResponseType } from "@near-js/jsonrpc-types";
+import {
+  ErrorType,
+  RequestType,
+  ResponseType,
+  Method,
+} from "@near-js/jsonrpc-types";
 import { JSON_RPC_TRANSPORTER_ERROR_CODE } from "./transporter";
 
 function preProces(request: any) {
@@ -43,11 +54,33 @@ function parseZod<T>(
   }
 }
 
-export function createClient(
-  transport: Transporter,
-  runtimeValidation?: true
-): RpcClient {
-  return Object.entries(methods).reduce((acc, [key, method]) => {
+/**
+ * Create a JSON-RPC client with only specific methods
+ * @param config - Configuration object
+ *
+ * @example
+ * ```typescript
+ * import { createClientWithMethods, jsonRpcTransporter, NearRpcEndpoint } from "@near-js/jsonrpc-client";
+ * import { block, status, query } from "@near-js/jsonrpc-types/methods";
+ *
+ * const transporter = jsonRpcTransporter({ endpoint: NearRpcEndpoint.Mainnet });
+ * const client = createClientWithMethods({
+ *   transporter,
+ *   methods: { block, status, query },
+ *   runtimeValidation: true
+ * });
+ *
+ * // Only these methods are available:
+ * const blockData = await client.block({ finality: "final" });
+ * const statusData = await client.status(null);
+ * ```
+ */
+export function createClientWithMethods<
+  T extends Record<string, Method<any, any, any>>
+>(config: CreateClientWithMethodsConfig<T>): SelectiveRpcClient<T> {
+  const { transporter, methods: selectedMethods, runtimeValidation } = config;
+
+  return Object.entries(selectedMethods).reduce((acc, [key, method]) => {
     acc[key] = async (request: RequestType<typeof method>) => {
       if (runtimeValidation) {
         const requestValidation = parseZod<RequestType<typeof method>>(
@@ -61,7 +94,7 @@ export function createClient(
         }
       }
 
-      const response = await transport(method.methodName, preProces(request));
+      const response = await transporter(method.methodName, preProces(request));
       const result = postProcess(response) as { result: any; error: any };
 
       if (runtimeValidation) {
@@ -104,4 +137,32 @@ export function createClient(
     };
     return acc;
   }, {} as any);
+}
+
+/**
+ * Create a JSON-RPC client with all available methods
+ * @param config - Configuration object
+ *
+ * @example
+ * ```typescript
+ * import { createClient, jsonRpcTransporter, NearRpcEndpoint } from "@near-js/jsonrpc-client";
+ *
+ * const transporter = jsonRpcTransporter({ endpoint: NearRpcEndpoint.Mainnet });
+ * const client = createClient({
+ *   transporter,
+ *   runtimeValidation: true
+ * });
+ *
+ * // All methods are available:
+ * const blockData = await client.block({ finality: "final" });
+ * const statusData = await client.status(null);
+ * const queryData = await client.query({ requestType: "view_account", finality: "final", accountId: "near" });
+ * ```
+ */
+export function createClient(config: CreateClientConfig): RpcClient {
+  return createClientWithMethods({
+    transporter: config.transporter,
+    methods,
+    runtimeValidation: config.runtimeValidation,
+  }) as RpcClient;
 }

@@ -44,9 +44,7 @@
     "check-types": "tsc --noEmit"
   },
   "files": [
-    "dist",
-    "src",
-    "README.md"
+    "dist"
   ],
   "devDependencies": {
     "tsup": "^8.0.1",

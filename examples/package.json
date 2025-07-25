@@ -9,6 +9,7 @@
     "block": "tsx block.ts",
     "gas": "tsx gas.ts",
     "network": "tsx network.ts",
+    "selective-methods": "tsx selective-methods.ts",
     "transactions": "tsx transactions.ts",
     "validation": "tsx validation.ts",
     "view-account": "tsx view-account.ts",

@@ -22,7 +22,7 @@ import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 const transporter = jsonRpcTransporter({
   endpoint: "https://rpc.testnet.near.org",
 });
-const client = createClient(transporter);
+const client = createClient({ transporter });
 
 // Query account
 const account = await client.query({

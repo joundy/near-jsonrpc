@@ -155,7 +155,7 @@ async function main(): Promise<void> {
   const transporter = jsonRpcTransporter({
     endpoint: "https://rpc.testnet.near.org",
   });
-  const client = createClient(transporter);
+  const client = createClient({ transporter });
 
   console.log("👁️  NEAR JSON-RPC Client - View Account Example\n");
 

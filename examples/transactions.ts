@@ -25,7 +25,7 @@ async function sendTransactionExample() {
   try {
     // 1. Create JSON-RPC client
     const transporter = jsonRpcTransporter({ endpoint: RPC_URL });
-    const client = createClient(transporter);
+    const client = createClient({ transporter });
 
     // 2. Setup keypair for signing
     const keyPair = KeyPairSigner.fromSecretKey(PRIVATE_KEY);
