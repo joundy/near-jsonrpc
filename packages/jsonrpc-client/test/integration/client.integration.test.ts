@@ -12,7 +12,7 @@ describe("NEAR JSON-RPC Client Integration", () => {
     const transporter = jsonRpcTransporter({
       endpoint: NearRpcEndpoint.Testnet,
     });
-    client = createClient(transporter);
+    client = createClient({ transporter });
   });
 
   it("should get network status", async () => {
@@ -50,10 +50,10 @@ describe("NEAR JSON-RPC Client Integration", () => {
   }, 10000);
 
   it("should handle validation errors", async () => {
-    const clientWithValidation = createClient(
-      jsonRpcTransporter({ endpoint: NearRpcEndpoint.Testnet }),
-      true
-    );
+    const clientWithValidation = createClient({
+      transporter: jsonRpcTransporter({ endpoint: NearRpcEndpoint.Testnet }),
+      runtimeValidation: true,
+    });
 
     // TODO: add test for runtime validation
     // This should pass validation

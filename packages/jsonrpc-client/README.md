@@ -16,7 +16,7 @@ import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 const transporter = jsonRpcTransporter({
   endpoint: "https://rpc.testnet.near.org",
 });
-const client = createClient(transporter);
+const client = createClient({ transporter });
 
 // Query account
 const account = await client.query({
@@ -38,14 +38,112 @@ const gasPrice = await client.gasPrice({});
 
 ## API
 
-### `createClient(transporter, runtimeValidation?)`
+### `jsonRpcTransporter(config)`
 
-Creates a type-safe JSON-RPC client for NEAR Protocol.
+Creates a transporter function for making JSON-RPC requests to NEAR Protocol.
 
 #### Parameters
 
-- `transporter: Transporter` - The transport layer for making JSON-RPC requests
-- `runtimeValidation?: true` - Optional flag to enable runtime validation of requests and responses
+- `config.endpoint: string | NearRpcEndpoint` - The RPC endpoint URL or predefined endpoint
+
+#### Example
+
+```typescript
+import { jsonRpcTransporter, NearRpcEndpoint } from "@near-js/jsonrpc-client";
+
+// Using predefined endpoints
+const transporter = jsonRpcTransporter({
+  endpoint: NearRpcEndpoint.Mainnet, // or Testnet, Betanet, Localnet
+});
+
+// Using custom endpoint
+const customTransporter = jsonRpcTransporter({
+  endpoint: "https://my-custom-rpc.com",
+});
+```
+
+### `createClient(config)`
+
+Creates a type-safe JSON-RPC client with all available NEAR Protocol methods.
+
+#### Parameters
+
+- `config.transporter: Transporter` - The transport layer for making JSON-RPC requests
+- `config.runtimeValidation?: true` - Optional flag to enable runtime validation of requests and responses
+
+#### Example
+
+```typescript
+import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
+
+const transporter = jsonRpcTransporter({
+  endpoint: "https://rpc.testnet.near.org",
+});
+
+// Basic client
+const client = createClient({ transporter });
+
+// Client with runtime validation
+const validatedClient = createClient({
+  transporter,
+  runtimeValidation: true,
+});
+```
+
+### `createClientWithMethods(config)`
+
+Creates a type-safe JSON-RPC client with only specific methods. This is useful for reducing bundle size and creating more focused clients.
+
+#### Parameters
+
+- `config.transporter: Transporter` - The transport layer for making JSON-RPC requests
+- `config.methods: object` - Object containing specific methods from `@near-js/jsonrpc-types/methods`
+- `config.runtimeValidation?: true` - Optional flag to enable runtime validation of requests and responses
+
+#### Example
+
+```typescript
+import {
+  jsonRpcTransporter,
+  createClientWithMethods,
+} from "@near-js/jsonrpc-client";
+import { block, status, query } from "@near-js/jsonrpc-types/methods";
+
+const transporter = jsonRpcTransporter({
+  endpoint: "https://rpc.testnet.near.org",
+});
+
+// Client with only specific methods
+const selectiveClient = createClientWithMethods({
+  transporter,
+  methods: { block, status, query },
+  runtimeValidation: true,
+});
+
+// Only these methods are available (TypeScript enforced):
+const blockData = await selectiveClient.block({ finality: "final" });
+const statusData = await selectiveClient.status(null);
+// selectiveClient.gasPrice() // ❌ TypeScript error - method not included
+
+// Use cases:
+// 1. Monitoring client (read-only operations)
+const monitoringClient = createClientWithMethods({
+  transporter,
+  methods: { status, block, gasPrice, query },
+});
+
+// 2. Transaction client (transaction operations)
+import {
+  broadcastTxAsync,
+  broadcastTxCommit,
+  tx,
+} from "@near-js/jsonrpc-types/methods";
+const txClient = createClientWithMethods({
+  transporter,
+  methods: { broadcastTxAsync, broadcastTxCommit, tx },
+  runtimeValidation: true,
+});
+```
 
 #### Runtime Validation
 
@@ -58,7 +156,10 @@ import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 const transporter = jsonRpcTransporter({
   endpoint: "https://rpc.testnet.near.org",
 });
-const client = createClient(transporter, true);
+const client = createClient({
+  transporter,
+  runtimeValidation: true,
+});
 
 // If validation fails, the client will return validation errors
 const result = await client.query({
@@ -101,6 +202,7 @@ See the [examples directory](../../examples) for more usage patterns:
 - [View Account](../../examples/view-account.ts)
 - [Transactions](../../examples/transactions.ts)
 - [Gas Price](../../examples/gas.ts)
+- [Selective Methods](../../examples/selective-methods.ts)
 
 ## Related
 
