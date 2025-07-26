@@ -2,92 +2,74 @@
 
 ## Overview
 
-The `@near-js/jsonrpc-generator` is a sophisticated code generation tool that automatically creates TypeScript types and Zod schemas for NEAR's JSON-RPC API. It bridges the gap between NEAR's OpenAPI specification and type-safe TypeScript client libraries, ensuring that all JSON-RPC methods, request/response types, and validation schemas stay in perfect sync with the official API.
+The `@near-js/jsonrpc-generator` automatically creates TypeScript types and Zod validation schemas for NEAR's JSON-RPC API from OpenAPI specifications. It fetches the latest API spec from nearcore, processes it into clean TypeScript types, and generates runtime validation schemas to ensure type safety.
 
-## Architecture
+## Quick Start
 
-### High-Level Workflow
-
-```
-OpenAPI Spec → TypeScript Types → Zod Schemas → Validation → Output Files
-     ↓              ↓                ↓             ↓           ↓
- openapi.json → openapi-typescript → AST Parser → Validator → jsonrpc-types/
+```bash
+# Generate types from the latest NEAR API
+yarn generate
 ```
 
-### Core Components
+This creates 5 files in `packages/jsonrpc-types/src/` with everything needed for type-safe JSON-RPC calls.
 
-The generator is structured into several specialized modules:
+## How It Works
 
-#### 1. **OpenAPI Processing** (`src/utils/openapi-ts.ts`)
+### 1. Source: NEAR's OpenAPI Specification
 
-- Fetches or reads the OpenAPI specification from NEAR's repository
-- Uses `openapi-typescript` library to convert OpenAPI schemas to TypeScript types
-- Applies patches via `patch-package` for customization needs
+The generator fetches the official OpenAPI spec from nearcore's repository:
 
-#### 2. **AST Parser** (`src/openapi-typescript-parser/`)
-
-- **`index.ts`**: Main parser orchestrator
-- **`parse-method.ts`**: Extracts JSON-RPC method definitions, parameters, and return types
-- **`parse-schema.ts`**: Parses TypeScript type definitions and creates schema mappings
-
-#### 3. **Builder System** (`src/builder/`)
-
-- **`build-types.ts`**: Generates core TypeScript utilities and method type definitions
-- **`build-methods.ts`**: Creates method signature definitions with Zod schema references
-- **`build-schemas.ts`**: Builds clean TypeScript schema definitions
-- **`build-mapped-properties.ts`**: Generates property name mappings (snake_case ↔ camelCase)
-- **`build-zod-schema.ts`**: Constructs final Zod schema file with proper imports
-
-#### 4. **Zod Generator** (`src/zod-generator/`)
-
-- **`generator.ts`**: Core Zod schema generation logic
-- **`dep-resolvers.ts`**: Resolves TypeScript type dependencies
-- **`utils.ts`**: Handles circular dependency detection and resolution
-- **`builders.ts`**: Low-level Zod schema construction utilities
-
-#### 5. **Validation System** (`src/zod-validator/`)
-
-- Ensures 1:1 compatibility between TypeScript types and generated Zod schemas
-- Uses `expect-type` library for compile-time type checking
-- Provides both individual and batch validation modes
-
-## Detailed Process Flow
-
-### Phase 1: OpenAPI Ingestion
-
-```typescript
-// 1. Load OpenAPI specification
-const spec = getOpenApiSpecLocal(); // or getOpenApiSpec() for remote
-
-// 2. Convert to TypeScript using openapi-typescript
-const openapiTS = await generateOpenapiTS(spec);
+```
+https://raw.githubusercontent.com/near/nearcore/refs/heads/master/chain/jsonrpc/openapi/openapi.json
 ```
 
-The generator reads NEAR's OpenAPI specification, which contains:
+This spec contains:
 
-- JSON-RPC method definitions
-- Request/response schemas
-- Error type definitions
-- Parameter specifications
+- All JSON-RPC method definitions (block, query, broadcast_tx_commit, etc.)
+- Request/response types for each method
+- Error types and validation rules
+- Complex nested data structures
 
-### Phase 2: TypeScript Parsing
+### 2. Generation Pipeline
 
-```typescript
-// 3. Parse the generated TypeScript using ts-morph AST
-const parsed = parseOpenapiTS(openapiTS);
-// Returns: { methods, schemas }
+```
+OpenAPI Spec → TypeScript Generation → AST Parsing → File Building → Zod Generation → Validation → Output
 ```
 
-The AST parser extracts:
+**Step 1: TypeScript Generation**
 
-- **Methods**: JSON-RPC method names, request types, response types, error types
-- **Schemas**: All TypeScript type definitions and property mappings
+- Uses `openapi-typescript` library to convert OpenAPI JSON to TypeScript types
+- Produces raw TypeScript with all the types and interfaces
 
-### Phase 3: File Generation
+**Step 2: AST Parsing**
 
-The generator creates five distinct output files:
+- Parses the generated TypeScript using `ts-morph` (TypeScript AST manipulation)
+- Extracts JSON-RPC method information (names, request/response types, error types)
+- Extracts schema types and identifies property name mappings (snake_case → camelCase)
 
-#### `types.ts` - Core Type Utilities
+**Step 3: File Building**
+
+- Five separate builders create the final output files
+- Each builder formats the data appropriately for its specific purpose
+
+**Step 4: Zod Generation**
+
+- Converts TypeScript types to equivalent Zod validation schemas
+- Handles circular dependencies with `z.lazy()`
+- Maintains 1:1 correspondence with TypeScript types
+
+**Step 5: Validation**
+
+- Uses `expect-type` to ensure Zod schemas produce identical types to TypeScript
+- Prevents runtime/compile-time mismatches
+
+## Generated Output
+
+The generator produces 5 files in `packages/jsonrpc-types/src/`:
+
+### `types.ts`
+
+Core utilities for method definitions:
 
 ```typescript
 export type Method<TRequest, TResponse, TError> = {
@@ -104,32 +86,15 @@ export function defineMethod<TRequest, TResponse, TError>(
   zodError: z.ZodType<TError>
 ): Method<TRequest, TResponse, TError>;
 
-// Type helpers for extracting types from Method definitions
-export type RequestType<T extends Method<any, any, any>>;
-export type ResponseType<T extends Method<any, any, any>>;
-export type ErrorType<T extends Method<any, any, any>>;
+// Type helpers to extract types from method definitions
+export type RequestType<T extends Method<any, any, any>> = ...;
+export type ResponseType<T extends Method<any, any, any>> = ...;
+export type ErrorType<T extends Method<any, any, any>> = ...;
 ```
 
-#### `methods.ts` - JSON-RPC Method Definitions
+### `schemas.ts`
 
-```typescript
-export const query = defineMethod(
-  "query",
-  QueryRequestSchema,
-  QueryResponseSchema,
-  QueryErrorSchema
-);
-
-export const broadcast_tx_commit = defineMethod(
-  "broadcast_tx_commit",
-  BroadcastTxCommitRequestSchema,
-  BroadcastTxCommitResponseSchema,
-  BroadcastTxCommitErrorSchema
-);
-// ... all other JSON-RPC methods
-```
-
-#### `schemas.ts` - TypeScript Type Definitions
+All TypeScript type definitions from the OpenAPI spec:
 
 ```typescript
 export type AccessKey = {
@@ -137,145 +102,111 @@ export type AccessKey = {
   permission: AccessKeyPermission;
 };
 
-export type QueryRequest = {
-  request_type: string;
-  finality?: string;
-  block_id?: string;
-  account_id?: string;
-  // ... other properties
+export type RpcBlockRequest =
+  | {
+      blockId: BlockId;
+    }
+  | {
+      finality: Finality;
+    }
+  | {
+      syncCheckpoint: SyncCheckpoint;
+    };
+
+export type RpcBlockResponse = {
+  author: AccountId;
+  chunks: ChunkHeaderView[];
+  header: BlockHeaderView;
 };
-// ... all schema types
+// ... hundreds more types
 ```
 
-#### `zod-schemas.ts` - Zod Validation Schemas
+### `methods.ts`
+
+Method definitions for all JSON-RPC endpoints:
+
+```typescript
+/** Method definition for block RPC call */
+export const block = defineMethod<RpcBlockRequest, RpcBlockResponse, RpcError>(
+  "block",
+  RpcBlockRequestSchema,
+  RpcBlockResponseSchema,
+  RpcErrorSchema
+);
+
+/** Method definition for broadcast_tx_async RPC call */
+export const broadcastTxAsync = defineMethod<
+  RpcSendTransactionRequest,
+  CryptoHash,
+  RpcError
+>(
+  "broadcast_tx_async",
+  RpcSendTransactionRequestSchema,
+  CryptoHashSchema,
+  RpcErrorSchema
+);
+
+// ... all other JSON-RPC methods
+```
+
+### `zod-schemas.ts`
+
+Zod validation schemas matching the TypeScript types:
 
 ```typescript
 export const AccessKeySchema = z.object({
   nonce: z.number(),
-  permission: AccessKeyPermissionSchema,
+  permission: z.lazy(() => AccessKeyPermissionSchema),
 });
 
-export const QueryRequestSchema = z.object({
-  request_type: z.string(),
-  finality: z.string().optional(),
-  block_id: z.string().optional(),
-  account_id: z.string().optional(),
-  // ... other properties
-});
-// ... all Zod schemas
+export const RpcBlockRequestSchema = z.union([
+  z.object({ blockId: z.lazy(() => BlockIdSchema) }),
+  z.object({ finality: z.lazy(() => FinalitySchema) }),
+  z.object({ syncCheckpoint: z.lazy(() => SyncCheckpointSchema) }),
+]);
+// ... all schemas with runtime validation
 ```
 
-#### `mapped-properties.ts` - Property Name Mappings
+### `mapped-properties.ts`
+
+Property name mappings for snake_case ↔ camelCase conversion:
 
 ```typescript
-export const MAPPED_PROPERTIES = {
-  // Snake case (JSON-RPC) → Camel case (TypeScript)
-  access_key: "accessKey",
-  block_hash: "blockHash",
-  finality_checkpoint: "finalityCheckpoint",
-  gas_price: "gasPrice",
-  // ... comprehensive mapping
-} as const;
+export const mappedSnakeCamelProperty = new Map<string, string>([
+  ["access_key", "accessKey"],
+  ["block_hash", "blockHash"],
+  ["final_execution_outcome", "finalExecutionOutcome"],
+  // ... 500+ property mappings
+]);
 ```
-
-### Phase 4: Zod Schema Generation
-
-```typescript
-// 4. Generate Zod schemas from TypeScript types
-const zodSchemas = generateZodSchemas(builtSchemas, "Schema");
-```
-
-This sophisticated process:
-
-- Analyzes TypeScript type definitions using AST manipulation
-- Detects circular dependencies between types
-- Generates corresponding Zod validation schemas
-- Handles complex TypeScript features (unions, intersections, generics)
-
-### Phase 5: Validation
-
-```typescript
-// 5. Validate 1:1 compatibility between TS and Zod schemas
-await validateZodSchema({
-  schemas: parsed.schemas.schemaTypes.map((schema) => schema.schema),
-  schemaTs: builtSchemas,
-  zodSchemaTs: builtZodSchemas,
-  zodSchemaSuffix: "Schema",
-  validateAll: true,
-});
-```
-
-The validation system ensures:
-
-- Every TypeScript type has a matching Zod schema
-- Zod schemas can infer to identical TypeScript types
-- No type information is lost during the conversion
-- Runtime validation matches compile-time types
 
 ## Key Features
 
-### 1. **Automated Synchronization**
+### ✅ **Automatic Synchronization**
 
-- Daily GitHub Actions workflow fetches latest OpenAPI spec
-- Automatically creates pull requests when API changes are detected
-- Keeps type definitions in sync with NEAR's evolving API
+- Fetches latest API spec from nearcore repository
+- Daily GitHub Actions workflow creates PRs when API changes
+- No manual updates needed
 
-### 2. **Property Name Transformation**
+### ✅ **Type Safety**
 
-- Handles conversion between JSON-RPC snake_case and TypeScript camelCase
-- Maintains a comprehensive mapping to prevent edge cases
-- Ensures consistent naming conventions across the codebase
+- Full TypeScript support with IDE autocomplete
+- Runtime validation with Zod schemas
+- Guaranteed consistency between compile-time and runtime types
 
-### 3. **Circular Dependency Resolution**
+### ✅ **Property Transformation**
 
-- Detects and handles circular type dependencies
-- Uses sophisticated dependency graph analysis
-- Generates valid Zod schemas even with complex type relationships
+- Automatically converts between JSON-RPC's snake_case and TypeScript's camelCase
+- Comprehensive mapping prevents edge cases
+- Single source of truth for all property name transformations
 
-### 4. **Type Safety Validation**
+### ✅ **Zero Configuration**
 
-- Compile-time validation using `expect-type`
-- Ensures Zod schemas produce identical types to TypeScript definitions
-- Prevents runtime/compile-time type mismatches
+- Works out of the box with sensible defaults
+- Handles all NEAR JSON-RPC methods automatically
+- No manual configuration required
 
-### 5. **AST-Based Processing**
-
-- Uses `ts-morph` for reliable TypeScript AST manipulation
-- More robust than regex-based text processing
-- Handles complex TypeScript language features correctly
-
-## Development Workflow
-
-### Local Development
-
-```bash
-# Generate types locally
-cd packages/jsonrpc-generator
-yarn generate
-
-# Or run directly
-npx tsx src/index.ts
-```
-
-### Customization
-
-#### Adding New Transformations
-
-1. Modify parsers in `src/openapi-typescript-parser/`
-2. Update builders in `src/builder/`
-3. Extend Zod generators if needed
-4. Update validation logic
-
-#### Handling New OpenAPI Features
-
-1. Update `openapi-typescript` if needed (may require patches)
-2. Extend AST parsing logic
-3. Update Zod generation to handle new patterns
-4. Add validation for new features
-
-## Output Integration
-
-### Usage in `@near-js/jsonrpc-client`
+## Usage Example
 
 ```typescript
 import { query, broadcast_tx_commit } from "@near-js/jsonrpc-types";
@@ -289,34 +220,154 @@ const queryRequest: RequestType<typeof query> = {
 };
 
 // Runtime validation
-const validatedRequest = query.zodRequest.parse(queryRequest);
-const validatedResponse = query.zodResponse.parse(response);
+try {
+  const validatedRequest = query.zodRequest.parse(queryRequest);
+  const response = await client.call(query.methodName, validatedRequest);
+  const validatedResponse = query.zodResponse.parse(response);
+} catch (error) {
+  if (error instanceof z.ZodError) {
+    console.error("Validation failed:", error.issues);
+  }
+}
 ```
 
-### Benefits for Consumers
+## Technical Architecture
 
-1. **Compile-time Safety**: Full TypeScript support with autocomplete
-2. **Runtime Validation**: Zod schemas catch invalid data at runtime
-3. **API Synchronization**: Always up-to-date with NEAR's latest API
-4. **Developer Experience**: Rich type information and validation errors
+### Core Dependencies
 
-## Contributing
+- `openapi-typescript@7.8.0` - Converts OpenAPI to TypeScript
+- `ts-morph@^26.0.0` - TypeScript AST manipulation
+- `zod/v4` - Runtime schema validation
+- `expect-type@^1.2.2` - Compile-time type validation
+
+### Main Components
+
+**📁 `src/index.ts`** - Main orchestrator
+
+- Coordinates the entire generation pipeline
+- Handles file I/O and error management
+
+**📁 `src/utils/`** - Utilities
+
+- `index.ts` - Fetches OpenAPI spec from nearcore
+- `openapi-ts.ts` - Converts OpenAPI to TypeScript using openapi-typescript
+
+**📁 `src/openapi-typescript-parser/`** - AST Processing
+
+- `index.ts` - Main parser coordinator
+- `parse-method.ts` - Extracts JSON-RPC method definitions
+- `parse-schema.ts` - Extracts TypeScript types and property mappings
+
+**📁 `src/builder/`** - File Builders
+
+- `build-types.ts` - Generates the core Method type and utilities
+- `build-schemas.ts` - Formats TypeScript schema definitions
+- `build-methods.ts` - Creates method definitions using defineMethod
+- `build-mapped-properties.ts` - Formats property name mappings
+- `build-zod-schema.ts` - Assembles final Zod schema file
+
+**📁 `src/zod-generator/`** - Zod Schema Generation
+
+- `generator.ts` - Converts TypeScript types to Zod schemas
+- `utils.ts` - Handles circular dependency detection and resolution
+- `node-handler.ts` - Processes specific TypeScript AST node types
+
+**📁 `src/zod-validator/`** - Type Safety Validation
+
+- `index.ts` - Validates Zod schemas match TypeScript types exactly
+- Uses temporary files and TypeScript compiler for validation
+
+### Generation Process Details
+
+1. **Fetch**: Downloads latest OpenAPI spec from nearcore
+2. **Convert**: Uses openapi-typescript to generate TypeScript types
+3. **Parse**: Extracts methods and schemas using TypeScript AST manipulation
+4. **Build**: Five builders create formatted output for each file type
+5. **Generate**: Creates Zod schemas from TypeScript types
+6. **Validate**: Ensures 1:1 compatibility between TypeScript and Zod
+7. **Write**: Saves all files to `packages/jsonrpc-types/src/`
+
+### Error Handling
+
+- Network failures fall back to local OpenAPI spec copy
+- AST parsing errors provide detailed diagnostics
+- Zod generation handles circular dependencies automatically
+- Validation errors specify exact type and location mismatches
+
+## Automation
+
+### GitHub Actions
+
+- **Schedule**: Daily at 00:00 UTC
+- **Trigger**: Manual workflow dispatch available
+- **Process**: Fetch spec → Generate → Create PR if changes detected
+- **Output**: Auto-assigned reviewers and proper labeling
+
+### Release Integration
+
+- Generated changes trigger automated releases via `release-please`
+- Semantic versioning based on API changes
+- Automated NPM publishing when releases are created
+
+## Development
+
+### Local Development
+
+```bash
+cd packages/jsonrpc-generator
+yarn generate     # Full generation
+yarn test         # Run tests
+yarn build        # Build package
+```
+
+### Debugging Common Issues
+
+**Problem: Circular Dependencies**
+
+```bash
+# Check zod-generator/utils.ts for cycle detection
+yarn generate  # Look for z.lazy() usage in output
+```
+
+**Problem: Type Mismatches**
+
+```bash
+# Run validation with detailed output
+yarn generate  # Check validation errors
+```
+
+**Problem: Property Mapping Issues**
+
+```bash
+# Verify mappings in mapped-properties.ts
+grep "property_name" packages/jsonrpc-types/src/mapped-properties.ts
+```
 
 ### Making Changes
 
-1. **Fork and Clone**: Standard GitHub workflow
-2. **Test Locally**: Run generation and validation
-3. **Update Tests**: Add tests for new functionality
-4. **Documentation**: Update this documentation for significant changes
-5. **Pull Request**: Submit with detailed description
+1. **Parser Changes**: Modify `src/openapi-typescript-parser/` for new OpenAPI features
+2. **Builder Changes**: Update `src/builder/` to change output format
+3. **Zod Changes**: Extend `src/zod-generator/` for new type patterns
+4. **Validation Changes**: Modify `src/zod-validator/` for validation logic
 
-### Code Style
+### Testing
 
-- Follow existing TypeScript conventions
-- Use meaningful variable and function names
-- Add JSDoc comments for public APIs
-- Include error handling and logging
+```bash
+yarn test                    # Unit tests
+yarn test:coverage          # Coverage report
+yarn test test/_integration/ # Integration tests
+```
+
+## Contributing
+
+The generator is designed to be self-maintaining for API changes. For improvements:
+
+1. Make focused changes with comprehensive tests
+2. Verify generation still works: `yarn generate`
+3. Ensure validation passes
+4. Update documentation for significant changes
+5. Submit PR with detailed description
 
 ---
 
-This generator represents a sophisticated approach to maintaining type safety between OpenAPI specifications and TypeScript client libraries. It ensures that NEAR's JSON-RPC API consumers always have access to accurate, up-to-date type definitions and runtime validation, significantly improving the developer experience and reducing integration errors.
+This generator ensures NEAR's JSON-RPC API consumers always have access to accurate, up-to-date type definitions and runtime validation, significantly improving developer experience and reducing integration errors.

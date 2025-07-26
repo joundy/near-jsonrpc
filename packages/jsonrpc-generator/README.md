@@ -1,46 +1,211 @@
 # @near-js/jsonrpc-generator
 
-Code generator for NEAR JSON-RPC TypeScript types from OpenAPI specifications.
+A sophisticated code generator that creates TypeScript types and Zod validation schemas for NEAR's JSON-RPC API from OpenAPI specifications.
+
+## Overview
+
+The `@near-js/jsonrpc-generator` automatically generates type-safe TypeScript bindings for NEAR's JSON-RPC API by processing the official OpenAPI specification from the nearcore repository. It produces comprehensive TypeScript types, Zod schemas for runtime validation, and property mappings to ensure seamless integration between NEAR's API and TypeScript applications.
 
 ## Usage
 
+### Generate Types
+
 ```bash
-# Generate types
+# From project root
+yarn generate
+
+# From this package directory
 yarn generate
 # or
 npx tsx src/index.ts
 ```
 
-## What it Generates
+### Scripts
 
-Creates files in `@near-js/jsonrpc-types`:
+```bash
+yarn build         # Build the generator package
+yarn test          # Run tests
+yarn check-types   # Type checking
+```
 
-| File                   | Description                |
-| ---------------------- | -------------------------- |
-| `types.ts`             | Core TypeScript types      |
-| `methods.ts`           | JSON-RPC method signatures |
-| `schemas.ts`           | TS schema definitions      |
-| `zod-schemas.ts`       | Zod schema definitions     |
-| `mapped-properties.ts` | Property name mappings     |
+## Generated Output
 
-## How it Works
+The generator creates the following files in `@near-js/jsonrpc-types/src/`:
 
-1. **OpenAPI Spec** → TypeScript via `openapi-typescript`
-2. **AST Processing** → Clean types via `ts-morph`
-3. **Zod Generation** → Generate zod schemas from the TS schema.
-4. **Zod 1:1 TS Validation** -> Validate zod schema against the TS schema to ensure that the generated types are 1:1 correct.
-5. **Property Mapping** → Naming convention utilities that map property names from the JSON-RPC spec (snake_case) to TypeScript types (camelCase). This ensures consistent transformation and prevents edge cases where traditional regex-based conversion might fail. The mapping is maintained in a dedicated file to provide a single source of truth for all property name transformations.
+| File                   | Description                                     |
+| ---------------------- | ----------------------------------------------- |
+| `types.ts`             | Core TypeScript utilities and method types      |
+| `methods.ts`           | JSON-RPC method signatures with schema refs     |
+| `schemas.ts`           | TypeScript schema definitions                   |
+| `zod-schemas.ts`       | Zod schemas for runtime validation              |
+| `mapped-properties.ts` | Property name mappings (snake_case ↔ camelCase) |
+| `index.ts`             | Re-exports all generated types                  |
+
+## Architecture
+
+### Generation Pipeline
+
+```
+1. Fetch OpenAPI Spec → 2. Generate TypeScript → 3. Parse AST → 4. Build Schemas → 5. Generate Zod → 6. Validate → 7. Output Files
+```
+
+### Core Components
+
+#### 1. **OpenAPI Processing**
+
+- Fetches the latest OpenAPI spec from nearcore's master branch
+- Uses `openapi-typescript` to generate initial TypeScript types
+- Applies custom patches for NEAR-specific requirements
+
+#### 2. **AST Parser**
+
+- Parses generated TypeScript using `ts-morph`
+- Extracts method definitions, parameters, and return types
+- Creates schema mappings and property transformations
+
+#### 3. **Schema Builder**
+
+- Generates clean TypeScript schema definitions
+- Creates method signatures with proper imports
+- Builds property name mappings for camelCase conversion
+
+#### 4. **Zod Generator**
+
+- Converts TypeScript schemas to Zod validation schemas
+- Maintains 1:1 compatibility between TS and Zod types
+- Handles complex nested types and references
+
+#### 5. **Validation Engine**
+
+- Ensures Zod schemas exactly match TypeScript schemas
+- Validates all generated types for correctness
+- Prevents runtime/compile-time mismatches
+
+## Features
+
+### **Automatic Synchronization**
+
+- Fetches latest API spec from NEAR's nearcore repository
+- Daily automated updates via GitHub Actions
+- Automatic PR creation when API changes are detected
+
+### **Type Safety**
+
+- Generates comprehensive TypeScript types for all JSON-RPC methods
+- Runtime validation with Zod schemas
+- 1:1 validation ensures TS and Zod schemas match exactly
+
+### **Property Mapping**
+
+- Automatic conversion between snake_case (JSON-RPC) and camelCase (TypeScript)
+- Handles edge cases that regex-based conversion might miss
+- Maintains single source of truth for property transformations
+
+### **Zero Configuration**
+
+- Works out of the box with sensible defaults
+- No manual configuration required
+- Handles all NEAR JSON-RPC methods automatically
 
 ## Automation
 
-- **Daily updates** via GitHub Actions
-- **Pull requests** created for API changes
-- **Keeps types in sync** with NEAR's API
+### GitHub Actions Integration
 
-## Related
+The generator runs automatically via GitHub Actions:
 
-- [`@near-js/jsonrpc-types`](../jsonrpc-types) - Generated types
-- [`@near-js/jsonrpc-client`](../jsonrpc-client) - Uses generated types
+- **Schedule**: Daily at 00:00 UTC
+- **Trigger**: Manual workflow dispatch
+- **Process**:
+  1. Fetch latest OpenAPI spec
+  2. Generate new types
+  3. Create PR if changes detected
+  4. Auto-assign reviewers
+
+### Generated PR Structure
+
+```markdown
+## Automated Update
+
+This PR updates the generated JSONRPC types based on the latest OpenAPI specification.
+
+### Generated by:
+
+- Workflow: `.github/workflows/update-types.yml`
+- Command: `yarn generate`
+```
+
+## Dependencies
+
+### Production
+
+- `openapi-typescript@7.8.0` - OpenAPI to TypeScript conversion
+- `ts-morph@^26.0.0` - TypeScript AST manipulation
+
+### Development
+
+- `tsx@^4.20.3` - TypeScript execution
+- `jest@^30.0.5` - Testing framework
+- `tsup@^8.0.1` - Build system
+
+## Technical Details
+
+### Property Name Transformation
+
+The generator handles property name conversion between JSON-RPC's snake_case and TypeScript's camelCase:
+
+```typescript
+// JSON-RPC API (snake_case)
+{
+  "block_height": 12345,
+  "final_execution_outcome": {...}
+}
+
+// Generated TypeScript (camelCase)
+{
+  blockHeight: number;
+  finalExecutionOutcome: {...};
+}
+```
+
+### Schema Validation
+
+The generator includes a sophisticated validation system:
+
+```typescript
+// Ensures Zod schemas match TypeScript schemas exactly
+await validateZodSchema({
+  schemas: parsed.schemas.schemaTypes,
+  schemaTs: builtSchemas,
+  zodSchemaTs: builtZodSchemas,
+  zodSchemaSuffix: "Schema",
+  validateAll: true,
+});
+```
+
+## Related Packages
+
+- [`@near-js/jsonrpc-types`](../jsonrpc-types) - Generated types and schemas
+- [`@near-js/jsonrpc-client`](../jsonrpc-client) - Type-safe JSON-RPC client
+
+## Documentation
+
+For comprehensive technical documentation, architecture details, and development guidance, see:
+
+**[GENERATOR.md](../../GENERATOR.md)** - Complete technical documentation with:
+
+- Detailed architecture and component breakdown
+- Step-by-step generation process explanation
+- Development workflows and debugging guide
+- Code examples and implementation details
+
+## Contributing
+
+The generator is designed to be self-maintaining. Changes to NEAR's API are automatically detected and incorporated. For generator improvements:
+
+1. Modify the appropriate builder or parser
+2. Run tests: `yarn test`
+3. Test generation: `yarn generate`
+4. Ensure validation passes
 
 ## License
 
