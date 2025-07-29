@@ -17,7 +17,7 @@ import {
   RequestType,
   ResponseType,
   Method,
-} from "@near-js/jsonrpc-types";
+} from "@near-js/jsonrpc-types/types";
 import { JSON_RPC_TRANSPORTER_ERROR_CODE } from "./transporter";
 
 function preProces(request: any) {

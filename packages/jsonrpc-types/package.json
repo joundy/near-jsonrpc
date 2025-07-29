@@ -32,7 +32,6 @@
       "import": "./dist/mapped-properties.mjs"
     },
     "./zod-schemas": {
-      "types": "./dist/zod-schemas.d.ts",
       "require": "./dist/zod-schemas.js",
       "import": "./dist/zod-schemas.mjs"
     }
