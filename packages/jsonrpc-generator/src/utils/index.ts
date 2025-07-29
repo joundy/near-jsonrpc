@@ -26,3 +26,7 @@ export function snakeToCamel(str: string) {
     return x.toUpperCase();
   });
 }
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

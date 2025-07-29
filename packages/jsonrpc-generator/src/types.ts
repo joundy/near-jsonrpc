@@ -3,10 +3,17 @@ export type ResponseType = {
   fromSchema: string;
 };
 
+export type QueryType = {
+  requestType: string;
+  type: string;
+  fromSchema: string;
+};
+
 export type RequestType = {
   type: string;
   method: string;
   fromSchema: string;
+  queryTypes?: QueryType[];
 };
 
 export type ErrorType = {

@@ -2190,6 +2190,11 @@ export type RpcClientConfigResponse = {
     chunkDistributionNetwork?: ChunkDistributionNetworkConfig | (null);
     /** @description Time between checking to re-request chunks. */
     chunkRequestRetryPeriod: number[];
+    /**
+     * Format: uint
+     * @description Number of threads for ChunkValidationActor pool.
+     */
+    chunkValidationThreads: number;
     /** @description Multiplier for the wait time for all chunks to be received. */
     chunkWaitMult: number[];
     /**
@@ -2293,6 +2298,19 @@ export type RpcClientConfigResponse = {
     saveTxOutcomes: boolean;
     /** @description Skip waiting for sync (for testing or single node testnet). */
     skipSyncWait: boolean;
+    /**
+     * Format: uint
+     * @description Number of threads for StateRequestActor pool.
+     */
+    stateRequestServerThreads: number;
+    /** @description Number of seconds between state requests for view client.
+     *     Throttling window for state requests (headers and parts). */
+    stateRequestThrottlePeriod: number[];
+    /**
+     * Format: uint
+     * @description Maximum number of state requests served per throttle period
+     */
+    stateRequestsPerThrottlePeriod: number;
     /** @description Options for syncing state. */
     stateSync: StateSyncConfig;
     /** @description Whether to use the State Sync mechanism.
@@ -2346,16 +2364,9 @@ export type RpcClientConfigResponse = {
     version: Version;
     /**
      * Format: uint
-     * @description Maximum number of state requests served per `view_client_throttle_period`
-     */
-    viewClientNumStateRequestsPerThrottlePeriod: number;
-    /**
-     * Format: uint
      * @description Number of threads for ViewClientActor pool.
      */
     viewClientThreads: number;
-    /** @description Throttling window for state requests (headers and parts). */
-    viewClientThrottlePeriod: number[];
 };
 export type RpcCongestionLevelRequest = {
     blockId: BlockId;
@@ -3540,3 +3551,170 @@ export type WitnessConfigView = {
 export type JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse = Range_of_uint64[];
 export type JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse = ValidatorStakeView[];
 export type JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse = RpcHealthResponse | (null);
+export type RpcQueryRequestViewAccount = ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_account";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_account";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_account";
+});
+export type RpcQueryRequestViewCode = ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_code";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_code";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_code";
+});
+export type RpcQueryRequestViewState = ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    includeProof?: boolean;
+    prefixBase64: StoreKey;
+    /** @enum {string} */
+    requestType: "view_state";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    includeProof?: boolean;
+    prefixBase64: StoreKey;
+    /** @enum {string} */
+    requestType: "view_state";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    includeProof?: boolean;
+    prefixBase64: StoreKey;
+    /** @enum {string} */
+    requestType: "view_state";
+});
+export type RpcQueryRequestViewAccessKey = ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    publicKey: PublicKey;
+    /** @enum {string} */
+    requestType: "view_access_key";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    publicKey: PublicKey;
+    /** @enum {string} */
+    requestType: "view_access_key";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    publicKey: PublicKey;
+    /** @enum {string} */
+    requestType: "view_access_key";
+});
+export type RpcQueryRequestViewAccessKeyList = ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_access_key_list";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_access_key_list";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_access_key_list";
+});
+export type RpcQueryRequestCallFunction = ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    argsBase64: FunctionArgs;
+    methodName: string;
+    /** @enum {string} */
+    requestType: "call_function";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    argsBase64: FunctionArgs;
+    methodName: string;
+    /** @enum {string} */
+    requestType: "call_function";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    argsBase64: FunctionArgs;
+    methodName: string;
+    /** @enum {string} */
+    requestType: "call_function";
+});
+export type RpcQueryRequestViewGlobalContractCode = ({
+    blockId: BlockId;
+} & {
+    codeHash: CryptoHash;
+    /** @enum {string} */
+    requestType: "view_global_contract_code";
+}) | ({
+    finality: Finality;
+} & {
+    codeHash: CryptoHash;
+    /** @enum {string} */
+    requestType: "view_global_contract_code";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    codeHash: CryptoHash;
+    /** @enum {string} */
+    requestType: "view_global_contract_code";
+});
+export type RpcQueryRequestViewGlobalContractCodeByAccountId = ({
+    blockId: BlockId;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_global_contract_code_by_account_id";
+}) | ({
+    finality: Finality;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_global_contract_code_by_account_id";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountId: AccountId;
+    /** @enum {string} */
+    requestType: "view_global_contract_code_by_account_id";
+});
