@@ -1,7 +1,7 @@
 import { Project } from "ts-morph";
 import { parseSchemaTypes } from "./parse-schema";
 import { parseMethodTypes } from "./parse-method";
-import { assignQueryChildMethods } from "./assign-query-method";
+import { expandDescriminatedMethods } from "./expand-descriminated-method";
 
 // OPENAPI TS is generated from the library openapi-typescript https://openapi-ts.dev/
 // this parser is used for getting the methods and schemas for coresponding near json rpc methods
@@ -12,7 +12,11 @@ export function parseOpenapiTS(openapiTS: string) {
   const source = project.createSourceFile("__temp__openapi.ts", openapiTS);
 
   const methods = parseMethodTypes(source);
-  assignQueryChildMethods(source, methods);
+
+  // this will expand the discriminated methods
+  // example: the method query has a property 'request_type'
+  // it will expand it to multiple methods
+  expandDescriminatedMethods(source, methods);
 
   const ignoredSchemaSet = new Set<string>();
   for (const method of methods) {

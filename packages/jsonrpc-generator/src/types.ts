@@ -3,17 +3,16 @@ export type ResponseType = {
   fromSchema: string;
 };
 
-export type QueryType = {
-  requestType: string;
-  type: string;
-  fromSchema: string;
+export type RequestDescriminatedType = {
+  property: string;
+  value: string;
 };
 
 export type RequestType = {
   type: string;
   method: string;
   fromSchema: string;
-  queryTypes?: QueryType[];
+  discriminatedType?: RequestDescriminatedType;
 };
 
 export type ErrorType = {

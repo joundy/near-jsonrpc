@@ -1,6 +1,6 @@
-import { Project, VariableDeclarationKind } from "ts-morph";
+import { Project, VariableDeclarationKind, WriterFunction } from "ts-morph";
 import type { MethodType } from "../types";
-import { snakeToCamel } from "../utils";
+import { capitalize, snakeToCamel } from "../utils";
 import { GENERATED_COMMENT } from "./constants";
 
 export type BuildMethodsOptions = {
@@ -12,6 +12,7 @@ export type BuildMethodsOptions = {
 
 export function buildMethods(
   methods: MethodType[],
+  mappedSnakeCamelProperty: Map<string, string>,
   options: BuildMethodsOptions
 ) {
   const uniqueNeededSchemasSet = new Set<string>();
@@ -30,7 +31,7 @@ export function buildMethods(
 
   source.addImportDeclaration({
     moduleSpecifier: options.typesLocation,
-    namedImports: ["defineMethod"],
+    namedImports: ["defineMethod", "DistributiveOmit"],
   });
 
   source.addImportDeclaration({
@@ -48,31 +49,64 @@ export function buildMethods(
 
   source.addVariableStatements(
     methods.map((method) => {
+      let name = snakeToCamel(method.request.method);
+      let initializer: WriterFunction = (writer) => {
+        writer
+          .write(
+            `defineMethod<${method.request.type}, ${method.response.type}, ${method.error.type}>(`
+          )
+          .quote(method.request.method)
+          .write(", ")
+          .write(`${method.request.type}${options.zodSuffix}`)
+          .write(", ")
+          .write(`${method.response.type}${options.zodSuffix}`)
+          .write(", ")
+          .write(`${method.error.type}${options.zodSuffix}`)
+          .write(")");
+      };
+
+      if (method.request.discriminatedType) {
+        name = `${name}${capitalize(
+          snakeToCamel(method.request.discriminatedType.value)
+        )}`;
+
+        const discriminateProperty =
+          mappedSnakeCamelProperty.get(
+            method.request.discriminatedType!.property
+          ) || method.request.discriminatedType!.property;
+
+        const discriminateValue = method.request.discriminatedType!.value;
+
+        initializer = (writer) => {
+          writer
+            .write(
+              `defineMethod<DistributiveOmit<${method.request.type}, "${discriminateProperty}">, ${method.response.type}, ${method.error.type}, Pick<${method.request.type}, "${discriminateProperty}">>(`
+            )
+            .quote(method.request.method)
+            .write(", ")
+            .write(`${method.request.type}${options.zodSuffix}`)
+            .write(", ")
+            .write(`${method.response.type}${options.zodSuffix}`)
+            .write(", ")
+            .write(`${method.error.type}${options.zodSuffix}`)
+            .write(", ")
+            .write(`{ ${discriminateProperty}: "${discriminateValue}" }`)
+            .write(")");
+        };
+      }
+
       return {
         declarationKind: VariableDeclarationKind.Const,
         isExported: true,
         declarations: [
           {
-            name: snakeToCamel(method.request.method),
-            initializer: (writer) => {
-              writer
-                .write(
-                  `defineMethod<${method.request.type}, ${method.response.type}, ${method.error.type}>(`
-                )
-                .quote(method.request.method)
-                .write(", ")
-                .write(`${method.request.type}${options.zodSuffix}`)
-                .write(", ")
-                .write(`${method.response.type}${options.zodSuffix}`)
-                .write(", ")
-                .write(`${method.error.type}${options.zodSuffix}`)
-                .write(")");
-            },
+            name,
+            initializer,
           },
         ],
         docs: [
           {
-            description: `Method definition for ${method.request.method} RPC call`,
+            description: `Method definition for ${name} RPC call`,
           },
         ],
       };

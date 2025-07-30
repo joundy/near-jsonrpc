@@ -1,6 +1,7 @@
 import * as methods from "@near-js/jsonrpc-types/methods";
 import { z } from "zod/v4";
 import type {
+  DefaultRequestType,
   ErrorType,
   Method,
   RequestType,
@@ -56,10 +57,12 @@ export type RpcClient = {
   [K in keyof typeof methods]: (typeof methods)[K] extends Method<
     RequestType<(typeof methods)[K]>,
     ResponseType<(typeof methods)[K]>,
-    ErrorType<(typeof methods)[K]>
+    ErrorType<(typeof methods)[K]>,
+    DefaultRequestType<(typeof methods)[K]>
   >
     ? (
-        request: RequestType<(typeof methods)[K]>
+        request: RequestType<(typeof methods)[K]>,
+        defaultRequestType?: DefaultRequestType<(typeof methods)[K]>
       ) => ClientMethodReturnType<
         RequestType<(typeof methods)[K]>,
         ResponseType<(typeof methods)[K]>,
@@ -72,7 +75,7 @@ export type RpcClient = {
  * Type for a client with selected methods
  */
 export type SelectiveRpcClient<
-  T extends Record<string, Method<any, any, any>>
+  T extends Record<string, Method<any, any, any, any>>
 > = {
   [K in keyof T]: T[K] extends Method<
     infer TRequest,

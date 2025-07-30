@@ -13,7 +13,8 @@
     "transactions": "tsx transactions.ts",
     "validation": "tsx validation.ts",
     "view-account": "tsx view-account.ts",
-    "view-function": "tsx view-function.ts"
+    "view-function": "tsx view-function.ts",
+    "query-view-account": "tsx query-view-account.ts"
   },
   "devDependencies": {
     "@near-js/jsonrpc-client": "*",

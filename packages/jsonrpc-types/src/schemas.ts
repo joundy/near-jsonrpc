@@ -1577,8 +1577,6 @@ export type GenesisConfig = {
      *         "shard_ids": [
      *           0
      *         ],
-     *         "shards_parent_map": null,
-     *         "shards_split_map": null,
      *         "version": 0
      *       }
      *     }
@@ -3551,6 +3549,142 @@ export type WitnessConfigView = {
 export type JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse = Range_of_uint64[];
 export type JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse = ValidatorStakeView[];
 export type JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse = RpcHealthResponse | (null);
+export type RpcStateChangesInBlockByTypeRequestAccountChanges = ({
+    blockId: BlockId;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "account_changes";
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "account_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "account_changes";
+});
+export type RpcStateChangesInBlockByTypeRequestSingleAccessKeyChanges = ({
+    blockId: BlockId;
+} & {
+    /** @enum {string} */
+    changesType: "single_access_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    finality: Finality;
+} & {
+    /** @enum {string} */
+    changesType: "single_access_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    /** @enum {string} */
+    changesType: "single_access_key_changes";
+    keys: AccountWithPublicKey[];
+});
+export type RpcStateChangesInBlockByTypeRequestSingleGasKeyChanges = ({
+    blockId: BlockId;
+} & {
+    /** @enum {string} */
+    changesType: "single_gas_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    finality: Finality;
+} & {
+    /** @enum {string} */
+    changesType: "single_gas_key_changes";
+    keys: AccountWithPublicKey[];
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    /** @enum {string} */
+    changesType: "single_gas_key_changes";
+    keys: AccountWithPublicKey[];
+});
+export type RpcStateChangesInBlockByTypeRequestAllAccessKeyChanges = ({
+    blockId: BlockId;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_access_key_changes";
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_access_key_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_access_key_changes";
+});
+export type RpcStateChangesInBlockByTypeRequestAllGasKeyChanges = ({
+    blockId: BlockId;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_gas_key_changes";
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_gas_key_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "all_gas_key_changes";
+});
+export type RpcStateChangesInBlockByTypeRequestContractCodeChanges = ({
+    blockId: BlockId;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "contract_code_changes";
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "contract_code_changes";
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "contract_code_changes";
+});
+export type RpcStateChangesInBlockByTypeRequestDataChanges = ({
+    blockId: BlockId;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "data_changes";
+    keyPrefixBase64: StoreKey;
+}) | ({
+    finality: Finality;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "data_changes";
+    keyPrefixBase64: StoreKey;
+}) | ({
+    syncCheckpoint: SyncCheckpoint;
+} & {
+    accountIds: AccountId[];
+    /** @enum {string} */
+    changesType: "data_changes";
+    keyPrefixBase64: StoreKey;
+});
 export type RpcQueryRequestViewAccount = ({
     blockId: BlockId;
 } & {

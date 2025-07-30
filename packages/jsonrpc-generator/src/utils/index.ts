@@ -30,3 +30,27 @@ export function snakeToCamel(str: string) {
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export function findCommonStringsOfMapsByKey(
+  maps: Map<string, string>[]
+): string[] {
+  if (maps.length === 0) {
+    return [];
+  }
+
+  const firstMap = maps[0]!;
+  const allKeys = Array.from(firstMap.keys());
+  return allKeys.filter((key) => maps.every((map) => map.has(key)));
+}
+
+export function mergeMaps<K, V>(maps: Map<K, V>[]): Map<K, V> {
+  const result = new Map<K, V>();
+  
+  for (const map of maps) {
+    for (const [key, value] of map.entries()) {
+      result.set(key, value);
+    }
+  }
+  
+  return result;
+}

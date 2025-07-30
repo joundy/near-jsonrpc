@@ -60,12 +60,16 @@ async function main() {
   });
 
   console.info("🔌 Building methods...");
-  const builtMethods = buildMethods(parsed.methods, {
-    schemasLocation: SCHEMAS_LOCATION,
-    typesLocation: TYPES_LOCATION,
-    zodSchemaLocation: ZOD_LOCATION,
-    zodSuffix: ZOD_SCHEMA_SUFFIX,
-  });
+  const builtMethods = buildMethods(
+    parsed.methods,
+    parsed.schemas.mappedSnakeCamelProperty,
+    {
+      schemasLocation: SCHEMAS_LOCATION,
+      typesLocation: TYPES_LOCATION,
+      zodSchemaLocation: ZOD_LOCATION,
+      zodSuffix: ZOD_SCHEMA_SUFFIX,
+    }
+  );
 
   console.info(
     "📊 Validating Zod schemas to ensure 1:1 with TS schemas compatibility..."

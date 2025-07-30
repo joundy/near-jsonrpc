@@ -4,59 +4,65 @@
  * 
  * @generated
  */
-import { defineMethod } from "./types";
-import type { RpcBlockRequest, RpcBlockResponse, RpcError, RpcSendTransactionRequest, CryptoHash, RpcTransactionResponse, RpcStateChangesInBlockByTypeRequest, RpcStateChangesInBlockResponse, RpcChunkRequest, RpcChunkResponse, RpcClientConfigRequest, RpcClientConfigResponse, RpcStateChangesInBlockRequest, RpcStateChangesInBlockByTypeResponse, RpcCongestionLevelRequest, RpcCongestionLevelResponse, GenesisConfigRequest, GenesisConfig, RpcLightClientBlockProofRequest, RpcLightClientBlockProofResponse, RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcMaintenanceWindowsRequest, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse, RpcProtocolConfigRequest, RpcProtocolConfigResponse, RpcReceiptRequest, RpcReceiptResponse, RpcSplitStorageInfoRequest, RpcSplitStorageInfoResponse, RpcTransactionStatusRequest, RpcValidatorsOrderedRequest, JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse, RpcGasPriceRequest, RpcGasPriceResponse, RpcHealthRequest, JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse, RpcNetworkInfoRequest, RpcNetworkInfoResponse, RpcLightClientNextBlockRequest, RpcLightClientNextBlockResponse, RpcQueryRequest, RpcQueryResponse, RpcStatusRequest, RpcStatusResponse, RpcValidatorRequest, RpcValidatorResponse } from "./schemas";
-import { RpcBlockRequestSchema, RpcBlockResponseSchema, RpcErrorSchema, RpcSendTransactionRequestSchema, CryptoHashSchema, RpcTransactionResponseSchema, RpcStateChangesInBlockByTypeRequestSchema, RpcStateChangesInBlockResponseSchema, RpcChunkRequestSchema, RpcChunkResponseSchema, RpcClientConfigRequestSchema, RpcClientConfigResponseSchema, RpcStateChangesInBlockRequestSchema, RpcStateChangesInBlockByTypeResponseSchema, RpcCongestionLevelRequestSchema, RpcCongestionLevelResponseSchema, GenesisConfigRequestSchema, GenesisConfigSchema, RpcLightClientBlockProofRequestSchema, RpcLightClientBlockProofResponseSchema, RpcLightClientExecutionProofRequestSchema, RpcLightClientExecutionProofResponseSchema, RpcMaintenanceWindowsRequestSchema, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponseSchema, RpcProtocolConfigRequestSchema, RpcProtocolConfigResponseSchema, RpcReceiptRequestSchema, RpcReceiptResponseSchema, RpcSplitStorageInfoRequestSchema, RpcSplitStorageInfoResponseSchema, RpcTransactionStatusRequestSchema, RpcValidatorsOrderedRequestSchema, JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponseSchema, RpcGasPriceRequestSchema, RpcGasPriceResponseSchema, RpcHealthRequestSchema, JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponseSchema, RpcNetworkInfoRequestSchema, RpcNetworkInfoResponseSchema, RpcLightClientNextBlockRequestSchema, RpcLightClientNextBlockResponseSchema, RpcQueryRequestSchema, RpcQueryResponseSchema, RpcStatusRequestSchema, RpcStatusResponseSchema, RpcValidatorRequestSchema, RpcValidatorResponseSchema } from "./zod-schemas";
+import { defineMethod, DistributiveOmit } from "./types";
+import type { RpcBlockRequest, RpcBlockResponse, RpcError, RpcStateChangesInBlockRequest, RpcStateChangesInBlockByTypeResponse, RpcSendTransactionRequest, CryptoHash, RpcTransactionResponse, RpcStateChangesInBlockByTypeRequest, RpcStateChangesInBlockResponse, RpcChunkRequest, RpcChunkResponse, RpcClientConfigRequest, RpcClientConfigResponse, RpcCongestionLevelRequest, RpcCongestionLevelResponse, GenesisConfigRequest, GenesisConfig, RpcLightClientBlockProofRequest, RpcLightClientBlockProofResponse, RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcMaintenanceWindowsRequest, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse, RpcProtocolConfigRequest, RpcProtocolConfigResponse, RpcReceiptRequest, RpcReceiptResponse, RpcSplitStorageInfoRequest, RpcSplitStorageInfoResponse, RpcTransactionStatusRequest, RpcValidatorsOrderedRequest, JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse, RpcGasPriceRequest, RpcGasPriceResponse, RpcHealthRequest, JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse, RpcNetworkInfoRequest, RpcNetworkInfoResponse, RpcLightClientNextBlockRequest, RpcLightClientNextBlockResponse, RpcQueryRequest, RpcQueryResponse, RpcStatusRequest, RpcStatusResponse, RpcValidatorRequest, RpcValidatorResponse, RpcStateChangesInBlockByTypeRequestAccountChanges, RpcStateChangesInBlockByTypeRequestSingleAccessKeyChanges, RpcStateChangesInBlockByTypeRequestSingleGasKeyChanges, RpcStateChangesInBlockByTypeRequestAllAccessKeyChanges, RpcStateChangesInBlockByTypeRequestAllGasKeyChanges, RpcStateChangesInBlockByTypeRequestContractCodeChanges, RpcStateChangesInBlockByTypeRequestDataChanges, RpcQueryRequestViewAccount, RpcQueryRequestViewCode, RpcQueryRequestViewState, RpcQueryRequestViewAccessKey, RpcQueryRequestViewAccessKeyList, RpcQueryRequestCallFunction, RpcQueryRequestViewGlobalContractCode, RpcQueryRequestViewGlobalContractCodeByAccountId } from "./schemas";
+import { RpcBlockRequestSchema, RpcBlockResponseSchema, RpcErrorSchema, RpcStateChangesInBlockRequestSchema, RpcStateChangesInBlockByTypeResponseSchema, RpcSendTransactionRequestSchema, CryptoHashSchema, RpcTransactionResponseSchema, RpcStateChangesInBlockByTypeRequestSchema, RpcStateChangesInBlockResponseSchema, RpcChunkRequestSchema, RpcChunkResponseSchema, RpcClientConfigRequestSchema, RpcClientConfigResponseSchema, RpcCongestionLevelRequestSchema, RpcCongestionLevelResponseSchema, GenesisConfigRequestSchema, GenesisConfigSchema, RpcLightClientBlockProofRequestSchema, RpcLightClientBlockProofResponseSchema, RpcLightClientExecutionProofRequestSchema, RpcLightClientExecutionProofResponseSchema, RpcMaintenanceWindowsRequestSchema, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponseSchema, RpcProtocolConfigRequestSchema, RpcProtocolConfigResponseSchema, RpcReceiptRequestSchema, RpcReceiptResponseSchema, RpcSplitStorageInfoRequestSchema, RpcSplitStorageInfoResponseSchema, RpcTransactionStatusRequestSchema, RpcValidatorsOrderedRequestSchema, JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponseSchema, RpcGasPriceRequestSchema, RpcGasPriceResponseSchema, RpcHealthRequestSchema, JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponseSchema, RpcNetworkInfoRequestSchema, RpcNetworkInfoResponseSchema, RpcLightClientNextBlockRequestSchema, RpcLightClientNextBlockResponseSchema, RpcQueryRequestSchema, RpcQueryResponseSchema, RpcStatusRequestSchema, RpcStatusResponseSchema, RpcValidatorRequestSchema, RpcValidatorResponseSchema, RpcStateChangesInBlockByTypeRequestAccountChangesSchema, RpcStateChangesInBlockByTypeRequestSingleAccessKeyChangesSchema, RpcStateChangesInBlockByTypeRequestSingleGasKeyChangesSchema, RpcStateChangesInBlockByTypeRequestAllAccessKeyChangesSchema, RpcStateChangesInBlockByTypeRequestAllGasKeyChangesSchema, RpcStateChangesInBlockByTypeRequestContractCodeChangesSchema, RpcStateChangesInBlockByTypeRequestDataChangesSchema, RpcQueryRequestViewAccountSchema, RpcQueryRequestViewCodeSchema, RpcQueryRequestViewStateSchema, RpcQueryRequestViewAccessKeySchema, RpcQueryRequestViewAccessKeyListSchema, RpcQueryRequestCallFunctionSchema, RpcQueryRequestViewGlobalContractCodeSchema, RpcQueryRequestViewGlobalContractCodeByAccountIdSchema } from "./zod-schemas";
 
 /** Method definition for block RPC call */
 export const block = defineMethod<RpcBlockRequest, RpcBlockResponse, RpcError>("block", RpcBlockRequestSchema, RpcBlockResponseSchema, RpcErrorSchema);
-/** Method definition for broadcast_tx_async RPC call */
+/** Method definition for blockEffects RPC call */
+export const blockEffects = defineMethod<RpcStateChangesInBlockRequest, RpcStateChangesInBlockByTypeResponse, RpcError>("block_effects", RpcStateChangesInBlockRequestSchema, RpcStateChangesInBlockByTypeResponseSchema, RpcErrorSchema);
+/** Method definition for broadcastTxAsync RPC call */
 export const broadcastTxAsync = defineMethod<RpcSendTransactionRequest, CryptoHash, RpcError>("broadcast_tx_async", RpcSendTransactionRequestSchema, CryptoHashSchema, RpcErrorSchema);
-/** Method definition for broadcast_tx_commit RPC call */
+/** Method definition for broadcastTxCommit RPC call */
 export const broadcastTxCommit = defineMethod<RpcSendTransactionRequest, RpcTransactionResponse, RpcError>("broadcast_tx_commit", RpcSendTransactionRequestSchema, RpcTransactionResponseSchema, RpcErrorSchema);
 /** Method definition for changes RPC call */
 export const changes = defineMethod<RpcStateChangesInBlockByTypeRequest, RpcStateChangesInBlockResponse, RpcError>("changes", RpcStateChangesInBlockByTypeRequestSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema);
 /** Method definition for chunk RPC call */
 export const chunk = defineMethod<RpcChunkRequest, RpcChunkResponse, RpcError>("chunk", RpcChunkRequestSchema, RpcChunkResponseSchema, RpcErrorSchema);
-/** Method definition for client_config RPC call */
+/** Method definition for clientConfig RPC call */
 export const clientConfig = defineMethod<RpcClientConfigRequest, RpcClientConfigResponse, RpcError>("client_config", RpcClientConfigRequestSchema, RpcClientConfigResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_changes RPC call */
+/** Method definition for EXPERIMENTALChanges RPC call */
 export const EXPERIMENTALChanges = defineMethod<RpcStateChangesInBlockByTypeRequest, RpcStateChangesInBlockResponse, RpcError>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_changes_in_block RPC call */
+/** Method definition for EXPERIMENTALChangesInBlock RPC call */
 export const EXPERIMENTALChangesInBlock = defineMethod<RpcStateChangesInBlockRequest, RpcStateChangesInBlockByTypeResponse, RpcError>("EXPERIMENTAL_changes_in_block", RpcStateChangesInBlockRequestSchema, RpcStateChangesInBlockByTypeResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_congestion_level RPC call */
+/** Method definition for EXPERIMENTALCongestionLevel RPC call */
 export const EXPERIMENTALCongestionLevel = defineMethod<RpcCongestionLevelRequest, RpcCongestionLevelResponse, RpcError>("EXPERIMENTAL_congestion_level", RpcCongestionLevelRequestSchema, RpcCongestionLevelResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_genesis_config RPC call */
+/** Method definition for EXPERIMENTALGenesisConfig RPC call */
 export const EXPERIMENTALGenesisConfig = defineMethod<GenesisConfigRequest, GenesisConfig, RpcError>("EXPERIMENTAL_genesis_config", GenesisConfigRequestSchema, GenesisConfigSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_light_client_block_proof RPC call */
+/** Method definition for EXPERIMENTALLightClientBlockProof RPC call */
 export const EXPERIMENTALLightClientBlockProof = defineMethod<RpcLightClientBlockProofRequest, RpcLightClientBlockProofResponse, RpcError>("EXPERIMENTAL_light_client_block_proof", RpcLightClientBlockProofRequestSchema, RpcLightClientBlockProofResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_light_client_proof RPC call */
+/** Method definition for EXPERIMENTALLightClientProof RPC call */
 export const EXPERIMENTALLightClientProof = defineMethod<RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcError>("EXPERIMENTAL_light_client_proof", RpcLightClientExecutionProofRequestSchema, RpcLightClientExecutionProofResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_maintenance_windows RPC call */
+/** Method definition for EXPERIMENTALMaintenanceWindows RPC call */
 export const EXPERIMENTALMaintenanceWindows = defineMethod<RpcMaintenanceWindowsRequest, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse, RpcError>("EXPERIMENTAL_maintenance_windows", RpcMaintenanceWindowsRequestSchema, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_protocol_config RPC call */
+/** Method definition for EXPERIMENTALProtocolConfig RPC call */
 export const EXPERIMENTALProtocolConfig = defineMethod<RpcProtocolConfigRequest, RpcProtocolConfigResponse, RpcError>("EXPERIMENTAL_protocol_config", RpcProtocolConfigRequestSchema, RpcProtocolConfigResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_receipt RPC call */
+/** Method definition for EXPERIMENTALReceipt RPC call */
 export const EXPERIMENTALReceipt = defineMethod<RpcReceiptRequest, RpcReceiptResponse, RpcError>("EXPERIMENTAL_receipt", RpcReceiptRequestSchema, RpcReceiptResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_split_storage_info RPC call */
+/** Method definition for EXPERIMENTALSplitStorageInfo RPC call */
 export const EXPERIMENTALSplitStorageInfo = defineMethod<RpcSplitStorageInfoRequest, RpcSplitStorageInfoResponse, RpcError>("EXPERIMENTAL_split_storage_info", RpcSplitStorageInfoRequestSchema, RpcSplitStorageInfoResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_tx_status RPC call */
+/** Method definition for EXPERIMENTALTxStatus RPC call */
 export const EXPERIMENTALTxStatus = defineMethod<RpcTransactionStatusRequest, RpcTransactionResponse, RpcError>("EXPERIMENTAL_tx_status", RpcTransactionStatusRequestSchema, RpcTransactionResponseSchema, RpcErrorSchema);
-/** Method definition for EXPERIMENTAL_validators_ordered RPC call */
+/** Method definition for EXPERIMENTALValidatorsOrdered RPC call */
 export const EXPERIMENTALValidatorsOrdered = defineMethod<RpcValidatorsOrderedRequest, JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponse, RpcError>("EXPERIMENTAL_validators_ordered", RpcValidatorsOrderedRequestSchema, JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponseSchema, RpcErrorSchema);
-/** Method definition for gas_price RPC call */
+/** Method definition for gasPrice RPC call */
 export const gasPrice = defineMethod<RpcGasPriceRequest, RpcGasPriceResponse, RpcError>("gas_price", RpcGasPriceRequestSchema, RpcGasPriceResponseSchema, RpcErrorSchema);
+/** Method definition for genesisConfig RPC call */
+export const genesisConfig = defineMethod<GenesisConfigRequest, GenesisConfig, RpcError>("genesis_config", GenesisConfigRequestSchema, GenesisConfigSchema, RpcErrorSchema);
 /** Method definition for health RPC call */
 export const health = defineMethod<RpcHealthRequest, JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponse, RpcError>("health", RpcHealthRequestSchema, JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponseSchema, RpcErrorSchema);
-/** Method definition for light_client_proof RPC call */
+/** Method definition for lightClientProof RPC call */
 export const lightClientProof = defineMethod<RpcLightClientExecutionProofRequest, RpcLightClientExecutionProofResponse, RpcError>("light_client_proof", RpcLightClientExecutionProofRequestSchema, RpcLightClientExecutionProofResponseSchema, RpcErrorSchema);
-/** Method definition for network_info RPC call */
+/** Method definition for maintenanceWindows RPC call */
+export const maintenanceWindows = defineMethod<RpcMaintenanceWindowsRequest, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponse, RpcError>("maintenance_windows", RpcMaintenanceWindowsRequestSchema, JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponseSchema, RpcErrorSchema);
+/** Method definition for networkInfo RPC call */
 export const networkInfo = defineMethod<RpcNetworkInfoRequest, RpcNetworkInfoResponse, RpcError>("network_info", RpcNetworkInfoRequestSchema, RpcNetworkInfoResponseSchema, RpcErrorSchema);
-/** Method definition for next_light_client_block RPC call */
+/** Method definition for nextLightClientBlock RPC call */
 export const nextLightClientBlock = defineMethod<RpcLightClientNextBlockRequest, RpcLightClientNextBlockResponse, RpcError>("next_light_client_block", RpcLightClientNextBlockRequestSchema, RpcLightClientNextBlockResponseSchema, RpcErrorSchema);
 /** Method definition for query RPC call */
 export const query = defineMethod<RpcQueryRequest, RpcQueryResponse, RpcError>("query", RpcQueryRequestSchema, RpcQueryResponseSchema, RpcErrorSchema);
-/** Method definition for send_tx RPC call */
+/** Method definition for sendTx RPC call */
 export const sendTx = defineMethod<RpcSendTransactionRequest, RpcTransactionResponse, RpcError>("send_tx", RpcSendTransactionRequestSchema, RpcTransactionResponseSchema, RpcErrorSchema);
 /** Method definition for status RPC call */
 export const status = defineMethod<RpcStatusRequest, RpcStatusResponse, RpcError>("status", RpcStatusRequestSchema, RpcStatusResponseSchema, RpcErrorSchema);
@@ -64,3 +70,47 @@ export const status = defineMethod<RpcStatusRequest, RpcStatusResponse, RpcError
 export const tx = defineMethod<RpcTransactionStatusRequest, RpcTransactionResponse, RpcError>("tx", RpcTransactionStatusRequestSchema, RpcTransactionResponseSchema, RpcErrorSchema);
 /** Method definition for validators RPC call */
 export const validators = defineMethod<RpcValidatorRequest, RpcValidatorResponse, RpcError>("validators", RpcValidatorRequestSchema, RpcValidatorResponseSchema, RpcErrorSchema);
+/** Method definition for changesAccountChanges RPC call */
+export const changesAccountChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestAccountChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestAccountChanges, "changesType">>("changes", RpcStateChangesInBlockByTypeRequestAccountChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "account_changes" });
+/** Method definition for changesSingleAccessKeyChanges RPC call */
+export const changesSingleAccessKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestSingleAccessKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestSingleAccessKeyChanges, "changesType">>("changes", RpcStateChangesInBlockByTypeRequestSingleAccessKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "single_access_key_changes" });
+/** Method definition for changesSingleGasKeyChanges RPC call */
+export const changesSingleGasKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestSingleGasKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestSingleGasKeyChanges, "changesType">>("changes", RpcStateChangesInBlockByTypeRequestSingleGasKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "single_gas_key_changes" });
+/** Method definition for changesAllAccessKeyChanges RPC call */
+export const changesAllAccessKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestAllAccessKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestAllAccessKeyChanges, "changesType">>("changes", RpcStateChangesInBlockByTypeRequestAllAccessKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "all_access_key_changes" });
+/** Method definition for changesAllGasKeyChanges RPC call */
+export const changesAllGasKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestAllGasKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestAllGasKeyChanges, "changesType">>("changes", RpcStateChangesInBlockByTypeRequestAllGasKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "all_gas_key_changes" });
+/** Method definition for changesContractCodeChanges RPC call */
+export const changesContractCodeChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestContractCodeChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestContractCodeChanges, "changesType">>("changes", RpcStateChangesInBlockByTypeRequestContractCodeChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "contract_code_changes" });
+/** Method definition for changesDataChanges RPC call */
+export const changesDataChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestDataChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestDataChanges, "changesType">>("changes", RpcStateChangesInBlockByTypeRequestDataChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "data_changes" });
+/** Method definition for EXPERIMENTALChangesAccountChanges RPC call */
+export const EXPERIMENTALChangesAccountChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestAccountChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestAccountChanges, "changesType">>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestAccountChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "account_changes" });
+/** Method definition for EXPERIMENTALChangesSingleAccessKeyChanges RPC call */
+export const EXPERIMENTALChangesSingleAccessKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestSingleAccessKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestSingleAccessKeyChanges, "changesType">>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestSingleAccessKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "single_access_key_changes" });
+/** Method definition for EXPERIMENTALChangesSingleGasKeyChanges RPC call */
+export const EXPERIMENTALChangesSingleGasKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestSingleGasKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestSingleGasKeyChanges, "changesType">>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestSingleGasKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "single_gas_key_changes" });
+/** Method definition for EXPERIMENTALChangesAllAccessKeyChanges RPC call */
+export const EXPERIMENTALChangesAllAccessKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestAllAccessKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestAllAccessKeyChanges, "changesType">>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestAllAccessKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "all_access_key_changes" });
+/** Method definition for EXPERIMENTALChangesAllGasKeyChanges RPC call */
+export const EXPERIMENTALChangesAllGasKeyChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestAllGasKeyChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestAllGasKeyChanges, "changesType">>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestAllGasKeyChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "all_gas_key_changes" });
+/** Method definition for EXPERIMENTALChangesContractCodeChanges RPC call */
+export const EXPERIMENTALChangesContractCodeChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestContractCodeChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestContractCodeChanges, "changesType">>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestContractCodeChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "contract_code_changes" });
+/** Method definition for EXPERIMENTALChangesDataChanges RPC call */
+export const EXPERIMENTALChangesDataChanges = defineMethod<DistributiveOmit<RpcStateChangesInBlockByTypeRequestDataChanges, "changesType">, RpcStateChangesInBlockResponse, RpcError, Pick<RpcStateChangesInBlockByTypeRequestDataChanges, "changesType">>("EXPERIMENTAL_changes", RpcStateChangesInBlockByTypeRequestDataChangesSchema, RpcStateChangesInBlockResponseSchema, RpcErrorSchema, { changesType: "data_changes" });
+/** Method definition for queryViewAccount RPC call */
+export const queryViewAccount = defineMethod<DistributiveOmit<RpcQueryRequestViewAccount, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestViewAccount, "requestType">>("query", RpcQueryRequestViewAccountSchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "view_account" });
+/** Method definition for queryViewCode RPC call */
+export const queryViewCode = defineMethod<DistributiveOmit<RpcQueryRequestViewCode, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestViewCode, "requestType">>("query", RpcQueryRequestViewCodeSchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "view_code" });
+/** Method definition for queryViewState RPC call */
+export const queryViewState = defineMethod<DistributiveOmit<RpcQueryRequestViewState, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestViewState, "requestType">>("query", RpcQueryRequestViewStateSchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "view_state" });
+/** Method definition for queryViewAccessKey RPC call */
+export const queryViewAccessKey = defineMethod<DistributiveOmit<RpcQueryRequestViewAccessKey, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestViewAccessKey, "requestType">>("query", RpcQueryRequestViewAccessKeySchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "view_access_key" });
+/** Method definition for queryViewAccessKeyList RPC call */
+export const queryViewAccessKeyList = defineMethod<DistributiveOmit<RpcQueryRequestViewAccessKeyList, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestViewAccessKeyList, "requestType">>("query", RpcQueryRequestViewAccessKeyListSchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "view_access_key_list" });
+/** Method definition for queryCallFunction RPC call */
+export const queryCallFunction = defineMethod<DistributiveOmit<RpcQueryRequestCallFunction, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestCallFunction, "requestType">>("query", RpcQueryRequestCallFunctionSchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "call_function" });
+/** Method definition for queryViewGlobalContractCode RPC call */
+export const queryViewGlobalContractCode = defineMethod<DistributiveOmit<RpcQueryRequestViewGlobalContractCode, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestViewGlobalContractCode, "requestType">>("query", RpcQueryRequestViewGlobalContractCodeSchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "view_global_contract_code" });
+/** Method definition for queryViewGlobalContractCodeByAccountId RPC call */
+export const queryViewGlobalContractCodeByAccountId = defineMethod<DistributiveOmit<RpcQueryRequestViewGlobalContractCodeByAccountId, "requestType">, RpcQueryResponse, RpcError, Pick<RpcQueryRequestViewGlobalContractCodeByAccountId, "requestType">>("query", RpcQueryRequestViewGlobalContractCodeByAccountIdSchema, RpcQueryResponseSchema, RpcErrorSchema, { requestType: "view_global_contract_code_by_account_id" });
