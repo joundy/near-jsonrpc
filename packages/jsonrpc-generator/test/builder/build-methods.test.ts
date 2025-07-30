@@ -10,11 +10,11 @@ describe("Build Methods", () => {
  * 
  * @generated
  */
-import { defineMethod } from "./types";
+import { defineMethod, DistributiveOmit } from "./types";
 import type { FooRequest, FooResponse, FooError } from "./schemas";
 import { FooRequestZodSchema, FooResponseZodSchema, FooErrorZodSchema } from "./zod-schemas";
 
-/** Method definition for foo_method RPC call */
+/** Method definition for fooMethod RPC call */
 export const fooMethod = defineMethod<FooRequest, FooResponse, FooError>("foo_method", FooRequestZodSchema, FooResponseZodSchema, FooErrorZodSchema);
 `,
     };
@@ -36,7 +36,14 @@ export const fooMethod = defineMethod<FooRequest, FooResponse, FooError>("foo_me
         },
       },
     ];
-    const result = buildMethods(methodTypes, {
+
+    const mappedSnakeCamelProperty = new Map<string, string>([
+      ["hello_world", "helloWorld"],
+      ["hello_world_2", "helloWorld2"],
+      ["hello_world_3", "helloWorld3"],
+      ["hello_world_4", "helloWorld4"],
+    ]);
+    const result = buildMethods(methodTypes, mappedSnakeCamelProperty, {
       schemasLocation: "./schemas",
       typesLocation: "./types",
       zodSchemaLocation: "./zod-schemas",
