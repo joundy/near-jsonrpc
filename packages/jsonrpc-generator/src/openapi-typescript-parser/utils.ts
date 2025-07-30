@@ -71,3 +71,20 @@ export function replaceAllIndexedSchemas(schemaType: string) {
   const regex = /components\["schemas"\]\["([^"]+)"\]/g;
   return schemaType.replace(regex, "$1");
 }
+
+/**
+ * Adds new properties to the schema
+ */
+export function addNewPropertyToSchema(
+  source: SourceFile,
+  newSchemaMethodMap: Map<string, string>
+) {
+  const literal = getSchemasLiteral(source);
+
+  for (const [key, value] of newSchemaMethodMap) {
+    literal.addProperty({
+      name: key,
+      type: value,
+    });
+  }
+}

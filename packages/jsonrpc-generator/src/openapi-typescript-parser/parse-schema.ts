@@ -17,10 +17,6 @@ function processPropertyRenaming(
     newName: string;
   }> = [];
 
-  console.info(
-    `🔄 Processing ${propertyDescendants.length} properties from ${propertyName} for snake_case to camelCase conversion`
-  );
-
   // Collection phase: gather all rename operations
   for (const property of propertyDescendants) {
     const name = property.getName();
@@ -58,8 +54,6 @@ function processSchemaProperty(
       mappedSnakeCamelProperty
     );
   }
-
-  console.info(`✅ Property renaming complete for ${property.getName()}`);
 
   const typeName = property.getName();
   const typeNode = property.getTypeNodeOrThrow();

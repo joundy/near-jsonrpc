@@ -3,10 +3,16 @@ export type ResponseType = {
   fromSchema: string;
 };
 
+export type RequestDescriminatedType = {
+  property: string;
+  value: string;
+};
+
 export type RequestType = {
   type: string;
   method: string;
   fromSchema: string;
+  discriminatedType?: RequestDescriminatedType;
 };
 
 export type ErrorType = {

@@ -76,12 +76,19 @@ function parseZod<T>(
  * ```
  */
 export function createClientWithMethods<
-  T extends Record<string, Method<any, any, any>>
+  T extends Record<string, Method<any, any, any, any>>
 >(config: CreateClientWithMethodsConfig<T>): SelectiveRpcClient<T> {
   const { transporter, methods: selectedMethods, runtimeValidation } = config;
 
   return Object.entries(selectedMethods).reduce((acc, [key, method]) => {
     acc[key] = async (request: RequestType<typeof method>) => {
+      if (method.defaultRequest) {
+        request = {
+          ...method.defaultRequest,
+          ...request,
+        };
+      }
+
       if (runtimeValidation) {
         const requestValidation = parseZod<RequestType<typeof method>>(
           "request",

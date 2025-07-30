@@ -10,29 +10,13 @@ import type {
   RequestType,
   ResponseType,
 } from "../types";
-import { getSchemaSet, getSchemasLiteral } from "./utils";
+import { addNewPropertyToSchema, getSchemaSet, getSchemasLiteral } from "./utils";
 import {
   parseRequestBody,
   parseResponse,
   processTypeForSchemaGeneration,
 } from "./operation-parsers";
 
-/**
- * Adds new properties to the schema
- */
-function addNewPropertyToSchema(
-  source: SourceFile,
-  newSchemaMethodMap: Map<string, string>
-) {
-  const literal = getSchemasLiteral(source);
-
-  for (const [key, value] of newSchemaMethodMap) {
-    literal.addProperty({
-      name: key,
-      type: value,
-    });
-  }
-}
 
 /**
  * Processes method types and handles schema generation

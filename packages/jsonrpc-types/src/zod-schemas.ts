@@ -1998,3 +1998,261 @@ export const WitnessConfigViewSchema = z.object({
 export const JsonRpcResponseForArrayOfRangeOfUint64AndRpcErrorResponseSchema = z.array(Range_of_uint64Schema);
 export const JsonRpcResponseForArrayOfValidatorStakeViewAndRpcErrorResponseSchema = z.array(ValidatorStakeViewSchema);
 export const JsonRpcResponseForNullableRpcHealthResponseAndRpcErrorResponseSchema = z.union([RpcHealthResponseSchema, z.null()]);
+export const RpcStateChangesInBlockByTypeRequestAccountChangesSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("account_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("account_changes")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("account_changes")
+}))]);
+export const RpcStateChangesInBlockByTypeRequestSingleAccessKeyChangesSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    changesType: z.literal("single_access_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    changesType: z.literal("single_access_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    changesType: z.literal("single_access_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+}))]);
+export const RpcStateChangesInBlockByTypeRequestSingleGasKeyChangesSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    changesType: z.literal("single_gas_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    changesType: z.literal("single_gas_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    changesType: z.literal("single_gas_key_changes"),
+    keys: z.array(AccountWithPublicKeySchema)
+}))]);
+export const RpcStateChangesInBlockByTypeRequestAllAccessKeyChangesSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_access_key_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_access_key_changes")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_access_key_changes")
+}))]);
+export const RpcStateChangesInBlockByTypeRequestAllGasKeyChangesSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_gas_key_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_gas_key_changes")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("all_gas_key_changes")
+}))]);
+export const RpcStateChangesInBlockByTypeRequestContractCodeChangesSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("contract_code_changes")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("contract_code_changes")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("contract_code_changes")
+}))]);
+export const RpcStateChangesInBlockByTypeRequestDataChangesSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("data_changes"),
+    keyPrefixBase64: StoreKeySchema
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("data_changes"),
+    keyPrefixBase64: StoreKeySchema
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountIds: z.array(AccountIdSchema),
+    changesType: z.literal("data_changes"),
+    keyPrefixBase64: StoreKeySchema
+}))]);
+export const RpcQueryRequestViewAccountSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_account")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_account")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_account")
+}))]);
+export const RpcQueryRequestViewCodeSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_code")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_code")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_code")
+}))]);
+export const RpcQueryRequestViewStateSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    includeProof: z.boolean().optional(),
+    prefixBase64: StoreKeySchema,
+    requestType: z.literal("view_state")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    includeProof: z.boolean().optional(),
+    prefixBase64: StoreKeySchema,
+    requestType: z.literal("view_state")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    includeProof: z.boolean().optional(),
+    prefixBase64: StoreKeySchema,
+    requestType: z.literal("view_state")
+}))]);
+export const RpcQueryRequestViewAccessKeySchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    publicKey: PublicKeySchema,
+    requestType: z.literal("view_access_key")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    publicKey: PublicKeySchema,
+    requestType: z.literal("view_access_key")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    publicKey: PublicKeySchema,
+    requestType: z.literal("view_access_key")
+}))]);
+export const RpcQueryRequestViewAccessKeyListSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_access_key_list")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_access_key_list")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_access_key_list")
+}))]);
+export const RpcQueryRequestCallFunctionSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    argsBase64: FunctionArgsSchema,
+    methodName: z.string(),
+    requestType: z.literal("call_function")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    argsBase64: FunctionArgsSchema,
+    methodName: z.string(),
+    requestType: z.literal("call_function")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    argsBase64: FunctionArgsSchema,
+    methodName: z.string(),
+    requestType: z.literal("call_function")
+}))]);
+export const RpcQueryRequestViewGlobalContractCodeSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    codeHash: CryptoHashSchema,
+    requestType: z.literal("view_global_contract_code")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    codeHash: CryptoHashSchema,
+    requestType: z.literal("view_global_contract_code")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    codeHash: CryptoHashSchema,
+    requestType: z.literal("view_global_contract_code")
+}))]);
+export const RpcQueryRequestViewGlobalContractCodeByAccountIdSchema = z.union([z.object({
+    blockId: BlockIdSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_global_contract_code_by_account_id")
+})), z.object({
+    finality: FinalitySchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_global_contract_code_by_account_id")
+})), z.object({
+    syncCheckpoint: SyncCheckpointSchema
+}).and(z.object({
+    accountId: AccountIdSchema,
+    requestType: z.literal("view_global_contract_code_by_account_id")
+}))]);
