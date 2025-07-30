@@ -1130,6 +1130,7 @@ export const RpcClientConfigResponseSchema = z.object({
     chainId: z.string(),
     chunkDistributionNetwork: z.union([ChunkDistributionNetworkConfigSchema, z.null()]).optional(),
     chunkRequestRetryPeriod: z.array(z.number()),
+    chunkValidationThreads: z.number(),
     chunkWaitMult: z.array(z.number()),
     clientBackgroundMigrationThreads: z.number(),
     doomslugStepPeriod: z.array(z.number()),
@@ -1162,6 +1163,9 @@ export const RpcClientConfigResponseSchema = z.object({
     saveTrieChanges: z.boolean(),
     saveTxOutcomes: z.boolean(),
     skipSyncWait: z.boolean(),
+    stateRequestServerThreads: z.number(),
+    stateRequestThrottlePeriod: z.array(z.number()),
+    stateRequestsPerThrottlePeriod: z.number(),
     stateSync: z.lazy(() => StateSyncConfigSchema),
     stateSyncEnabled: z.boolean(),
     stateSyncExternalBackoff: z.array(z.number()),
@@ -1179,9 +1183,7 @@ export const RpcClientConfigResponseSchema = z.object({
     ttlAccountIdRouter: z.array(z.number()),
     txRoutingHeightHorizon: z.number(),
     version: z.lazy(() => VersionSchema),
-    viewClientNumStateRequestsPerThrottlePeriod: z.number(),
-    viewClientThreads: z.number(),
-    viewClientThrottlePeriod: z.array(z.number())
+    viewClientThreads: z.number()
 });
 export const RpcCongestionLevelRequestSchema = z.union([z.object({
     blockId: BlockIdSchema,

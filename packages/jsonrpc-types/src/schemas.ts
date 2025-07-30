@@ -1577,8 +1577,6 @@ export type GenesisConfig = {
      *         "shard_ids": [
      *           0
      *         ],
-     *         "shards_parent_map": null,
-     *         "shards_split_map": null,
      *         "version": 0
      *       }
      *     }
@@ -2190,6 +2188,11 @@ export type RpcClientConfigResponse = {
     chunkDistributionNetwork?: ChunkDistributionNetworkConfig | (null);
     /** @description Time between checking to re-request chunks. */
     chunkRequestRetryPeriod: number[];
+    /**
+     * Format: uint
+     * @description Number of threads for ChunkValidationActor pool.
+     */
+    chunkValidationThreads: number;
     /** @description Multiplier for the wait time for all chunks to be received. */
     chunkWaitMult: number[];
     /**
@@ -2293,6 +2296,19 @@ export type RpcClientConfigResponse = {
     saveTxOutcomes: boolean;
     /** @description Skip waiting for sync (for testing or single node testnet). */
     skipSyncWait: boolean;
+    /**
+     * Format: uint
+     * @description Number of threads for StateRequestActor pool.
+     */
+    stateRequestServerThreads: number;
+    /** @description Number of seconds between state requests for view client.
+     *     Throttling window for state requests (headers and parts). */
+    stateRequestThrottlePeriod: number[];
+    /**
+     * Format: uint
+     * @description Maximum number of state requests served per throttle period
+     */
+    stateRequestsPerThrottlePeriod: number;
     /** @description Options for syncing state. */
     stateSync: StateSyncConfig;
     /** @description Whether to use the State Sync mechanism.
@@ -2346,16 +2362,9 @@ export type RpcClientConfigResponse = {
     version: Version;
     /**
      * Format: uint
-     * @description Maximum number of state requests served per `view_client_throttle_period`
-     */
-    viewClientNumStateRequestsPerThrottlePeriod: number;
-    /**
-     * Format: uint
      * @description Number of threads for ViewClientActor pool.
      */
     viewClientThreads: number;
-    /** @description Throttling window for state requests (headers and parts). */
-    viewClientThrottlePeriod: number[];
 };
 export type RpcCongestionLevelRequest = {
     blockId: BlockId;
