@@ -3852,3 +3852,99 @@ export type RpcQueryRequestViewGlobalContractCodeByAccountId = ({
     /** @enum {string} */
     requestType: "view_global_contract_code_by_account_id";
 });
+
+export function DiscriminateRpcQueryResponse(obj: RpcQueryResponse): {
+    AccountView?: {
+        blockHash: CryptoHash;
+        /** Format: uint64 */
+        blockHeight: number;
+    }
+    & AccountView;
+    ContractCodeView?: {
+        blockHash: CryptoHash;
+        /** Format: uint64 */
+        blockHeight: number;
+    }
+    & ContractCodeView;
+    ViewStateResult?: {
+        blockHash: CryptoHash;
+        /** Format: uint64 */
+        blockHeight: number;
+    }
+    & ViewStateResult;
+    CallResult?: {
+        blockHash: CryptoHash;
+        /** Format: uint64 */
+        blockHeight: number;
+    }
+    & CallResult;
+    AccessKeyView?: {
+        blockHash: CryptoHash;
+        /** Format: uint64 */
+        blockHeight: number;
+    }
+    & AccessKeyView;
+    AccessKeyList?: {
+        blockHash: CryptoHash;
+        /** Format: uint64 */
+        blockHeight: number;
+    }
+    & AccessKeyList;
+} {
+    let AccountView: ReturnType<typeof DiscriminateRpcQueryResponse>['AccountView'] = undefined
+    let ContractCodeView: ReturnType<typeof DiscriminateRpcQueryResponse>['ContractCodeView'] = undefined
+    let ViewStateResult: ReturnType<typeof DiscriminateRpcQueryResponse>['ViewStateResult'] = undefined
+    let CallResult: ReturnType<typeof DiscriminateRpcQueryResponse>['CallResult'] = undefined
+    let AccessKeyView: ReturnType<typeof DiscriminateRpcQueryResponse>['AccessKeyView'] = undefined
+    let AccessKeyList: ReturnType<typeof DiscriminateRpcQueryResponse>['AccessKeyList'] = undefined
+    if ("amount" in obj && "codeHash" in obj && "locked" in obj && "storagePaidAt" in obj && "storageUsage" in obj) {
+        AccountView = obj;
+    }
+    if ("codeBase64" in obj && "hash" in obj) {
+        ContractCodeView = obj;
+    }
+    if ("values" in obj) {
+        ViewStateResult = obj;
+    }
+    if ("logs" in obj && "result" in obj) {
+        CallResult = obj;
+    }
+    if ("nonce" in obj && "permission" in obj) {
+        AccessKeyView = obj;
+    }
+    if ("keys" in obj) {
+        AccessKeyList = obj;
+    }
+    return {
+        AccountView,
+        ContractCodeView,
+        ViewStateResult,
+        CallResult,
+        AccessKeyView,
+        AccessKeyList
+    };
+}
+
+export function DiscriminateRpcTransactionResponse(obj: RpcTransactionResponse): {
+    FinalExecutionOutcomeWithReceiptView?: {
+        finalExecutionStatus: TxExecutionStatus;
+    }
+    & FinalExecutionOutcomeWithReceiptView;
+    FinalExecutionOutcomeView?: {
+        finalExecutionStatus: TxExecutionStatus;
+    }
+    & FinalExecutionOutcomeView;
+} {
+    let FinalExecutionOutcomeWithReceiptView: ReturnType<typeof DiscriminateRpcTransactionResponse>['FinalExecutionOutcomeWithReceiptView'] = undefined
+    let FinalExecutionOutcomeView: ReturnType<typeof DiscriminateRpcTransactionResponse>['FinalExecutionOutcomeView'] = undefined
+    if ("receipts" in obj && "receiptsOutcome" in obj && "status" in obj && "transaction" in obj && "transactionOutcome" in obj) {
+        FinalExecutionOutcomeWithReceiptView = obj;
+    }
+    if ("receiptsOutcome" in obj && "status" in obj && "transaction" in obj && "transactionOutcome" in obj) {
+        FinalExecutionOutcomeView = obj;
+    }
+    return {
+        FinalExecutionOutcomeWithReceiptView,
+        FinalExecutionOutcomeView
+    };
+}

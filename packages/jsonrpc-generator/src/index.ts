@@ -22,6 +22,8 @@ import {
   TYPES_LOCATION,
   ZOD_LOCATION,
 } from "./constants";
+import { generateDiscriminators } from "./discriminator-generator";
+import { extendSchemaWithDiscriminators } from "./builder/extend-schema-with-discriminators";
 
 async function main() {
   console.info("📄 Getting OpenAPI spec from nearcore repository...");
@@ -82,10 +84,22 @@ async function main() {
     validateAll: true, // set to false to validate one by one
   });
 
+  console.info("📊 Generating discriminators helpers for schemas...");
+  const schemaDiscriminators = generateDiscriminators(builtSchemas);
+
+  console.info("📊 Extending schemas with discriminators...");
+  const builtSchemasWithDiscriminators = extendSchemaWithDiscriminators(
+    builtSchemas,
+    schemaDiscriminators
+  );
+
   console.info("💾 Saving output files...");
   writeFileSync(`${OUTPUT_BASE_PATH}/${TYPES_FILE}`, builtTypes);
   writeFileSync(`${OUTPUT_BASE_PATH}/${METHODS_FILE}`, builtMethods);
-  writeFileSync(`${OUTPUT_BASE_PATH}/${SCHEMAS_FILE}`, builtSchemas);
+  writeFileSync(
+    `${OUTPUT_BASE_PATH}/${SCHEMAS_FILE}`,
+    builtSchemasWithDiscriminators
+  );
   writeFileSync(`${OUTPUT_BASE_PATH}/${ZOD_SCHEMAS_FILE}`, builtZodSchemas);
   writeFileSync(
     `${OUTPUT_BASE_PATH}/${MAPPED_PROPERTIES_FILE}`,

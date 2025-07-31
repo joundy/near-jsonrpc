@@ -36,3 +36,15 @@ export type ZodSchemaType = {
   type: string;
   zodType?: string;
 };
+
+
+export type RefDiscriminator = {
+  referenceSchema: string;
+  properties: string[];
+};
+
+export type SchemaDiscriminator = {
+  schema: string;
+  refDiscriminators: RefDiscriminator[];
+  typeLiteral?: string;
+};
