@@ -1,66 +1,6 @@
-import {
-  Project,
-  SourceFile,
-  SyntaxKind,
-  TypeAliasDeclaration,
-  TypeLiteralNode,
-  UnionTypeNode,
-} from "ts-morph";
-
-type RefDiscriminator = {
-  referenceSchema: string;
-  properties: string[];
-};
-
-type SchemaDiscriminator = {
-  schema: string;
-  refDiscriminators: RefDiscriminator[];
-  typeLiteral?: string;
-};
-
-function extractSchemaPropertiesNonOptional(schema: TypeLiteralNode) {
-  const propertyNames: string[] = [];
-  const properties = schema.getProperties();
-  for (const property of properties) {
-    const isOptional = property.hasQuestionToken();
-    if (!isOptional) {
-      propertyNames.push(property.getName());
-    }
-  }
-
-  return propertyNames;
-}
-
-function discriminateUnionTypeReference(
-  source: SourceFile,
-  unionType: UnionTypeNode
-): RefDiscriminator[] {
-  const typeNodes = unionType.getTypeNodes();
-
-  const discriminators: RefDiscriminator[] = [];
-  for (const typeNode of typeNodes) {
-    if (typeNode.isKind(SyntaxKind.TypeReference)) {
-      const reference = typeNode.asKindOrThrow(SyntaxKind.TypeReference);
-      const referenceName = reference.getText();
-
-      const schemaTypeLiteral = source
-        .getTypeAliasOrThrow(referenceName)
-        .getFirstChildByKind(SyntaxKind.TypeLiteral);
-
-      if (schemaTypeLiteral) {
-        const properties =
-          extractSchemaPropertiesNonOptional(schemaTypeLiteral);
-
-        discriminators.push({
-          referenceSchema: referenceName,
-          properties,
-        });
-      }
-    }
-  }
-
-  return discriminators;
-}
+import { Project, SourceFile, SyntaxKind } from "ts-morph";
+import { SchemaDiscriminator } from "../types";
+import { discriminateUnionTypeReference } from "./utils";
 
 export function generateDiscriminators(schemasTs: string) {
   const project = new Project();
@@ -138,7 +78,7 @@ export function generateDiscriminators(schemasTs: string) {
     }
   }
 
-  console.log(schemaDiscriminators);
-
   project.removeSourceFile(source);
+
+  return schemaDiscriminators;
 }

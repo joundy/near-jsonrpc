@@ -14,7 +14,8 @@
     "validation": "tsx validation.ts",
     "view-account": "tsx view-account.ts",
     "view-function": "tsx view-function.ts",
-    "query-view-account": "tsx query-view-account.ts"
+    "query-view-account": "tsx query-view-account.ts",
+    "discriminated-helper": "tsx discriminated-helper.ts"
   },
   "devDependencies": {
     "@near-js/jsonrpc-client": "*",

@@ -20,12 +20,11 @@ function processPropertyRenaming(
   // Collection phase: gather all rename operations
   for (const property of propertyDescendants) {
     const name = property.getName();
-    // TODO: remove this comments
-    // const camelize = snakeToCamel(name);
-    // if (name !== camelize) {
-    //   mappedSnakeCamelProperty.set(name, camelize);
-    //   renameOperations.push({ property, newName: camelize });
-    // }
+    const camelize = snakeToCamel(name);
+    if (name !== camelize) {
+      mappedSnakeCamelProperty.set(name, camelize);
+      renameOperations.push({ property, newName: camelize });
+    }
   }
 
   // Rename the properties
