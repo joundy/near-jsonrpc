@@ -1,0 +1,28 @@
+import type { Method, RequestType } from "@near-js/jsonrpc-types/types";
+import type { JsonRpcQueryKeys, MethodName } from "./types";
+
+export const jsonRpcQueryKeys: JsonRpcQueryKeys = {
+  all: ["jsonrpc"] as const,
+  method: <T extends Method<any, any, any, any>>(
+    methodName: MethodName<T>,
+    params?: RequestType<T>
+  ) => {
+    if (params === undefined || params === null) {
+      return ["jsonrpc", methodName] as const;
+    }
+    return ["jsonrpc", methodName, params] as const;
+  },
+};
+
+export function createMethodQueryKey<T extends Method<any, any, any, any>>(
+  methodName: MethodName<T>,
+  params?: RequestType<T>
+) {
+  return jsonRpcQueryKeys.method(methodName, params);
+}
+
+export function getMethodQueryKeys<T extends Method<any, any, any, any>>(
+  methodName: MethodName<T>
+) {
+  return ["jsonrpc", methodName] as const;
+}
