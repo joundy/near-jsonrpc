@@ -5,16 +5,17 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "patch-package",
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "check-types": "turbo run check-types",
-    "clean": "rm -rf dist && turbo run clean",
-    "test": "turbo run test",
+    "build": "turbo run build --filter='./packages/*'",
+    "dev": "turbo run dev --filter='./packages/*'",
+    "check-types": "turbo run check-types --filter='./packages/*'",
+    "clean": "rm -rf dist && turbo run clean --filter='./packages/*'",
+    "test": "turbo run test --filter='./packages/*'",
     "generate": "yarn workspace @near-js/jsonrpc-generator generate"
   },
   "workspaces": [
     "packages/*",
-    "examples"
+    "examples",
+    "examples/react-examples"
   ],
   "devDependencies": {
     "patch-package": "^8.0.0",
