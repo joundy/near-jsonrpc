@@ -12,13 +12,28 @@ npm install @near-js/jsonrpc-client
 
 ```typescript
 import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
+import { DiscriminateRpcQueryResponse } from "@near-js/jsonrpc-types";
 
 const transporter = jsonRpcTransporter({
   endpoint: "https://rpc.testnet.near.org",
 });
 const client = createClient({ transporter });
 
-// Query account
+// Query account using discriminated method
+const { result, error } = await client.queryViewAccount({
+  accountId: "example.testnet",
+  finality: "final",
+});
+
+if (!error) {
+  // Use discriminator helper for type-safe response handling
+  const accountView = DiscriminateRpcQueryResponse(result).AccountView;
+  if (accountView) {
+    console.log(`Balance: ${accountView.amount} yoctoNEAR`);
+  }
+}
+
+// Alternative: Use generic query method (still supported)
 const account = await client.query({
   requestType: "view_account",
   finality: "final",
@@ -145,6 +160,83 @@ const txClient = createClientWithMethods({
 });
 ```
 
+## Discriminated Methods
+
+The client now supports discriminated methods that provide better type safety and developer experience for specific operations. These methods automatically set the discriminator properties (like `requestType`) for you.
+
+### Query Methods
+
+Instead of using the generic `query` method with a `requestType` parameter, you can now use specific methods:
+
+```typescript
+import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
+import { DiscriminateRpcQueryResponse } from "@near-js/jsonrpc-types";
+
+const transporter = jsonRpcTransporter({
+  endpoint: "https://rpc.testnet.near.org",
+});
+const client = createClient({ transporter });
+
+// Use specific discriminated methods
+const { result, error } = await client.queryViewAccount({
+  accountId: "example.testnet",
+  finality: "final",
+  // requestType: "view_account" is automatically set
+});
+
+// Or use generic method
+await client.query({
+  requestType: "view_account",
+  accountId: "example.testnet",
+  finality: "final",
+});
+```
+
+### Changes Methods
+
+Similar discriminated methods are available for state changes:
+
+```typescript
+// Specific change type methods
+await client.changesAccountChanges({
+  accountIds: ["example.testnet"],
+  finality: "final",
+  // changesType: "account_changes" is automatically set
+});
+
+// Or use generic changes method
+await client.changes({
+  accountIds: ["example.testnet"],
+  finality: "final",
+  changesType: "account_changes",
+});
+```
+
+### Discriminator Helper Functions
+
+Use discriminator helpers to safely handle union response types:
+
+```typescript
+import {
+  DiscriminateRpcQueryResponse,
+  DiscriminateRpcTransactionResponse,
+} from "@near-js/jsonrpc-types";
+
+// For query responses
+const { result } = await client.queryViewAccount({
+  accountId: "example.testnet",
+});
+
+const discriminated = DiscriminateRpcQueryResponse(result);
+if (discriminated.AccountView) {
+  // TypeScript knows this is AccountView type
+  console.log(discriminated.AccountView.amount);
+} else if (discriminated.CallResult) {
+  // TypeScript knows this is CallResult type
+  console.log(discriminated.CallResult.result);
+}
+```
+
 #### Runtime Validation
 
 When `runtimeValidation` is enabled, the client will validate both outgoing requests and incoming responses using Zod schemas. This provides additional type safety at runtime and helps catch issues early.
@@ -199,7 +291,9 @@ For a comprehensive example of how to handle different types of validation error
 
 See the [examples directory](../../examples) for more usage patterns:
 
-- [View Account](../../examples/view-account.ts)
+- [View Account](../../examples/view-account.ts) - Traditional query method usage
+- [Query View Account](../../examples/query-view-account.ts) - Discriminated method usage
+- [Discriminated Helper](../../examples/discriminated-helper.ts) - Using discriminator helpers
 - [Transactions](../../examples/transactions.ts)
 - [Gas Price](../../examples/gas.ts)
 - [Selective Methods](../../examples/selective-methods.ts)
