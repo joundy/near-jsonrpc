@@ -4,11 +4,12 @@ A modern, type-safe TypeScript SDK for NEAR Protocol's JSON-RPC API.
 
 ## Packages
 
-| Package                                                        | Description                                                |
-| -------------------------------------------------------------- | ---------------------------------------------------------- |
-| **[@near-js/jsonrpc-client](./packages/jsonrpc-client)**       | Type-safe JSON-RPC client                                  |
-| **[@near-js/jsonrpc-types](./packages/jsonrpc-types)**         | TypeScript types and schemas                               |
-| **[@near-js/jsonrpc-generator](./packages/jsonrpc-generator)** | Code generator for types ([Detailed docs](./GENERATOR.md)) |
+| Package                                                            | Description                                                |
+| ------------------------------------------------------------------ | ---------------------------------------------------------- |
+| **[@near-js/jsonrpc-client](./packages/jsonrpc-client)**           | Type-safe JSON-RPC client                                  |
+| **[@near-js/jsonrpc-types](./packages/jsonrpc-types)**             | TypeScript types and schemas                               |
+| **[@near-js/jsonrpc-react-query](./packages/jsonrpc-react-query)** | React Query hooks for NEAR JSON-RPC                        |
+| **[@near-js/jsonrpc-generator](./packages/jsonrpc-generator)**     | Code generator for types ([Detailed docs](./GENERATOR.md)) |
 
 ## Quick Start
 

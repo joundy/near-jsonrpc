@@ -1,0 +1,51 @@
+{
+  "name": "@near-js/jsonrpc-react-query",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "check-types": "tsc --noEmit",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@near-js/jsonrpc-client": "*",
+    "@near-js/jsonrpc-types": "*"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^18.0.0"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.84.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/jest": "^30.0.0",
+    "@types/react": "^18.0.0",
+    "jest": "^30.0.5",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "ts-jest": "^29.4.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

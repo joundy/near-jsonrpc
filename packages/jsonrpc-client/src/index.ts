@@ -6,4 +6,5 @@ export type {
   SelectiveRpcClient,
   CreateClientConfig,
   CreateClientWithMethodsConfig,
+  ClientMethodReturnType,
 } from "./types";
