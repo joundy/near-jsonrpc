@@ -31,7 +31,7 @@ import type {
 ```typescript
 import {
   query,
-  queryViewAccount, // NEW: Discriminated methods
+  queryViewAccount,
   queryCallFunction,
   queryViewCode,
   block,
@@ -51,7 +51,6 @@ const transporter = jsonRpcTransporter({
 // Client with only specific methods
 const client = createClientWithMethods({
   transporter,
-  // ✅ NEW: Use discriminated methods for better type safety
   methods: { block, status, query, queryViewAccount, queryCallFunction },
   runtimeValidation: true,
 });

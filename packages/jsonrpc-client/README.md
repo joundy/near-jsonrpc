@@ -11,44 +11,41 @@ npm install @near-js/jsonrpc-client
 ## Quick Start
 
 ```typescript
-import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
-import { DiscriminateRpcQueryResponse } from "@near-js/jsonrpc-types";
+import {
+  jsonRpcTransporter,
+  createClientWithMethods,
+} from "@near-js/jsonrpc-client";
+import { block, gasPrice, query } from "@near-js/jsonrpc-types/methods";
 
 const transporter = jsonRpcTransporter({
   endpoint: "https://rpc.testnet.near.org",
 });
-const client = createClient({ transporter });
+const client = createClientWithMethods({
+  transporter,
+  methods: { block, gasPrice, query }, // Only these methods are available
+  runtimeValidation: { request: true, response: true, error: false },
+});
 
-// Query account using discriminated method
-const { result, error } = await client.queryViewAccount({
+const { result: blockResponse, blockError } = await client.block({
   accountId: "example.testnet",
   finality: "final",
 });
 
-if (!error) {
-  // Use discriminator helper for type-safe response handling
-  const accountView = DiscriminateRpcQueryResponse(result).AccountView;
-  if (accountView) {
-    console.log(`Balance: ${accountView.amount} yoctoNEAR`);
-  }
+if (blockError) {
+  console.error("Error fetching block:", blockError);
+  return;
 }
+console.log(blockResult);
 
-// Alternative: Use generic query method (still supported)
-const account = await client.query({
+const viewAccountResult = await client.query({
   requestType: "view_account",
   finality: "final",
   accountId: "example.testnet",
 });
+console.log(viewAccountResult);
 
-// Get transaction status
-const txStatus = await client.tx({
-  txHash: "your-tx-hash",
-  senderAccountId: "sender.testnet",
-  waitUntil: "FINAL",
-});
-
-// Get current gas price
-const gasPrice = await client.gasPrice({});
+const gasPriceResult = await client.gasPrice({});
+console.log(gasPriceResult);
 ```
 
 ## API
