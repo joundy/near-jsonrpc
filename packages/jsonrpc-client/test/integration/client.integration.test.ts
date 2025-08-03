@@ -49,10 +49,23 @@ describe("NEAR JSON-RPC Client Integration", () => {
     expect(typeof result.result?.header.hash).toBe("string");
   }, 10000);
 
-  it("should handle validation errors", async () => {
+  it("should handle validation errors with boolean setting", async () => {
     const clientWithValidation = createClient({
       transporter: jsonRpcTransporter({ endpoint: NearRpcEndpoint.Testnet }),
       runtimeValidation: true,
+    });
+
+    // TODO: add test for runtime validation
+    // This should pass validation
+    // const validResult = await clientWithValidation.gasPrice({});
+    // expect(validResult.error).toBeUndefined();
+    // expect(validResult.result).toBeDefined();
+  }, 10000);
+
+  it("should handle validation errors with object setting", async () => {
+    const clientWithValidation = createClient({
+      transporter: jsonRpcTransporter({ endpoint: NearRpcEndpoint.Testnet }),
+      runtimeValidation: { request: true, response: true, error: false },
     });
 
     // TODO: add test for runtime validation

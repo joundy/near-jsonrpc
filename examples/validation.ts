@@ -179,8 +179,11 @@ async function main() {
     endpoint: "https://rpc.testnet.near.org",
   });
 
-  // Create client with runtime validation enabled
-  const client = createClient({ transporter, runtimeValidation: true });
+  // Create client with runtime validation enabled for all types
+  const client = createClient({
+    transporter,
+    runtimeValidation: { request: true, response: true, error: true },
+  });
 
   console.log("🛡️ NEAR JSON-RPC Client - Type-Safe & Zod Validation Example\n");
 

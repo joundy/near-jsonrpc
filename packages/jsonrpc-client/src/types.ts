@@ -10,6 +10,23 @@ import type {
 
 export type RuntimeValidationType = "request" | "response" | "error";
 
+/**
+ * Runtime validation configuration
+ */
+export interface RuntimeValidationConfig {
+  /** Enable request validation */
+  request: boolean;
+  /** Enable response validation */
+  response: boolean;
+  /** Enable error validation */
+  error: boolean;
+}
+
+/**
+ * Runtime validation setting - can be boolean for backward compatibility or object for granular control
+ */
+export type RuntimeValidationSetting = boolean | RuntimeValidationConfig;
+
 export type RuntimeValidation<T, RuntimeValidationType> = {
   runtimeValidation: RuntimeValidationType;
   error: z.core.$ZodErrorTree<T>;
@@ -101,8 +118,8 @@ export interface CreateClientWithMethodsConfig<
   transporter: Transporter;
   /** Object containing the specific methods to include from "@near-js/jsonrpc-types/methods" */
   methods: T;
-  /** Whether to enable runtime validation (optional, defaults to false) */
-  runtimeValidation?: true;
+  /** Runtime validation configuration (optional, defaults to false for all) */
+  runtimeValidation?: RuntimeValidationSetting;
 }
 
 /**
@@ -111,6 +128,6 @@ export interface CreateClientWithMethodsConfig<
 export interface CreateClientConfig {
   /** The transport function to use for sending requests */
   transporter: Transporter;
-  /** Whether to enable runtime validation (optional, defaults to false) */
-  runtimeValidation?: true;
+  /** Runtime validation configuration (optional, defaults to false for all) */
+  runtimeValidation?: RuntimeValidationSetting;
 }

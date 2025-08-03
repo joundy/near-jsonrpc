@@ -49,10 +49,28 @@ describe("createClient", () => {
     });
   });
 
-  it("supports runtime validation", () => {
+  it("supports runtime validation with boolean (backward compatibility)", () => {
     const client = createClient({
       transporter: mockTransporter,
       runtimeValidation: true,
+    });
+
+    expect(typeof client.status).toBe("function");
+  });
+
+  it("supports runtime validation with object", () => {
+    const client = createClient({
+      transporter: mockTransporter,
+      runtimeValidation: { request: true, response: true, error: false },
+    });
+
+    expect(typeof client.status).toBe("function");
+  });
+
+  it("supports granular runtime validation settings", () => {
+    const client = createClient({
+      transporter: mockTransporter,
+      runtimeValidation: { request: false, response: true, error: true },
     });
 
     expect(typeof client.status).toBe("function");
@@ -124,11 +142,33 @@ describe("createClientWithMethods", () => {
     expect((client as any).query).toBeUndefined();
   });
 
-  it("should enable validation when specified", async () => {
+  it("should enable validation when specified (boolean)", async () => {
     const client = createClientWithMethods({
       transporter: mockTransporter,
       methods: { status },
       runtimeValidation: true,
+    });
+
+    const result = await client.status(null);
+    expect(result).toBeDefined();
+  });
+
+  it("should enable validation when specified (object)", async () => {
+    const client = createClientWithMethods({
+      transporter: mockTransporter,
+      methods: { status },
+      runtimeValidation: { request: true, response: false, error: true },
+    });
+
+    const result = await client.status(null);
+    expect(result).toBeDefined();
+  });
+
+  it("should handle granular validation settings", async () => {
+    const client = createClientWithMethods({
+      transporter: mockTransporter,
+      methods: { status },
+      runtimeValidation: { request: false, response: true, error: false },
     });
 
     const result = await client.status(null);

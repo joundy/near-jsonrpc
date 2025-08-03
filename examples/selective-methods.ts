@@ -20,7 +20,7 @@ async function main() {
   const client = createClientWithMethods({
     transporter,
     methods: { block, status, gasPrice }, // Only these methods are available
-    runtimeValidation: true,
+    runtimeValidation: { request: true, response: true, error: false },
   });
 
   console.log("🎯 NEAR JSON-RPC Client - Selective Methods Example\n");
