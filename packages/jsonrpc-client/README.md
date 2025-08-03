@@ -84,7 +84,7 @@ Creates a type-safe JSON-RPC client with all available NEAR Protocol methods.
 #### Parameters
 
 - `config.transporter: Transporter` - The transport layer for making JSON-RPC requests
-- `config.runtimeValidation?: true` - Optional flag to enable runtime validation of requests and responses
+- `config.runtimeValidation?: boolean | RuntimeValidationConfig` - Optional configuration to enable runtime validation. Can be `true` for all validation or an object for granular control
 
 #### Example
 
@@ -98,10 +98,16 @@ const transporter = jsonRpcTransporter({
 // Basic client
 const client = createClient({ transporter });
 
-// Client with runtime validation
+// Client with runtime validation (all types)
 const validatedClient = createClient({
   transporter,
   runtimeValidation: true,
+});
+
+// Client with granular validation control
+const granularClient = createClient({
+  transporter,
+  runtimeValidation: { request: true, response: true, error: false },
 });
 ```
 
@@ -113,7 +119,7 @@ Creates a type-safe JSON-RPC client with only specific methods. This is useful f
 
 - `config.transporter: Transporter` - The transport layer for making JSON-RPC requests
 - `config.methods: object` - Object containing specific methods from `@near-js/jsonrpc-types/methods`
-- `config.runtimeValidation?: true` - Optional flag to enable runtime validation of requests and responses
+- `config.runtimeValidation?: boolean | RuntimeValidationConfig` - Optional configuration to enable runtime validation. Can be `true` for all validation or an object for granular control
 
 #### Example
 
@@ -128,11 +134,18 @@ const transporter = jsonRpcTransporter({
   endpoint: "https://rpc.testnet.near.org",
 });
 
-// Client with only specific methods
+// Client with only specific methods and full validation
 const selectiveClient = createClientWithMethods({
   transporter,
   methods: { block, status, query },
   runtimeValidation: true,
+});
+
+// Client with selective methods and granular validation
+const granularSelectiveClient = createClientWithMethods({
+  transporter,
+  methods: { block, status, query },
+  runtimeValidation: { request: true, response: false, error: true },
 });
 
 // Only these methods are available (TypeScript enforced):
@@ -239,21 +252,53 @@ if (discriminated.AccountView) {
 
 #### Runtime Validation
 
-When `runtimeValidation` is enabled, the client will validate both outgoing requests and incoming responses using Zod schemas. This provides additional type safety at runtime and helps catch issues early.
+The client supports runtime validation using Zod schemas to validate requests, responses, and errors. You can configure validation in two ways:
+
+##### Boolean Configuration (Simple)
+
+Set `runtimeValidation: true` to enable all validation types:
 
 ```typescript
 import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
 
-// Create client with runtime validation enabled
-const transporter = jsonRpcTransporter({
-  endpoint: "https://rpc.testnet.near.org",
-});
 const client = createClient({
-  transporter,
-  runtimeValidation: true,
+  transporter: jsonRpcTransporter({ endpoint: "https://rpc.testnet.near.org" }),
+  runtimeValidation: true, // Enables request, response, and error validation
 });
+```
 
-// If validation fails, the client will return validation errors
+##### Object Configuration (Granular Control)
+
+Use an object to control which validation types are enabled:
+
+```typescript
+import { jsonRpcTransporter, createClient } from "@near-js/jsonrpc-client";
+
+// Only validate requests (catch invalid input before sending)
+const clientRequestOnly = createClient({
+  transporter: jsonRpcTransporter({ endpoint: "https://rpc.testnet.near.org" }),
+  runtimeValidation: { request: true, response: false, error: false },
+});
+```
+
+##### RuntimeValidationConfig Interface
+
+```typescript
+interface RuntimeValidationConfig {
+  /** Enable request validation */
+  request: boolean;
+  /** Enable response validation */
+  response: boolean;
+  /** Enable error validation */
+  error: boolean;
+}
+```
+
+##### Using Validation
+
+When validation is enabled and fails, the client returns validation errors:
+
+```typescript
 const result = await client.query({
   requestType: "view_account",
   finality: "final",

@@ -7,6 +7,7 @@ import type {
 import type {
   Transporter,
   ClientMethodReturnType,
+  RuntimeValidationSetting,
 } from "@near-js/jsonrpc-client";
 import type {
   Method,
@@ -27,7 +28,7 @@ export interface JsonRpcQueryConfig {
   /** The transporter to use for requests */
   transporter: Transporter;
   /** Whether to enable runtime validation */
-  runtimeValidation?: true;
+  runtimeValidation?: RuntimeValidationSetting;
 }
 
 /**

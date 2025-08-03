@@ -7,4 +7,6 @@ export type {
   CreateClientConfig,
   CreateClientWithMethodsConfig,
   ClientMethodReturnType,
+  RuntimeValidationConfig,
+  RuntimeValidationSetting,
 } from "./types";

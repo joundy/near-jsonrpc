@@ -6,6 +6,8 @@ import type {
   SelectiveRpcClient,
   CreateClientWithMethodsConfig,
   CreateClientConfig,
+  RuntimeValidationConfig,
+  RuntimeValidationSetting,
 } from "./types";
 import { RuntimeValidationType } from "./types";
 import {
@@ -19,6 +21,31 @@ import {
   Method,
 } from "@near-js/jsonrpc-types/types";
 import { JSON_RPC_TRANSPORTER_ERROR_CODE } from "./transporter";
+
+/**
+ * Normalize runtime validation setting to a config object
+ */
+function normalizeRuntimeValidation(
+  runtimeValidation?: RuntimeValidationSetting
+): RuntimeValidationConfig {
+  if (typeof runtimeValidation === "boolean") {
+    return {
+      request: runtimeValidation,
+      response: runtimeValidation,
+      error: runtimeValidation,
+    };
+  }
+
+  if (runtimeValidation) {
+    return runtimeValidation;
+  }
+
+  return {
+    request: false,
+    response: false,
+    error: false,
+  };
+}
 
 function preProces(request: any) {
   return transformCamelToSnake(request);
@@ -67,7 +94,7 @@ function parseZod<T>(
  * const client = createClientWithMethods({
  *   transporter,
  *   methods: { block, status, query },
- *   runtimeValidation: true
+ *   runtimeValidation: { request: true, response: true, error: false }
  * });
  *
  * // Only these methods are available:
@@ -79,6 +106,7 @@ export function createClientWithMethods<
   T extends Record<string, Method<any, any, any, any>>
 >(config: CreateClientWithMethodsConfig<T>): SelectiveRpcClient<T> {
   const { transporter, methods: selectedMethods, runtimeValidation } = config;
+  const validationConfig = normalizeRuntimeValidation(runtimeValidation);
 
   return Object.entries(selectedMethods).reduce((acc, [key, method]) => {
     acc[key] = async (request: RequestType<typeof method>) => {
@@ -89,7 +117,7 @@ export function createClientWithMethods<
         };
       }
 
-      if (runtimeValidation) {
+      if (validationConfig.request) {
         const requestValidation = parseZod<RequestType<typeof method>>(
           "request",
           method.zodRequest,
@@ -104,30 +132,29 @@ export function createClientWithMethods<
       const response = await transporter(method.methodName, preProces(request));
       const result = postProcess(response) as { result: any; error: any };
 
-      if (runtimeValidation) {
-        if (result.result) {
-          const resultValidation = parseZod<ResponseType<typeof method>>(
-            "response",
-            method.zodResponse,
-            result.result
-          );
-          if (resultValidation) {
-            return resultValidation;
-          }
+      if (validationConfig.response && result.result) {
+        const resultValidation = parseZod<ResponseType<typeof method>>(
+          "response",
+          method.zodResponse,
+          result.result
+        );
+        if (resultValidation) {
+          return resultValidation;
         }
+      }
 
-        if (
-          result.error &&
-          result.error.code !== JSON_RPC_TRANSPORTER_ERROR_CODE
-        ) {
-          const errorValidation = parseZod<ErrorType<typeof method>>(
-            "error",
-            method.zodError,
-            result.error
-          );
-          if (errorValidation) {
-            return errorValidation;
-          }
+      if (
+        validationConfig.error &&
+        result.error &&
+        result.error.code !== JSON_RPC_TRANSPORTER_ERROR_CODE
+      ) {
+        const errorValidation = parseZod<ErrorType<typeof method>>(
+          "error",
+          method.zodError,
+          result.error
+        );
+        if (errorValidation) {
+          return errorValidation;
         }
       }
 
@@ -157,7 +184,7 @@ export function createClientWithMethods<
  * const transporter = jsonRpcTransporter({ endpoint: NearRpcEndpoint.Mainnet });
  * const client = createClient({
  *   transporter,
- *   runtimeValidation: true
+ *   runtimeValidation: { request: true, response: true, error: true }
  * });
  *
  * // All methods are available:
