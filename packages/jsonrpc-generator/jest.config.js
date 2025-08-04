@@ -22,6 +22,7 @@ export default {
   coverageProvider: "v8",
   collectCoverageFrom: [
     "src/**/*.ts",
+    "!src/index.ts",
     "!src/**/constants.ts",
     "!src/**/types.ts",
     "!src/**/*.d.ts",
