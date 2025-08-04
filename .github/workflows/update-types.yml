@@ -59,14 +59,14 @@ jobs:
 
           # Commit changes
           git add packages/jsonrpc-types/src/
-          git commit -m "chore: update generated JSONRPC types"
+          git commit -m "feat: update generated JSONRPC types"
 
           # Push the branch
           git push origin "$BRANCH_NAME"
 
           # Create PR using GitHub CLI
           gh pr create \
-            --title "chore: update generated JSONRPC types" \
+            --title "feat: update generated JSONRPC types" \
             --body "## 🤖 Automated Update
 
           This PR updates the generated JSONRPC types based on the latest OpenAPI specification.
