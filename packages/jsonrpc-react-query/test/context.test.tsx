@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { JsonRpcQueryProvider, useJsonRpcQueryConfig } from "../src/context";
 import { jsonRpcTransporter, NearRpcEndpoint } from "@near-js/jsonrpc-client";
 import type { JsonRpcQueryConfig } from "../src/types";
