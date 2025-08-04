@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-build-test:
+  build-test:
     runs-on: ubuntu-latest
 
     steps:
