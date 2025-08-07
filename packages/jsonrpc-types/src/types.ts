@@ -21,12 +21,12 @@ export function defineMethod<TRequest, TResponse, TError, DefaultTRequest = unde
 }
 
 /** Type helper to extract the request type from a method */
-export type RequestType<T extends Method<any, any, any, any>> = T extends Method<infer R, any, any, any> ? R : never;
+export type RequestType<T extends Method<unknown, unknown, unknown, unknown>> = T extends Method<infer R, unknown, unknown, unknown> ? R : never;
 /** Type helper to extract the response type from a method */
-export type ResponseType<T extends Method<any, any, any, any>> = T extends Method<any, infer R, any, any> ? R : never;
+export type ResponseType<T extends Method<unknown, unknown, unknown, unknown>> = T extends Method<unknown, infer R, unknown, unknown> ? R : never;
 /** Type helper to extract the error type from a method */
-export type ErrorType<T extends Method<any, any, any, any>> = T extends Method<any, any, infer E, any> ? E : never;
+export type ErrorType<T extends Method<unknown, unknown, unknown, unknown>> = T extends Method<unknown, unknown, infer E, unknown> ? E : never;
 /** Type helper to extract the default request type from a method */
-export type DefaultRequestType<T extends Method<any, any, any, any>> = T extends Method<any, any, any, infer D> ? D : never;
+export type DefaultRequestType<T extends Method<unknown, unknown, unknown, unknown>> = T extends Method<unknown, unknown, unknown, infer D> ? D : never;
 /** Utility type to omit properties from a type in a distributive manner */
-export type DistributiveOmit<T, K extends PropertyKey> = T extends any ? Pick<T, Exclude<keyof T, K>> : never;
+export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Pick<T, Exclude<keyof T, K>> : never;

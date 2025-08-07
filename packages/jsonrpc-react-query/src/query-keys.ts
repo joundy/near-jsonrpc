@@ -3,7 +3,7 @@ import type { JsonRpcQueryKeys, MethodName } from "./types";
 
 export const jsonRpcQueryKeys: JsonRpcQueryKeys = {
   all: ["jsonrpc"] as const,
-  method: <T extends Method<any, any, any, any>>(
+  method: <T extends Method<unknown, unknown, unknown, unknown>>(
     methodName: MethodName<T>,
     params?: RequestType<T>
   ) => {
@@ -14,15 +14,14 @@ export const jsonRpcQueryKeys: JsonRpcQueryKeys = {
   },
 };
 
-export function createMethodQueryKey<T extends Method<any, any, any, any>>(
-  methodName: MethodName<T>,
-  params?: RequestType<T>
-) {
+export function createMethodQueryKey<
+  T extends Method<unknown, unknown, unknown, unknown>
+>(methodName: MethodName<T>, params?: RequestType<T>) {
   return jsonRpcQueryKeys.method(methodName, params);
 }
 
-export function getMethodQueryKeys<T extends Method<any, any, any, any>>(
-  methodName: MethodName<T>
-) {
+export function getMethodQueryKeys<
+  T extends Method<unknown, unknown, unknown, unknown>
+>(methodName: MethodName<T>) {
   return ["jsonrpc", methodName] as const;
 }

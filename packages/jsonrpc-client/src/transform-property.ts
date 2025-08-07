@@ -13,7 +13,7 @@ type AnyObject = {
   [key: string]: any;
 };
 
-const detectObject = (obj: any) => {
+const detectObject = (obj: unknown) => {
   if (Object.prototype.toString.call(obj) === "[object Object]") {
     return true;
   }
@@ -43,10 +43,10 @@ const transformPropertyName =
     return recursive(data);
   };
 
-export const transformSnakeToCamel = transformPropertyName((s: string) => 
+export const transformSnakeToCamel = transformPropertyName((s: string) =>
   mappedSnakeCamelProperty.has(s) ? mappedSnakeCamelProperty.get(s)! : s
 );
 
-export const transformCamelToSnake = transformPropertyName((s: string) => 
+export const transformCamelToSnake = transformPropertyName((s: string) =>
   mappedCamelSnakeProperty.has(s) ? mappedCamelSnakeProperty.get(s)! : s
 );

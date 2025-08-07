@@ -92,7 +92,7 @@ export type RpcClient = {
  * Type for a client with selected methods
  */
 export type SelectiveRpcClient<
-  T extends Record<string, Method<any, any, any, any>>
+  T extends Record<string, Method<unknown, unknown, unknown, unknown>>
 > = {
   [K in keyof T]: T[K] extends Method<
     infer TRequest,
@@ -105,14 +105,14 @@ export type SelectiveRpcClient<
 
 export type Transporter = (
   methodName: string,
-  request: any
-) => Promise<{ result: any; error: any }>;
+  request: unknown
+) => Promise<{ result: unknown; error: unknown }>;
 
 /**
  * Configuration for creating a selective JSON-RPC client
  */
 export interface CreateClientWithMethodsConfig<
-  T extends Record<string, Method<any, any, any>>
+  T extends Record<string, Method<unknown, unknown, unknown, unknown>>
 > {
   /** The transport function to use for sending requests */
   transporter: Transporter;

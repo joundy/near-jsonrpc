@@ -68,8 +68,10 @@ export function buildTypes() {
   source
     .addTypeAlias({
       name: "RequestType",
-      typeParameters: [{ name: "T", constraint: "Method<any, any, any, any>" }],
-      type: "T extends Method<infer R, any, any, any> ? R : never",
+      typeParameters: [
+        { name: "T", constraint: "Method<unknown, unknown, unknown, unknown>" },
+      ],
+      type: "T extends Method<infer R, unknown, unknown, unknown> ? R : never",
       isExported: true,
     })
     .addJsDoc({
@@ -80,8 +82,10 @@ export function buildTypes() {
   source
     .addTypeAlias({
       name: "ResponseType",
-      typeParameters: [{ name: "T", constraint: "Method<any, any, any, any>" }],
-      type: "T extends Method<any, infer R, any, any> ? R : never",
+      typeParameters: [
+        { name: "T", constraint: "Method<unknown, unknown, unknown, unknown>" },
+      ],
+      type: "T extends Method<unknown, infer R, unknown, unknown> ? R : never",
       isExported: true,
     })
     .addJsDoc({
@@ -92,8 +96,10 @@ export function buildTypes() {
   source
     .addTypeAlias({
       name: "ErrorType",
-      typeParameters: [{ name: "T", constraint: "Method<any, any, any, any>" }],
-      type: "T extends Method<any, any, infer E, any> ? E : never",
+      typeParameters: [
+        { name: "T", constraint: "Method<unknown, unknown, unknown, unknown>" },
+      ],
+      type: "T extends Method<unknown, unknown, infer E, unknown> ? E : never",
       isExported: true,
     })
     .addJsDoc({
@@ -104,8 +110,10 @@ export function buildTypes() {
   source
     .addTypeAlias({
       name: "DefaultRequestType",
-      typeParameters: [{ name: "T", constraint: "Method<any, any, any, any>" }],
-      type: "T extends Method<any, any, any, infer D> ? D : never",
+      typeParameters: [
+        { name: "T", constraint: "Method<unknown, unknown, unknown, unknown>" },
+      ],
+      type: "T extends Method<unknown, unknown, unknown, infer D> ? D : never",
       isExported: true,
     })
     .addJsDoc({
@@ -118,7 +126,7 @@ export function buildTypes() {
     .addTypeAlias({
       name: "DistributiveOmit",
       typeParameters: [{ name: "T" }, { name: "K", constraint: "PropertyKey" }],
-      type: "T extends any ? Pick<T, Exclude<keyof T, K>> : never",
+      type: "T extends unknown ? Pick<T, Exclude<keyof T, K>> : never",
       isExported: true,
     })
     .addJsDoc({

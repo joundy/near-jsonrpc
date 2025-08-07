@@ -44,7 +44,7 @@ import { createMethodQueryKey } from "./query-keys";
  * ```
  */
 export function useJsonRpcQuery<
-  TMethod extends Method<any, any, any, any>,
+  TMethod extends Method<unknown, unknown, unknown, unknown>,
   TData = ResponseType<TMethod>
 >(
   method: TMethod,

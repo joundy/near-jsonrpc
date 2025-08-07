@@ -147,7 +147,7 @@ export class JsonRpcQueryCache {
   /**
    * Prefetch a query for a specific method
    */
-  async prefetchMethod<T extends Method<any, any, any, any>>(
+  async prefetchMethod<T extends Method<unknown, unknown, unknown, unknown>>(
     method: T,
     params: any,
     options?: { staleTime?: number; gcTime?: number }

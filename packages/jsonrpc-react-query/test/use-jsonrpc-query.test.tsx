@@ -40,14 +40,17 @@ const createMockQueryResult = (overrides = {}) =>
 
 jest.mocked(useQuery).mockImplementation(() => createMockQueryResult());
 
-jest.mocked(createClientWithMethods).mockImplementation(() => ({
-  block: jest
-    .fn()
-    .mockResolvedValue({ result: { header: { hash: "test-hash" } } }),
-  status: jest
-    .fn()
-    .mockResolvedValue({ result: { version: { version: "1.0.0" } } }),
-}));
+jest.mocked(createClientWithMethods).mockImplementation(
+  () =>
+    ({
+      block: jest
+        .fn()
+        .mockResolvedValue({ result: { header: { hash: "test-hash" } } }),
+      status: jest
+        .fn()
+        .mockResolvedValue({ result: { version: { version: "1.0.0" } } }),
+    } as any)
+);
 
 describe("useJsonRpcQuery", () => {
   const mockTransporter = jsonRpcTransporter({

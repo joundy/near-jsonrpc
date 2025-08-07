@@ -103,7 +103,7 @@ function parseZod<T>(
  * ```
  */
 export function createClientWithMethods<
-  T extends Record<string, Method<any, any, any, any>>
+  T extends Record<string, Method<unknown, unknown, unknown, unknown>>
 >(config: CreateClientWithMethodsConfig<T>): SelectiveRpcClient<T> {
   const { transporter, methods: selectedMethods, runtimeValidation } = config;
   const validationConfig = normalizeRuntimeValidation(runtimeValidation);
@@ -113,7 +113,7 @@ export function createClientWithMethods<
       if (method.defaultRequest) {
         request = {
           ...method.defaultRequest,
-          ...request,
+          ...(request as object),
         };
       }
 
@@ -130,7 +130,7 @@ export function createClientWithMethods<
       }
 
       const response = await transporter(method.methodName, preProces(request));
-      const result = postProcess(response) as { result: any; error: any };
+      const result = postProcess(response) as { result: unknown; error: any };
 
       if (validationConfig.response && result.result) {
         const resultValidation = parseZod<ResponseType<typeof method>>(
