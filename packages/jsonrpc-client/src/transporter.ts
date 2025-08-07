@@ -17,7 +17,7 @@ export function jsonRpcTransporter({
 }: JsonRpcTransporterParams): (
   methodName: string,
   params: any
-) => Promise<{ result: any; error: any }> {
+) => Promise<{ result: unknown; error: unknown }> {
   return async (methodName: string, params: any) => {
     const payload = {
       jsonrpc: "2.0",
@@ -40,8 +40,8 @@ export function jsonRpcTransporter({
       }
 
       const data = (await response.json()) as {
-        result?: any;
-        error?: any;
+        result?: unknown;
+        error?: unknown;
         id: number;
         jsonrpc: string;
       };

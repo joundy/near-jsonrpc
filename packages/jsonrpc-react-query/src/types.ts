@@ -19,7 +19,8 @@ import type {
 /**
  * Extract the method name from a method object
  */
-export type MethodName<T extends Method<any, any, any, any>> = T["methodName"];
+export type MethodName<T extends Method<unknown, unknown, unknown, unknown>> =
+  T["methodName"];
 
 /**
  * Base configuration for React Query hooks
@@ -35,7 +36,7 @@ export interface JsonRpcQueryConfig {
  * Configuration for useJsonRpcQuery hook
  */
 export interface UseJsonRpcQueryOptions<
-  TMethod extends Method<any, any, any, any>,
+  TMethod extends Method<unknown, unknown, unknown, unknown>,
   TData = ResponseType<TMethod>,
   TError = ErrorType<TMethod>
 > extends Omit<
@@ -59,7 +60,7 @@ export interface UseJsonRpcQueryOptions<
  * Configuration for useJsonRpcMutation hook
  */
 export interface UseJsonRpcMutationOptions<
-  TMethod extends Method<any, any, any, any>,
+  TMethod extends Method<unknown, unknown, unknown, unknown>,
   TData = ResponseType<TMethod>,
   TError = ErrorType<TMethod>,
   TVariables = RequestType<TMethod>
@@ -86,7 +87,7 @@ export interface JsonRpcQueryKeys {
   /** Base key for all JSON-RPC queries */
   all: readonly ["jsonrpc"];
   /** Key for specific method queries */
-  method: <T extends Method<any, any, any, any>>(
+  method: <T extends Method<unknown, unknown, unknown, unknown>>(
     methodName: MethodName<T>,
     params?: RequestType<T>
   ) => readonly ["jsonrpc", MethodName<T>, RequestType<T>?];
