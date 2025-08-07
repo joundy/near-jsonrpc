@@ -47,11 +47,14 @@ const mockQueryClient = {
 
 jest.mocked(useQueryClient).mockReturnValue(mockQueryClient);
 
-jest.mocked(createClientWithMethods).mockImplementation(() => ({
-  broadcast_tx_commit: jest.fn().mockResolvedValue({
-    result: { transaction: { hash: "tx-hash" } },
-  }),
-}));
+jest.mocked(createClientWithMethods).mockImplementation(
+  () =>
+    ({
+      broadcast_tx_commit: jest.fn().mockResolvedValue({
+        result: { transaction: { hash: "tx-hash" } },
+      }),
+    } as any)
+);
 
 describe("useJsonRpcMutation", () => {
   const mockTransporter = jsonRpcTransporter({
