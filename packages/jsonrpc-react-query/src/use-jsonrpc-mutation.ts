@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { createClientWithMethods } from "@near-js/jsonrpc-client";
 import type {
   Method,
@@ -12,7 +12,6 @@ import type {
   MethodName,
 } from "./types";
 import { useJsonRpcQueryConfig } from "./context";
-import { getMethodQueryKeys } from "./query-keys";
 
 /**
  * React Query hook for JSON-RPC mutations
@@ -54,7 +53,7 @@ import { getMethodQueryKeys } from "./query-keys";
  * ```
  */
 export function useJsonRpcMutation<
-  TMethod extends Method<any, any, any, any>,
+  TMethod extends Method<unknown, unknown, unknown, unknown>,
   TData = ResponseType<TMethod>,
   TVariables = RequestType<TMethod>
 >(
@@ -96,10 +95,10 @@ export function useJsonRpcMutation<
     mutate: mutationResult.mutate,
     mutateAsync: async (variables: TVariables) => {
       const result = await mutationResult.mutateAsync(variables);
-      if ((result as any).error) {
-        throw (result as any).error;
+      if (result.error) {
+        throw result.error;
       }
-      return (result as any).result as TData;
+      return result.result as TData;
     },
     isPending: mutationResult.isPending,
     isSuccess:
