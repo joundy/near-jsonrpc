@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0](https://github.com/joundy/near-jsonrpc/compare/jsonrpc-client-v0.1.0...jsonrpc-client-v0.2.0) (2025-08-04)
+## [0.2.0](https://github.com/joundy/near-jsonrpc/compare/jsonrpc-client-v0.1.0...jsonrpc-client-v0.2.0) (2025-08-13)
 
 
 ### Features
@@ -15,8 +15,10 @@
 * add selective methods and object-based API ([f5257cf](https://github.com/joundy/near-jsonrpc/commit/f5257cfebc78ee7b89ea918284b88bd7f69f4f17))
 * add testing infrastructure ([e13e695](https://github.com/joundy/near-jsonrpc/commit/e13e695e1cd22f116738b808fa667526bcb6728c))
 * add testing infrastructure ([3f5ea39](https://github.com/joundy/near-jsonrpc/commit/3f5ea395b0ca6ce266dde2a5eeeff449923bafdd))
+* enhance TypeScript type safety and code generation ([d3cd42f](https://github.com/joundy/near-jsonrpc/commit/d3cd42f881284242ec638bd106330426ee15d4bf))
 * expand descriminated methods ([9df962c](https://github.com/joundy/near-jsonrpc/commit/9df962c5e29e74e9daf302a40224d7fbbd94e5c1))
 * expand discriminated methods ([bae2f7f](https://github.com/joundy/near-jsonrpc/commit/bae2f7ff79f33c0661aec33f1b191885435da93a))
+* improve TypeScript type safety by replacing 'any' with 'unknown' ([5d6a08e](https://github.com/joundy/near-jsonrpc/commit/5d6a08e7eef2d23985777722c0fa77dfe96042fd))
 * mapped property name, snakecase, camelcase & client update ([6fd3357](https://github.com/joundy/near-jsonrpc/commit/6fd335762530e64df2972ed8151c5cd691716254))
 * optimize build configuration and package exports ([266e109](https://github.com/joundy/near-jsonrpc/commit/266e109a4f41ecbfab4344ab0b624bef358a8fd1))
 * optimize build configuration and package exports ([d70ae28](https://github.com/joundy/near-jsonrpc/commit/d70ae28e245ec0aaac68a9d2f96934828fac2d34))

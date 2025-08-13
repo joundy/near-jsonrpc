@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0](https://github.com/joundy/near-jsonrpc/compare/jsonrpc-types-v0.1.0...jsonrpc-types-v0.2.0) (2025-08-04)
+## [0.2.0](https://github.com/joundy/near-jsonrpc/compare/jsonrpc-types-v0.1.0...jsonrpc-types-v0.2.0) (2025-08-13)
 
 
 ### Features
@@ -8,10 +8,12 @@
 * add main index.ts file for jsonrpc-types package ([8bbaba8](https://github.com/joundy/near-jsonrpc/commit/8bbaba8708a321c47b2fcd2c7ee9465e538a8d15))
 * add monorepo build system ([48ab51e](https://github.com/joundy/near-jsonrpc/commit/48ab51e6876a35b9133f9a6ece9232a206e71991))
 * add selective methods and object-based API ([142befc](https://github.com/joundy/near-jsonrpc/commit/142befc05cf02d1d1163c2d19810aa34d8471ede))
+* enhance TypeScript type safety and code generation ([d3cd42f](https://github.com/joundy/near-jsonrpc/commit/d3cd42f881284242ec638bd106330426ee15d4bf))
 * expand descriminated methods ([9df962c](https://github.com/joundy/near-jsonrpc/commit/9df962c5e29e74e9daf302a40224d7fbbd94e5c1))
 * expand discriminated methods ([bae2f7f](https://github.com/joundy/near-jsonrpc/commit/bae2f7ff79f33c0661aec33f1b191885435da93a))
 * export zod-schemas in @near-js/jsonrpc-types ([e632c5d](https://github.com/joundy/near-jsonrpc/commit/e632c5dcf9ea5cb080e30ea05c00c1fa4c5acceb))
 * extends the schema with discrimination helper function ([a66bea2](https://github.com/joundy/near-jsonrpc/commit/a66bea2e9e0ae29ec2cb0413509a0e31c1f62cc4))
+* improve TypeScript type safety by replacing 'any' with 'unknown' ([5d6a08e](https://github.com/joundy/near-jsonrpc/commit/5d6a08e7eef2d23985777722c0fa77dfe96042fd))
 * init add zod schema generator ([06e8b28](https://github.com/joundy/near-jsonrpc/commit/06e8b288c5b27b3370f67231ae688b4ea570d518))
 * init assign query child method (request_type) ([2dcc662](https://github.com/joundy/near-jsonrpc/commit/2dcc6622b86022cfadb9c4f609863cb3df5bb522))
 * mapped property name, snakecase, camelcase & client update ([6fd3357](https://github.com/joundy/near-jsonrpc/commit/6fd335762530e64df2972ed8151c5cd691716254))

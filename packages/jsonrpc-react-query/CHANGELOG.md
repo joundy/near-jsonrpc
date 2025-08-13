@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0](https://github.com/joundy/near-jsonrpc/compare/jsonrpc-react-query-v0.1.0...jsonrpc-react-query-v0.2.0) (2025-08-04)
+## [0.2.0](https://github.com/joundy/near-jsonrpc/compare/jsonrpc-react-query-v0.1.0...jsonrpc-react-query-v0.2.0) (2025-08-13)
 
 
 ### Features
@@ -10,6 +10,9 @@
 * add granular runtime validation configuration ([749b468](https://github.com/joundy/near-jsonrpc/commit/749b4683ee4a94515a0cd08be1f9362f841d58d6))
 * add pr checks workflow ([9eff301](https://github.com/joundy/near-jsonrpc/commit/9eff30190d524f6a3fbbaceb7625ea743e2454f1))
 * Add React Query integration package and examples ([7de6cdb](https://github.com/joundy/near-jsonrpc/commit/7de6cdb6e93634d7da8fa1abf63a6ca245745c58))
+* enhance code generator and update test suites ([000e3cb](https://github.com/joundy/near-jsonrpc/commit/000e3cb21b756d80ab2d213bd00530f8d129ce47))
+* enhance TypeScript type safety and code generation ([d3cd42f](https://github.com/joundy/near-jsonrpc/commit/d3cd42f881284242ec638bd106330426ee15d4bf))
+* improve TypeScript type safety by replacing 'any' with 'unknown' ([5d6a08e](https://github.com/joundy/near-jsonrpc/commit/5d6a08e7eef2d23985777722c0fa77dfe96042fd))
 
 
 ### Bug Fixes
