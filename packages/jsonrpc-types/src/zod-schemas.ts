@@ -955,6 +955,7 @@ export const LimitConfigSchema = z.object({
     maxActionsPerReceipt: z.number(),
     maxArgumentsLength: z.number(),
     maxContractSize: z.number(),
+    maxElementsPerContractTable: z.union([z.number(), z.null()]).optional(),
     maxFunctionsNumberPerContract: z.union([z.number(), z.null()]).optional(),
     maxGasBurnt: z.number(),
     maxLengthMethodName: z.number(),
@@ -971,6 +972,7 @@ export const LimitConfigSchema = z.object({
     maxReceiptSize: z.number(),
     maxRegisterSize: z.number(),
     maxStackHeight: z.number(),
+    maxTablesPerContract: z.union([z.number(), z.null()]).optional(),
     maxTotalLogLength: z.number(),
     maxTotalPrepaidGas: z.number(),
     maxTransactionSize: z.number(),
@@ -1025,7 +1027,7 @@ export const PeerInfoViewSchema = z.object({
     sentBytesPerSec: z.number(),
     trackedShards: z.array(z.lazy(() => ShardIdSchema))
 });
-export const PrepareErrorSchema = z.union([z.literal("Serialization"), z.literal("Deserialization"), z.literal("InternalMemoryDeclared"), z.literal("GasInstrumentation"), z.literal("StackHeightInstrumentation"), z.literal("Instantiate"), z.literal("Memory"), z.literal("TooManyFunctions"), z.literal("TooManyLocals")]);
+export const PrepareErrorSchema = z.union([z.literal("Serialization"), z.literal("Deserialization"), z.literal("InternalMemoryDeclared"), z.literal("GasInstrumentation"), z.literal("StackHeightInstrumentation"), z.literal("Instantiate"), z.literal("Memory"), z.literal("TooManyFunctions"), z.literal("TooManyLocals"), z.literal("TooManyTables"), z.literal("TooManyTableElements")]);
 export const PublicKeySchema = z.string();
 export const Range_of_uint64Schema = z.object({
     end: z.number(),
